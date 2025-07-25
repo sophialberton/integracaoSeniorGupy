@@ -4,9 +4,10 @@
 ### Estrutura do projeto
 
 ```
-├── data/                      # Dados simulados ou reais (ex: exportações do RH)
+├── data/                      # Dados de exportações do RH
 │   ├── colaboradores_ativos.json
 │   ├── usuarios_sistema.json
+│   ├── connectionDB.py
 │
 ├── scripts/                   # Scripts Python principais
 │   ├── remover_ex_colaboradores.py
@@ -17,6 +18,9 @@
 ├── utils/                     # Funções auxiliares
 │   ├── carregar_dados.py
 │   ├── salvar_dados.py
+│   ├── config.py
+│   ├── logger.py
+│   ├── database.py
 │
 ├── logs/                      # Logs de execução e auditoria
 │   ├── execucao.log
