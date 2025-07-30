@@ -1,7 +1,12 @@
+import sys
+import os
 import requests
 import logging
-import os 
 from dotenv import load_dotenv,find_dotenv
+# Caminho para encontrar a pasta 'src'
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if src_path not in sys.path:
+    sys.path.append(src_path)
 from data.connectionDB import Database
 from utils.config import dict_extract
 
@@ -37,6 +42,7 @@ class conexaoGupy():
         return lista
         
     def verificaColaboradores(self):
+        logging.info("verificaColaboradores")
         data = self._process_user()
         for situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior in data:
             if situacaoSenior == 7:
@@ -65,11 +71,13 @@ class conexaoGupy():
                 self.listaColaboradores(nomeSenior,emailSenior,localtrabalhoSenior)
  
     def listaColaboradores(self):
+        logging.info("listaColaboradores")
         # DEPOIS DE FILTRAR SE É SITUACAO != 7 ELE VAI VIR PARA CÁ, AQUI VAI SER VERIFICADO SE O USUARIO JÁ TEM CADASTRO NA GUPY, 
         # SE NAO TIVER ELE VAI PARA O CADASTRO
         pass
    
     def criaColaboradores(self):
+        logging.info("criaColaboradores")
         dados = self.querySenior()
         url = "https://api.gupy.io/api/v1/users"
         headers = {
@@ -83,6 +91,7 @@ class conexaoGupy():
         print(response.text)
         
     def updateColaboradores(self):
+        logging.info("updateColaboradores")
         dados = self.listaColaboradores()
         for id,nome,email in dados:
             try:        
@@ -105,6 +114,7 @@ class conexaoGupy():
                 pass 
   
     def deleteColaboradores(self):
+        logging.info("deleteColaboradores")
         dados = self.verificaColaboradores()
         for ids in dados:
             try:

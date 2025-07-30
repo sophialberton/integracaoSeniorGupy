@@ -96,7 +96,7 @@ class Database:
             logging.info(">Consulta executada com sucesso.")
             # logging.info("------------------------------------------------------------------------------------")            
         except oracledb.DatabaseError as e:
-            logging.error("Error executing query: %s", e)
+            logging.error("Erro ao executar query: %s", e)
         finally:
             if self.cursor:
                 self.cursor.close()
