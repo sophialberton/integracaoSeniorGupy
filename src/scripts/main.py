@@ -37,7 +37,8 @@ class main:
             format="%(asctime)s %(levelname)s %(message)s",
             encoding='utf-8',
             datefmt="%Y-%m-%d %H:%M:%S",
-            filename=log_filename
+            filename=log_filename, 
+            force=True
         )
         logging.info(f"-------------->>>Informações do executor--------------")
         logging.info(f"IPV4: {ip_local}")
