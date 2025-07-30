@@ -4,20 +4,20 @@ from dotenv import load_dotenv
 load_dotenv("venv/.env")
 
 #Database
-host_data           = os.getenv('host')
-port_data           = os.getenv('port')
-service_name_data   =os.getenv('service_name')
-user_data           =os.getenv('user')
-password_data       =os.getenv('password')
+host_senior           = os.getenv('host_senior')
+port_senior           = os.getenv('port_senior')
+service_name_senior   =os.getenv('service_name_senior')
+user_senior           =os.getenv('user_senior')
+password_senior       =os.getenv('password_senior')
 token               = os.getenv("TOKEN") 
 
 dict_extract = {
     "Gupy":{
         "token":    token,
-        "host":     host_data,
-        "port":     port_data,
-        "service":  service_name_data,
-        "user":     user_data,
-        "password": password_data
+        "host_senior":     host_senior,
+        "port_senior":     port_senior,
+        "service_senior":  service_name_senior,
+        "user_senior":     user_senior,
+        "password_senior": password_senior
     }
 }
