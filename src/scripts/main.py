@@ -1,7 +1,14 @@
+import sys
 import os
 import logging
 from datetime import datetime
 from dotenv import load_dotenv,find_dotenv
+
+# Caminho para encontrar a pasta 'src'
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if src_path not in sys.path:
+    sys.path.append(src_path)
+
 from data.connectionDB import Database
 from conexaoGupy import conexaoGupy
 from utils.config import dict_extract
