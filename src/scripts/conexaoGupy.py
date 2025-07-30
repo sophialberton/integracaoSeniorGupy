@@ -27,10 +27,10 @@ class conexaoGupy():
         # Conexão com database    
         db_results = self.db_connection.querySenior()
         for data in db_results:
-            self._process_user(data)
+            self.process_user(data)
         logging.info("ConnectionDB")
             
-    def _process_user(self,data):      
+    def process_user(self,data):      
         lista = []          
         situacaoSenior      = data.Situacao
         matriculaSenior     = data.Matricula
@@ -43,7 +43,7 @@ class conexaoGupy():
         
     def verificaColaboradores(self):
         logging.info("verificaColaboradores")
-        data = self._process_user()
+        data = self.process_user()
         for situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior in data:
             if situacaoSenior == 7:
                 url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"

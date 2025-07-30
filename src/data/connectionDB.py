@@ -18,18 +18,23 @@ class Database:
         # Verifica se as variaveis de ambiente foram carregadas 
         if None in dsn.values():
             logging.error("Faltando uma ou mais variáveis de ambiente.")
-            return
+            return False
         try:
             self.connection = oracledb.connect(
                 user=dsn['user'],
                 password=dsn['password'],
-                dsn=oracledb.makedsn(dsn['host'], dsn['port'], service_name=dsn['service_name'])
+                dsn=oracledb.makedsn(
+                    dsn['host'],
+                    dsn['port'],
+                    service_name=dsn['service_name'])
             )
             logging.info(f"-------------->>>Informações da Database--------------")
             logging.info(">Conexão com o banco de dados estabelecida com sucesso")
+            return True
             # logging.info(f"------------------------------------------------------------------------------------")           
         except oracledb.DatabaseError as e:
             logging.error("Erro ao estabelecer conexão: %s", e)
+            return False
     
     def querySenior(self):
         if self.connection is None:
