@@ -3,44 +3,18 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv,find_dotenv
+from utils.config import dict_extract
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
     sys.path.append(src_path)
-from data.connectionDB import Database
-from utils.config import dict_extract
 
 class conexaoGupy():
     def __init__(self,**kwargs):
         load_dotenv(find_dotenv())
-        self.token = kwargs.get("token")
-        host = kwargs.get("host")
-        port = kwargs.get("port")
-        service = kwargs.get("service")
-        user = kwargs.get("user")
-        password = kwargs.get("password")
-        self.data = []
-        self.db_connection = Database()
-        self.db_connection.connectData(host,port,service,user,password)
-    
-    def connectionDB(self):
-        # Conexão com database    
-        db_results = self.db_connection.querySenior()
-        for data in db_results:
-            self.process_user(data)
-        logging.info("ConnectionDB")
-            
-    def process_user(self,data):      
-        lista = []          
-        situacaoSenior      = data.Situacao
-        matriculaSenior     = data.Matricula
-        nomeSenior          = data.Nome
-        emailSenior         = data.Email
-        cargoSenior         = data.Cargo
-        localtrabalhoSenior = data.LocalTrabalho
-        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior])
-        return lista
-        
+        self.token = kwargs.get("token")       
+        self.data = []          
+           
     def verificaColaboradores(self):
         logging.info("verificaColaboradores")
         data = self.process_user()

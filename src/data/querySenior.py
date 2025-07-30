@@ -3,38 +3,10 @@ import logging
 from collections import namedtuple
 # from dotenv import load_dotenv,find_dotenv
 
-class Database:
+class ConsultaSenior:
     def __init__(self):
         self.connection = None  # Declara conexão como None
         self.cursor = None      # Declara cursor como None
-    def connectData(self,host,port,service,user,password):
-        dsn = {
-            'host': host,
-            'port': port,
-            'service_name': service,
-            'user': user,
-            'password': password
-        }
-        # Verifica se as variaveis de ambiente foram carregadas 
-        if None in dsn.values():
-            logging.error("Faltando uma ou mais variáveis de ambiente.")
-            return False
-        try:
-            self.connection = oracledb.connect(
-                user=dsn['user'],
-                password=dsn['password'],
-                dsn=oracledb.makedsn(
-                    dsn['host'],
-                    dsn['port'],
-                    service_name=dsn['service_name'])
-            )
-            logging.info(f"-------------->>>Informações da Database--------------")
-            logging.info(">Conexão com o banco de dados estabelecida com sucesso")
-            return True
-            # logging.info(f"------------------------------------------------------------------------------------")           
-        except oracledb.DatabaseError as e:
-            logging.error("Erro ao estabelecer conexão: %s", e)
-            return False
     
     def querySenior(self):
         if self.connection is None:

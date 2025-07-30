@@ -13,11 +13,14 @@ token               = os.getenv("TOKEN")
 
 dict_extract = {
     "Gupy":{
-        "token":    token,
+        "token":    token        
+    },
+    "Senior":{
         "host_senior":     host_senior,
         "port_senior":     port_senior,
-        "service_senior":  service_name_senior,
+        "service_name_senior":  service_name_senior,
         "user_senior":     user_senior,
         "password_senior": password_senior
     }
+    
 }

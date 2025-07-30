@@ -1,18 +1,16 @@
-import sys
 import os
-import logging
-from datetime import datetime
-from dotenv import load_dotenv,find_dotenv
-
+import sys
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
     sys.path.append(src_path)
-
-from data.connectionDB import Database
-from conexaoGupy import conexaoGupy
-from utils.config import dict_extract
+import logging
 import socket
+from datetime import datetime
+from conexaoDB import Database
+from conexaoGupy import conexaoGupy
+from dotenv import load_dotenv,find_dotenv
+from utils.config import dict_extract
 
 class main:
     def __init__(self):
@@ -47,6 +45,7 @@ class main:
     logs()
     
     if __name__ == "__main__":
-        start = conexaoGupy()
-        start.connectionDB()
+        # start = conexaoGupy()
+        start = conexaoGupy(**dict_extract["Gupy"])
+        start2 = Database(**dict_extract["Senior"])
         
