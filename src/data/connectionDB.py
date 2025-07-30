@@ -17,7 +17,7 @@ class Database:
         }
         # Verifica se as variaveis de ambiente foram carregadas 
         if None in dsn.values():
-            logging.error("Missing one or more environment variables.")
+            logging.error("Faltando uma ou mais variáveis de ambiente.")
             return
         try:
             self.connection = oracledb.connect(
@@ -33,7 +33,7 @@ class Database:
     
     def querySenior(self):
         if self.connection is None:
-            logging.error("No database connection established.")
+            logging.error("Nenhuma conexão de banco de dados estabelecida.")
             return []
         row_data_list = []
         try:

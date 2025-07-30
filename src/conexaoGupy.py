@@ -1,10 +1,11 @@
 import requests
+import logging
 import os 
 from dotenv import load_dotenv,find_dotenv
 from data.connectionDB import Database
 from utils.config import dict_extract
 
-class Teste():
+class conexaoGupy():
     def __init__(self,**kwargs):
         load_dotenv(find_dotenv())
         self.token = kwargs.get("token")
@@ -22,6 +23,7 @@ class Teste():
         db_results = self.db_connection.querySenior()
         for data in db_results:
             self._process_user(data)
+        logging.info("ConnectionDB")
             
     def _process_user(self,data):      
         lista = []          
@@ -34,7 +36,6 @@ class Teste():
         lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior])
         return lista
         
-    
     def verificaColaboradores(self):
         data = self._process_user()
         for situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior in data:
@@ -62,10 +63,12 @@ class Teste():
                 return ids
             else:
                 self.listaColaboradores(nomeSenior,emailSenior,localtrabalhoSenior)
+ 
     def listaColaboradores(self):
         # DEPOIS DE FILTRAR SE É SITUACAO != 7 ELE VAI VIR PARA CÁ, AQUI VAI SER VERIFICADO SE O USUARIO JÁ TEM CADASTRO NA GUPY, 
         # SE NAO TIVER ELE VAI PARA O CADASTRO
         pass
+   
     def criaColaboradores(self):
         dados = self.querySenior()
         url = "https://api.gupy.io/api/v1/users"
@@ -100,6 +103,7 @@ class Teste():
                 print(response.text)   
             except:
                 pass 
+  
     def deleteColaboradores(self):
         dados = self.verificaColaboradores()
         for ids in dados:
@@ -114,6 +118,8 @@ class Teste():
                 print(response.text)
             except Exception as e:
                 print(e)
+  
     def run(self):
         self.updateColaboradores()
-Teste(**dict_extract["Gupy"]).listaColaboradores()
+
+conexaoGupy(**dict_extract["Gupy"]).listaColaboradores()
