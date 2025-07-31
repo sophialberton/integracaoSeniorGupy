@@ -4,6 +4,8 @@ import requests
 import logging
 from dotenv import load_dotenv,find_dotenv
 from utils.config import dict_extract
+from data.querySenior import ConsultaSenior
+from scripts.conexaoDB import Database
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
@@ -13,20 +15,41 @@ class conexaoGupy():
     def __init__(self,**kwargs):
         load_dotenv(find_dotenv())
         self.token = kwargs.get("token")       
-        self.data = []          
-           
-    def verificaColaboradores(self):
-        logging.info("verificaColaboradores")
-        data = self.process_user()
+        self.data = []   
+        self.db_connection = Database()    
+      
+    def connectionDB(self):
+        logging.info("ConnectionDB")
+        # Conexão com database    
+        db_results = ConsultaSenior.querySenior()
+        for data in db_results:
+            self.process_user(data)  
+    
+    def process_user(self,data):      
+        lista = []          
+        situacaoSenior      = data.Situacao
+        matriculaSenior     = data.Matricula
+        nomeSenior          = data.Nome
+        emailSenior         = data.Email
+        cargoSenior         = data.Cargo
+        localtrabalhoSenior = data.LocalTrabalho
+        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior])
+        return lista
+         
+    def verificaColaboradores(self,data):
+        logging.info("Verificando Colaboradores")
+        data = self.process_user(self)
+        
         for situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior in data:
             if situacaoSenior == 7:
+                # Requisição API gupy
                 url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"
                 headers = {
                     "accept": "application/json",
                     "authorization": f"Bearer {self.token}"
-                }
-
+                } 
                 response = requests.get(url,  headers=headers)
+
                 if response.status_code == 200:
                     data = response.json()
                     ids = []
@@ -43,6 +66,7 @@ class conexaoGupy():
                 return ids
             else:
                 self.listaColaboradores(nomeSenior,emailSenior,localtrabalhoSenior)
+        logging.info("Colaboradores Verificados")
  
     def listaColaboradores(self):
         logging.info("listaColaboradores")

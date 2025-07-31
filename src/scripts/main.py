@@ -47,6 +47,10 @@ class main:
     if __name__ == "__main__":
         # start = conexaoGupy()
         # start = conexaoGupy(**dict_extract["Gupy"])
-        start2 = Database(**dict_extract["Senior"]).connectData()
-        
+        conexao = Database(**dict_extract["Senior"]).connectData()
+        print(conexao)
+        colaboradores = Database.buscaColaborador(conexao)
+        print(colaboradores)
+        start = conexaoGupy(**dict_extract["Gupy"]).verificaColaboradores(colaboradores)
+
         
