@@ -17,16 +17,16 @@ class Database():
         self.user_senior = kwargs.get("user_senior")
         self.password_senior = kwargs.get("password_senior")
         self.host_senior = kwargs.get("host_senior")
-        self.porta_senior = kwargs.get("porta_senior")
+        self.port_senior = kwargs.get("port_senior")
         self.service_name_senior = kwargs.get("service_name_senior")
     
-    def connectData(self,host,port,service,user,password):
+    def connectData(self):
         dsn = {
-            'host_senior': host,
-            'port_senior': port,
-            'service_name_senior': service,
-            'user_senior': user,
-            'password_senior': password
+            'host_senior': self.host_senior,
+            'port_senior': self.port_senior,
+            'service_name_senior': self.service_name_senior,
+            'user_senior': self.user_senior,
+            'password_senior': self.password_senior
         }
         # Verifica se as variaveis de ambiente foram carregadas 
         print(dsn)
@@ -50,7 +50,7 @@ class Database():
         
     # connectData()
 
-Database(**dict_extract["Senior"])
+# Database(**dict_extract["Senior"])
         
         
         

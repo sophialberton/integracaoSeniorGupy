@@ -46,6 +46,7 @@ class main:
     
     if __name__ == "__main__":
         # start = conexaoGupy()
-        start = conexaoGupy(**dict_extract["Gupy"])
-        start2 = Database(**dict_extract["Senior"])
+        # start = conexaoGupy(**dict_extract["Gupy"])
+        start2 = Database(**dict_extract["Senior"]).connectData()
+        
         
