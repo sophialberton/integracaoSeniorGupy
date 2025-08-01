@@ -1,33 +1,72 @@
+import os
+import sys
 import oracledb
 import logging
 from collections import namedtuple
-# from dotenv import load_dotenv,find_dotenv
+from dotenv import load_dotenv,find_dotenv
+src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if src_path not in sys.path:
+    sys.path.append(src_path)
 
-class ConsultaSenior:
-    def __init__(self):
+class DatabaseSenior():
+    def __init__(self,**kwargs):
+        load_dotenv(find_dotenv())
         self.connection = None  # Declara conexão como None
-        self.cursor = None      # Declara cursor como None
+        self.cursor = None # Declara cursor como None
+        self.user_senior = kwargs.get("user_senior")
+        self.password_senior = kwargs.get("password_senior")
+        self.host_senior = kwargs.get("host_senior")
+        self.port_senior = kwargs.get("port_senior")
+        self.service_name_senior = kwargs.get("service_name_senior")
     
-    def querySenior(self):
-        if self.connection is None:
-            logging.error("Nenhuma conexão de banco de dados estabelecida.")
-            return []
+    def conexaoBancoSenior(self):
+        dsn = {
+            'host_senior': self.host_senior,
+            'port_senior': self.port_senior,
+            'service_name_senior': self.service_name_senior,
+            'user_senior': self.user_senior,
+            'password_senior': self.password_senior
+        }
+        # Verifica se as variaveis de ambiente foram carregadas 
+        if None in dsn.values():
+            logging.error("Faltando uma ou mais variáveis de ambiente.")
+            return False
+        try:
+            self.connection = oracledb.connect( 
+                user=dsn['user_senior'],
+                password=dsn['password_senior'],
+                dsn=oracledb.makedsn(dsn['host_senior'],dsn['port_senior'],service_name=dsn['service_name_senior'])
+            )
+            self.cursor = self.connection.cursor()
+            logging.info(f"-------------->>>Informações da Database--------------")
+            logging.info(">Conexão com o banco de dados estabelecida com sucesso")
+            return self.cursor
+            # logging.info(f"------------------------------------------------------------------------------------")           
+        except oracledb.DatabaseError as e:
+            logging.error("Erro ao estabelecer conexão: %s", e)
+            return False
+                        
+    def buscaColaboradorSenior(self):
         row_data_list = []
         try:
             self.cursor = self.connection.cursor()
             self.cursor.execute(
+                # IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
                 """
                 SELECT
                         *
                     FROM 
                         (
                         SELECT
-                            FUN.SITAFA AS "Situacao",
+                            FUN.NUMEMP AS "Empresa",
+                            FUN.TIPCOL AS "TipoColaborador",
                             FUN.NUMCAD AS "Matricula",
+                            FUN.NUMCPF AS "Cpf",
+                            FUN.SITAFA AS "Situacao",
                             FUN.NOMFUN AS "Nome",
                             EM.EMACOM AS "Email",
                             CAR.TITCAR AS "Cargo",
-                            ORN.NOMLOC AS "LocalTrabalho",
+                            ORN.NOMLOC AS "Filial",
                                         ROW_NUMBER() OVER (PARTITION BY FUN.NUMCAD
                         ORDER BY
                             FUN.SITAFA) AS RN
@@ -69,15 +108,33 @@ class ConsultaSenior:
             for row in rows:
                 row_data_object = RowData(*row)
                 row_data_list.append(row_data_object)
+                # print(row)
             logging.info("-------------->>>Query---------------------------------")
             logging.info(">Consulta executada com sucesso.")
             # logging.info("------------------------------------------------------------------------------------")            
         except oracledb.DatabaseError as e:
             logging.error("Erro ao executar query: %s", e)
+
         finally:
             if self.cursor:
                 self.cursor.close()
             logging.info(">Cursor fechado")
             logging.info("-------------->>>Script Rodandno------------------------")
-        return row_data_list        
-    
+            # print(self.row_data_list)
+        return row_data_list    
+                
+    # connectData()
+
+# Database(**dict_extract["Senior"])
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

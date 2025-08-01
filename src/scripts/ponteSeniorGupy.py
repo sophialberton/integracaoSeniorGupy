@@ -4,8 +4,9 @@ import requests
 import logging
 from dotenv import load_dotenv,find_dotenv
 from utils.config import dict_extract
-from data.querySenior import ConsultaSenior
-from scripts.conexaoDB import Database
+from conexaoGupy import conexaoGupy
+# from data.querySenior import ConsultaSenior
+from conexaoSenior import DatabaseSenior
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
@@ -16,32 +17,59 @@ class ponteSeniorGupy():
         load_dotenv(find_dotenv())
         self.token = kwargs.get("token")       
         self.data = []   
-        self.db_connection = Database()    
+        self.conexaoSenior = DatabaseSenior()
+        # self.emailSenior = DatabaseSenior.buscaColaboradorSenior(self="Email")
       
     def connectionDB(self):
         logging.info("ConnectionDB")
-        # Conexão com database    
-        db_results = ConsultaSenior.querySenior()
-        for data in db_results:
+        # Conexão com DatabaseSenior    
+        dadosSenior = DatabaseSenior.buscaColaboradorSenior()
+        for data in dadosSenior:
             self.process_user(data)  
     
-    def process_user(self,data):      
+    def process_user(self,data):    
+        listaSenior = []
+        # Verifica se 'data' é um dicionário
+        if isinstance(data, dict):
+            situacaoSenior  = data.get("Situacao")
+            matriculaSenior = data.get("Matricula")
+            cpfSenior       = data.get("Cpf")
+            nomeSenior      = data.get("Nome")
+            emailSenior     = data.get("Email")
+            cargoSenior     = data.get("Cargo")
+            filialSenior    = data.get("Filial")
+        else:
+            # Se for um objeto com atributos
+            situacaoSenior  = getattr(data, "Situacao", None)
+            matriculaSenior = getattr(data, "Matricula", None)
+            cpfSenior       = getattr(data, "Cpf", None)
+            nomeSenior      = getattr(data, "Nome", None)
+            emailSenior     = getattr(data, "Email", None)
+            cargoSenior     = getattr(data, "Cargo", None)
+            filialSenior    = getattr(data, "Filial", None)
+
+        listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
+        return listaSenior
+ 
+        """ 
         lista = []          
         situacaoSenior      = data.Situacao
         matriculaSenior     = data.Matricula
         nomeSenior          = data.Nome
         emailSenior         = data.Email
         cargoSenior         = data.Cargo
-        localtrabalhoSenior = data.LocalTrabalho
-        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior])
+        filialSenior        = data.Filial
+        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
         return lista
-         
-    def verificaColaboradores(self,data):
-        logging.info("Verificando Colaboradores")
-        data = self.process_user(self)
+         """
+    def verificaColaboradores(self,usuarios):
+        logging.info(">Verificando Colaboradores")
+        usuarios = self.process_user(self)
         
-        for situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,localtrabalhoSenior in data:
-            if situacaoSenior == 7:
+        for situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior in usuarios:
+            if situacaoSenior == 7: # Se demitido
+                
+                # conexaoGupy.deletaUsuarioGupy(id) 
                 # Requisição API gupy
                 url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"
                 headers = {
@@ -51,11 +79,11 @@ class ponteSeniorGupy():
                 response = requests.get(url,  headers=headers)
 
                 if response.status_code == 200:
-                    data = response.json()
+                    usuarios = response.json()
                     ids = []
-                    print(data['totalResults'])
-                    if data['results']:  
-                        for item in data['results']:
+                    print(usuarios['totalResults'])
+                    if usuarios['results']:  
+                        for item in usuarios['results']:
                             try:
                                 id = item['id']
                             except:
@@ -65,11 +93,13 @@ class ponteSeniorGupy():
                     continue
                 return ids
             else:
-                self.listaColaboradores(nomeSenior,emailSenior,localtrabalhoSenior)
+                logging.info(">>Lista Colaboradores")
+                # conexaoGupy.listaUsuariosGupy(emailSenior)
+                # self.listaColaboradores(nomeSenior,emailSenior,filialSenior)
         logging.info("Colaboradores Verificados")
  
     def listaColaboradores(self):
-        logging.info("listaColaboradores")
+        logging.info(">ListaColaboradores")
         # DEPOIS DE FILTRAR SE É SITUACAO != 7 ELE VAI VIR PARA CÁ, AQUI VAI SER VERIFICADO SE O USUARIO JÁ TEM CADASTRO NA GUPY, 
         # SE NAO TIVER ELE VAI PARA O CADASTRO
         pass
@@ -128,5 +158,5 @@ class ponteSeniorGupy():
     def run(self):
         self.updateColaboradores()
 
-ponteSeniorGupy(**dict_extract["Gupy"]).listaColaboradores()
+# ponteSeniorGupy(**dict_extract["Gupy"]).listaColaboradores()
     

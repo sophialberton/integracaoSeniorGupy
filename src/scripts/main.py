@@ -7,15 +7,16 @@ if src_path not in sys.path:
 import logging
 import socket
 from datetime import datetime
-from conexaoDB import Database
-from conexaoGupy import conexaoGupy
+from conexaoSenior import DatabaseSenior
+# from conexaoGupy import conexaoGupy
+from ponteSeniorGupy import ponteSeniorGupy
 from dotenv import load_dotenv,find_dotenv
 from utils.config import dict_extract
 
 class main:
     def __init__(self):
-        self.db = Database()
-        self.db.connectData()
+        self.bancoSenior = DatabaseSenior()
+        self.bancoSenior.conexaoBancoSenior()
     @staticmethod
     
     def logs():
@@ -47,10 +48,10 @@ class main:
     if __name__ == "__main__":
         # start = conexaoGupy()
         # start = conexaoGupy(**dict_extract["Gupy"])
-        conexao = Database(**dict_extract["Senior"]).connectData()
+        conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
         print(conexao)
-        colaboradores = Database.buscaColaborador(conexao)
+        colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
         print(colaboradores)
-        start = conexaoGupy(**dict_extract["Gupy"]).verificaColaboradores(colaboradores)
+        start = ponteSeniorGupy(**dict_extract["Gupy"]).verificaColaboradores(colaboradores)
 
         
