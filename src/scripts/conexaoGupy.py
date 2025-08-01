@@ -17,14 +17,43 @@ class conexaoGupy():
         self.token = kwargs.get("token")       
         self.data = []   
         self.db_connection = DatabaseSenior()    
-      
-    def connectionDB(self):
-        logging.info("ConnectionDB")
-        # Conexão com DatabaseSenior    
-        dadosSenior = DatabaseSenior.buscaColaboradorSenior()
-        for data in dadosSenior:
-            self.process_user(data)  
-         
+
+    
+    def process_user(self,data):    
+        listaSenior = []
+        # Verifica se 'data' é um dicionário
+        if isinstance(data, dict):
+            situacaoSenior  = data.get("Situacao")
+            matriculaSenior = data.get("Matricula")
+            cpfSenior       = data.get("Cpf")
+            nomeSenior      = data.get("Nome")
+            emailSenior     = data.get("Email")
+            cargoSenior     = data.get("Cargo")
+            filialSenior    = data.get("Filial")
+        else:
+            # Se for um objeto com atributos
+            situacaoSenior  = getattr(data, "Situacao", None)
+            matriculaSenior = getattr(data, "Matricula", None)
+            cpfSenior       = getattr(data, "Cpf", None)
+            nomeSenior      = getattr(data, "Nome", None)
+            emailSenior     = getattr(data, "Email", None)
+            cargoSenior     = getattr(data, "Cargo", None)
+            filialSenior    = getattr(data, "Filial", None)
+
+        listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
+        return listaSenior
+        """ 
+        lista = []          
+        situacaoSenior      = data.Situacao
+        matriculaSenior     = data.Matricula
+        nomeSenior          = data.Nome
+        emailSenior         = data.Email
+        cargoSenior         = data.Cargo
+        filialSenior        = data.Filial
+        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
+        return lista
+         """
+    
     def listaUsuariosGupy(self,emailSenior):
         # Requisição API gupy
         url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"

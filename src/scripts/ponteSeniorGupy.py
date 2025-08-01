@@ -3,7 +3,8 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv,find_dotenv
-from utils.config import dict_extract
+# from utils.config import dict_extract
+from collections import defaultdict
 from conexaoGupy import conexaoGupy
 # from data.querySenior import ConsultaSenior
 from conexaoSenior import DatabaseSenior
@@ -19,38 +20,32 @@ class ponteSeniorGupy():
         self.data = []   
         self.conexaoSenior = DatabaseSenior()
         # self.emailSenior = DatabaseSenior.buscaColaboradorSenior(self="Email")
-      
-    def connectionDB(self):
-        logging.info("ConnectionDB")
-        # Conexão com DatabaseSenior    
-        dadosSenior = DatabaseSenior.buscaColaboradorSenior()
-        for data in dadosSenior:
-            self.process_user(data)  
+        self.connection = None  # Declara conexão como None
+        self.cursor = None # Declara cursor como None
     
-    def process_user(self,data):    
+    def process_user(self):            
         listaSenior = []
         # Verifica se 'data' é um dicionário
-        if isinstance(data, dict):
-            situacaoSenior  = data.get("Situacao")
-            matriculaSenior = data.get("Matricula")
-            cpfSenior       = data.get("Cpf")
-            nomeSenior      = data.get("Nome")
-            emailSenior     = data.get("Email")
-            cargoSenior     = data.get("Cargo")
-            filialSenior    = data.get("Filial")
+        if isinstance(self.data, dict):
+            situacaoSenior  = self.data.get("Situacao")
+            matriculaSenior = self.data.get("Matricula")
+            cpfSenior       = self.data.get("Cpf")
+            nomeSenior      = self.data.get("Nome")
+            emailSenior     = self.data.get("Email")
+            cargoSenior     = self.data.get("Cargo")
+            filialSenior    = self.data.get("Filial")
         else:
             # Se for um objeto com atributos
-            situacaoSenior  = getattr(data, "Situacao", None)
-            matriculaSenior = getattr(data, "Matricula", None)
-            cpfSenior       = getattr(data, "Cpf", None)
-            nomeSenior      = getattr(data, "Nome", None)
-            emailSenior     = getattr(data, "Email", None)
-            cargoSenior     = getattr(data, "Cargo", None)
-            filialSenior    = getattr(data, "Filial", None)
+            situacaoSenior  = getattr(self.data, "Situacao", None)
+            matriculaSenior = getattr(self.data, "Matricula", None)
+            cpfSenior       = getattr(self.data, "Cpf", None)
+            nomeSenior      = getattr(self.data, "Nome", None)
+            emailSenior     = getattr(self.data, "Email", None)
+            cargoSenior     = getattr(self.data, "Cargo", None)
+            filialSenior    = getattr(self.data, "Filial", None)
 
         listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
         return listaSenior
- 
         """ 
         lista = []          
         situacaoSenior      = data.Situacao
@@ -62,41 +57,71 @@ class ponteSeniorGupy():
         lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
         return lista
          """
-    def verificaColaboradores(self,usuarios):
+    
+    def verificaColaboradores(self, colaboradores):
         logging.info(">Verificando Colaboradores")
+        print(colaboradores)
         usuarios = self.process_user(self)
+        print(usuarios)
         
-        for situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior in usuarios:
-            if situacaoSenior == 7: # Se demitido
-                
-                # conexaoGupy.deletaUsuarioGupy(id) 
-                # Requisição API gupy
-                url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"
-                headers = {
-                    "accept": "application/json",
-                    "authorization": f"Bearer {self.token}"
-                } 
-                response = requests.get(url,  headers=headers)
-
-                if response.status_code == 200:
-                    usuarios = response.json()
-                    ids = []
-                    print(usuarios['totalResults'])
-                    if usuarios['results']:  
-                        for item in usuarios['results']:
-                            try:
-                                id = item['id']
-                            except:
-                                pass
-                            ids.append([id])  
-                else:
-                    continue
-                return ids
+        for item in usuarios:
+            if isinstance(item, (list, tuple)) and len(item) >= 3:
+                cpfSenior = item[2]
+                matriculaSenior = item[1]
+                # processar aqui
             else:
-                logging.info(">>Lista Colaboradores")
-                # conexaoGupy.listaUsuariosGupy(emailSenior)
-                # self.listaColaboradores(nomeSenior,emailSenior,filialSenior)
-        logging.info("Colaboradores Verificados")
+                print(f"Formato inesperado: {item}")
+
+        
+        # Agrupando por CPF
+        cpf_dict = defaultdict(list)
+        for item in usuarios:
+            cpf_dict[cpfSenior].append(matriculaSenior)
+        
+        # Verifica se um CPF se repete:
+        for cpfSenior, contagem in cpf_dict.items():
+            # Se cpfSenior repete:
+            if len(contagem) > 1:
+                # le matriculas vinculadas ao cpf (loop) e conta a quantidade de matricula
+                for cpfSenior, matriculaSenior,nomeSenior,emailSenior, situacaoSenior in usuarios:
+                    contador_matricula = 0
+                    qtd_matriculas = len(matriculaSenior)
+                    # se situação da matricula for diferente de demitido (ou seja, esta admitido)
+                    if situacaoSenior != '7':
+                        # se tem nao cadastro na gupy
+                        if not conexaoGupy.listaUsuariosGupy(emailSenior):
+                            # cria cadastro
+                            conexaoGupy.criaUsuarioGupy(nomeSenior,emailSenior)
+                    # se situação da matricula for igual a demitido
+                    else:
+                        # se contador matricula for igual a quantidade de matriculas
+                        if contador_matricula == qtd_matriculas:
+                            # se tem cadastro na gupy
+                            if conexaoGupy.listaUsuariosGupy(emailSenior):
+                                # Deleta
+                                conexaoGupy.deletaUsuarioGupy(cpfSenior)
+                contador_matricula += 1
+            # se cpf nao se repete
+            else:
+                print(f"CPF {cpfSenior} aparece apenas uma vez.")                
+                # Le matricula vinculada ao CPF -> Não sei como fazer a leitura da matricula do Cpf
+                matricula = matriculaSenior[0]
+                situacaoSenior = matricula["situacaoSenior"]
+                # tem_cadastro_gupy = matricula["tem_cadastro_gupy"]
+                
+                #se situação da matricula for diferente de demitido (ou seja, esta admitido)
+                if situacaoSenior != '7':
+                    # se tem nao cadastro na gupy
+                    if not conexaoGupy.listaUsuariosGupy(emailSenior):
+                        # Cria cadastro
+                        conexaoGupy.criaUsuarioGupy(nomeSenior,emailSenior)
+                # Se situação da matricula for igual a demitido
+                else:
+                    # Se tem cadastro na Gupy
+                    if conexaoGupy.listaUsuariosGupy(emailSenior):
+                        # Deleta cadastro
+                        conexaoGupy.deletaUsuarioGupy(cpfSenior)
+        logging.info(">Colaboradores Verificados")
  
     def listaColaboradores(self):
         logging.info(">ListaColaboradores")
