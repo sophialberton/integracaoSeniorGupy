@@ -79,22 +79,23 @@ class ponteSeniorGupy():
     
     def dataSenior(self, colaboradores):
         # print(colaboradores)
-        logging.info(">Processando dados colaboradores Senior")
+        logging.info(">Processando dados colaboradores Senior (dataSenior)")
         # usuarios = self.process_user(colaboradores)        
         usuarios = []
         for colaborador in colaboradores:
                 usuario = self.process_user(colaborador)
                 usuarios.extend(usuario)  # pois process_user retorna uma lista com um item
         # print(usuarios) 
-        logging.info(">Dados colaboradores Senior processados")
+        logging.info(">Dados colaboradores Senior processados (dataSenior)")
         return usuarios
     
     def verificaColaboradores(self, colaboradores):
+        conexao = conexaoGupy()
         usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
-        logging.info(">Verificando Colaboradores")
+        logging.info(">Verificando Colaboradores (verificaColaboradores)")
         # print(colaboradores)
         # usuarios = self.process_user(self)
-        print(usuarios)
+        # print(usuarios) Esta funcionando
         
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 3:
@@ -109,29 +110,30 @@ class ponteSeniorGupy():
         cpf_dict = defaultdict(list)
         for item in usuarios:
             cpf_dict[cpfSenior].append(matriculaSenior)
+        logging.info(">Agrupando por CPFs (verificaColaboradores)")
         
         # Verifica se um CPF se repete:
         for cpfSenior, contagem in cpf_dict.items():
             # Se cpfSenior repete:
             if len(contagem) > 1:
                 # le matriculas vinculadas ao cpf (loop) e conta a quantidade de matricula
-                for cpfSenior, matriculaSenior,nomeSenior,emailSenior, situacaoSenior in usuarios:
+                for cpfSenior, matriculaSenior,nomeSenior,emailSenior, situacaoSenior, cargoSenior,filialSenior in usuarios:
                     contador_matricula = 0
-                    qtd_matriculas = len(matriculaSenior)
+                    qtd_matriculas = len(contagem)
                     # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                     if situacaoSenior != '7':
                         # se tem nao cadastro na gupy
-                        if not conexaoGupy.listaUsuariosGupy(emailSenior):
+                        if not conexao.listaUsuariosGupy(emailSenior):
                             # cria cadastro
-                            conexaoGupy.criaUsuarioGupy(nomeSenior,emailSenior)
+                            conexao.criaUsuarioGupy(nomeSenior,emailSenior)
                     # se situação da matricula for igual a demitido
                     else:
                         # se contador matricula for igual a quantidade de matriculas
                         if contador_matricula == qtd_matriculas:
                             # se tem cadastro na gupy
-                            if conexaoGupy.listaUsuariosGupy(emailSenior):
+                            if conexao.listaUsuariosGupy(emailSenior):
                                 # Deleta
-                                conexaoGupy.deletaUsuarioGupy(cpfSenior)
+                                conexao.deletaUsuarioGupy(cpfSenior)
                 contador_matricula += 1
             # se cpf nao se repete
             else:
@@ -144,15 +146,15 @@ class ponteSeniorGupy():
                 #se situação da matricula for diferente de demitido (ou seja, esta admitido)
                 if situacaoSenior != '7':
                     # se tem nao cadastro na gupy
-                    if not conexaoGupy.listaUsuariosGupy(emailSenior):
+                    if not conexao.listaUsuariosGupy(emailSenior):
                         # Cria cadastro
-                        conexaoGupy.criaUsuarioGupy(nomeSenior,emailSenior)
+                        conexao.criaUsuarioGupy(nomeSenior,emailSenior)
                 # Se situação da matricula for igual a demitido
                 else:
                     # Se tem cadastro na Gupy
-                    if conexaoGupy.listaUsuariosGupy(emailSenior):
+                    if conexao.listaUsuariosGupy(emailSenior):
                         # Deleta cadastro
-                        conexaoGupy.deletaUsuarioGupy(cpfSenior)
+                        conexao.deletaUsuarioGupy(cpfSenior)
         logging.info(">Colaboradores Verificados")
  
     def listaColaboradores(self):
