@@ -12,11 +12,13 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 class conexaoGupy():
-    def __init__(self,**kwargs):
+    def __init__(self):
         load_dotenv(find_dotenv())
-        self.token = kwargs.get("token")       
+        # self.token = kwargs.get("token")  
+        self.token = os.getenv("token")   
         self.data = []   
         self.db_connection = DatabaseSenior()    
+        print(f"token carregado: {self.token}")
     
     def listaUsuariosGupy(self,emailSenior):
         # Requisição API gupy
@@ -31,26 +33,25 @@ class conexaoGupy():
     def criaUsuarioGupy(self,nomeSenior,emailSenior):
         url = "https://api.gupy.io/api/v1/users"
         payload = {
-            f"name": list({nomeSenior}),
-            f"email": list({emailSenior})
+            f"name": str(nomeSenior),
+            f"email": str(emailSenior)
         }
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": "Bearer f21dcc63-73bc-4b69-85f0-b9ac179d457f"
-            # "authorization": f"Bearer {self.token}"
-        }
+            "authorization": f"Bearer {self.token}"
+            }
         response = requests.post(url, json=payload, headers=headers)
         print(response.text)
         
     def atualizaUsuarioGupy(self,idGupy,nomeSenior,emailSenior,cargoSenior,areaSenior,filialSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         payload = {
-            f"name": list({nomeSenior}),
-            f"email": list({emailSenior}),
-            f"roleId": list({cargoSenior}), # Cargo
-            f"departmentId": list({areaSenior}), # Departamento é a área
-            f"branchIds": list([{filialSenior}]) # Branch é a Filial
+            f"name": str(nomeSenior),
+            f"email": str(emailSenior),
+            f"roleId": str(cargoSenior), # Cargo
+            f"departmentId": str(areaSenior), # Departamento é a área
+            f"branchIds": str([filialSenior]) # Branch é a Filial
         }        
         headers = {
             "accept": "application/json",

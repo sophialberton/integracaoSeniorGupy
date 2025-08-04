@@ -85,7 +85,7 @@ class ponteSeniorGupy():
         for colaborador in colaboradores:
                 usuario = self.process_user(colaborador)
                 usuarios.extend(usuario)  # pois process_user retorna uma lista com um item
-        # print(usuarios) 
+        print(usuarios)
         logging.info(">Dados colaboradores Senior processados (dataSenior)")
         return usuarios
     
