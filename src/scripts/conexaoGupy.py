@@ -17,42 +17,6 @@ class conexaoGupy():
         self.token = kwargs.get("token")       
         self.data = []   
         self.db_connection = DatabaseSenior()    
-
-    
-    def process_user(self,data):    
-        listaSenior = []
-        # Verifica se 'data' é um dicionário
-        if isinstance(data, dict):
-            situacaoSenior  = data.get("Situacao")
-            matriculaSenior = data.get("Matricula")
-            cpfSenior       = data.get("Cpf")
-            nomeSenior      = data.get("Nome")
-            emailSenior     = data.get("Email")
-            cargoSenior     = data.get("Cargo")
-            filialSenior    = data.get("Filial")
-        else:
-            # Se for um objeto com atributos
-            situacaoSenior  = getattr(data, "Situacao", None)
-            matriculaSenior = getattr(data, "Matricula", None)
-            cpfSenior       = getattr(data, "Cpf", None)
-            nomeSenior      = getattr(data, "Nome", None)
-            emailSenior     = getattr(data, "Email", None)
-            cargoSenior     = getattr(data, "Cargo", None)
-            filialSenior    = getattr(data, "Filial", None)
-
-        listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
-        return listaSenior
-        """ 
-        lista = []          
-        situacaoSenior      = data.Situacao
-        matriculaSenior     = data.Matricula
-        nomeSenior          = data.Nome
-        emailSenior         = data.Email
-        cargoSenior         = data.Cargo
-        filialSenior        = data.Filial
-        lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
-        return lista
-         """
     
     def listaUsuariosGupy(self,emailSenior):
         # Requisição API gupy
@@ -67,13 +31,14 @@ class conexaoGupy():
     def criaUsuarioGupy(self,nomeSenior,emailSenior):
         url = "https://api.gupy.io/api/v1/users"
         payload = {
-            f"name": {nomeSenior},
-            f"email": {emailSenior}
+            f"name": list({nomeSenior}),
+            f"email": list({emailSenior})
         }
         headers = {
             "accept": "application/json",
             "content-type": "application/json",
-            "authorization": f"Bearer {self.token}"
+            "authorization": "Bearer f21dcc63-73bc-4b69-85f0-b9ac179d457f"
+            # "authorization": f"Bearer {self.token}"
         }
         response = requests.post(url, json=payload, headers=headers)
         print(response.text)
@@ -81,11 +46,11 @@ class conexaoGupy():
     def atualizaUsuarioGupy(self,idGupy,nomeSenior,emailSenior,cargoSenior,areaSenior,filialSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         payload = {
-            f"name": {nomeSenior},
-            f"email": {emailSenior},
-            f"roleId": {cargoSenior}, # Cargo
-            f"departmentId": {areaSenior}, # Departamento é a área
-            f"branchIds": [{filialSenior}] # Branch é a Filial
+            f"name": list({nomeSenior}),
+            f"email": list({emailSenior}),
+            f"roleId": list({cargoSenior}), # Cargo
+            f"departmentId": list({areaSenior}), # Departamento é a área
+            f"branchIds": list([{filialSenior}]) # Branch é a Filial
         }        
         headers = {
             "accept": "application/json",

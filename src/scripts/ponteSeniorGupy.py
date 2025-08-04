@@ -95,7 +95,7 @@ class ponteSeniorGupy():
         logging.info(">Verificando Colaboradores (verificaColaboradores)")
         # print(colaboradores)
         # usuarios = self.process_user(self)
-        # print(usuarios) Esta funcionando
+        # print(usuarios) # Esta funcionando
         
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 3:
