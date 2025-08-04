@@ -23,30 +23,49 @@ class ponteSeniorGupy():
         self.connection = None  # Declara conexão como None
         self.cursor = None # Declara cursor como None
     
-    def process_user(self):            
+    def process_user(self, data):            
         listaSenior = []
-        # Verifica se 'data' é um dicionário
-        if isinstance(self.data, dict):
-            situacaoSenior  = self.data.get("Situacao")
-            matriculaSenior = self.data.get("Matricula")
-            cpfSenior       = self.data.get("Cpf")
-            nomeSenior      = self.data.get("Nome")
-            emailSenior     = self.data.get("Email")
-            cargoSenior     = self.data.get("Cargo")
-            filialSenior    = self.data.get("Filial")
-        else:
-            # Se for um objeto com atributos
-            situacaoSenior  = getattr(self.data, "Situacao", None)
-            matriculaSenior = getattr(self.data, "Matricula", None)
-            cpfSenior       = getattr(self.data, "Cpf", None)
-            nomeSenior      = getattr(self.data, "Nome", None)
-            emailSenior     = getattr(self.data, "Email", None)
-            cargoSenior     = getattr(self.data, "Cargo", None)
-            filialSenior    = getattr(self.data, "Filial", None)
+        try:
+            situacaoSenior  = getattr(data, "Situacao", None)
+            matriculaSenior = getattr(data, "Matricula", None)
+            cpfSenior       = getattr(data, "Cpf", None)
+            nomeSenior      = getattr(data, "Nome", None)
+            emailSenior     = getattr(data, "Email", None)
+            cargoSenior     = getattr(data, "Cargo", None)
+            filialSenior    = getattr(data, "Filial", None)
 
-        listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
+            listaSenior.append([
+                situacaoSenior, matriculaSenior, cpfSenior,
+                nomeSenior, emailSenior, cargoSenior, filialSenior
+            ])
+        except Exception as e:
+            logging.error(f"Erro ao processar colaborador: {e}")
+        
         return listaSenior
+
         """ 
+        # listaSenior = []
+        # # Verifica se 'data' é um dicionário
+        # if isinstance(self.data, dict):
+        #     situacaoSenior  = self.data.get("Situacao")
+        #     matriculaSenior = self.data.get("Matricula")
+        #     cpfSenior       = self.data.get("Cpf")
+        #     nomeSenior      = self.data.get("Nome")
+        #     emailSenior     = self.data.get("Email")
+        #     cargoSenior     = self.data.get("Cargo")
+        #     filialSenior    = self.data.get("Filial")
+        # else:
+        #     # Se for um objeto com atributos
+        #     situacaoSenior  = getattr(self.data, "Situacao", None)
+        #     matriculaSenior = getattr(self.data, "Matricula", None)
+        #     cpfSenior       = getattr(self.data, "Cpf", None)
+        #     nomeSenior      = getattr(self.data, "Nome", None)
+        #     emailSenior     = getattr(self.data, "Email", None)
+        #     cargoSenior     = getattr(self.data, "Cargo", None)
+        #     filialSenior    = getattr(self.data, "Filial", None)
+
+        # listaSenior.append([situacaoSenior, matriculaSenior, cpfSenior, nomeSenior, emailSenior, cargoSenior, filialSenior])
+        # return listaSenior
         lista = []          
         situacaoSenior      = data.Situacao
         matriculaSenior     = data.Matricula
@@ -57,6 +76,7 @@ class ponteSeniorGupy():
         lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
         return lista
          """
+    
     def dataSenior(self, colaboradores):
         # print(colaboradores)
         logging.info(">Processando dados colaboradores Senior")
@@ -70,9 +90,10 @@ class ponteSeniorGupy():
         return usuarios
     
     def verificaColaboradores(self, colaboradores):
+        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
         logging.info(">Verificando Colaboradores")
-        print(colaboradores)
-        usuarios = self.process_user(self)
+        # print(colaboradores)
+        # usuarios = self.process_user(self)
         print(usuarios)
         
         for item in usuarios:
