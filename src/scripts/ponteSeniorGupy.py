@@ -57,6 +57,17 @@ class ponteSeniorGupy():
         lista.append([situacaoSenior,matriculaSenior,nomeSenior,emailSenior,cargoSenior,filialSenior])
         return lista
          """
+    def dataSenior(self, colaboradores):
+        # print(colaboradores)
+        logging.info(">Processando dados colaboradores Senior")
+        # usuarios = self.process_user(colaboradores)        
+        usuarios = []
+        for colaborador in colaboradores:
+                usuario = self.process_user(colaborador)
+                usuarios.extend(usuario)  # pois process_user retorna uma lista com um item
+        # print(usuarios) 
+        logging.info(">Dados colaboradores Senior processados")
+        return usuarios
     
     def verificaColaboradores(self, colaboradores):
         logging.info(">Verificando Colaboradores")

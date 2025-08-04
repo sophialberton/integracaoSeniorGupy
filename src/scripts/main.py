@@ -49,19 +49,20 @@ class main:
 
     logs()
     
-    def main():  
+    # def main():  
         
-        if __name__ == "__main__":
-            start = conexaoGupy()
-            # start = conexaoGupy(**dict_extract["Gupy"])
-            conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
-            # print(conexao)
-            colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
-            # print(colaboradores)
-            ligacao = ponteSeniorGupy.verificaColaboradores(colaboradores)
-            
-            # apiGupy = conexaoGupy()
-            # apiGupy.connectionDB()
+if __name__ == "__main__":
+    start = conexaoGupy()
+    # start = conexaoGupy(**dict_extract["Gupy"])
+    conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
+    # print(conexao)
+    colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
+    # print(colaboradores)
+    ponte = ponteSeniorGupy()
+    ligacao = ponte.verificaColaboradores(colaboradores)
+        
+        # apiGupy = conexaoGupy()
+        # apiGupy.connectionDB()
 
-    main()
+    # main()
         
