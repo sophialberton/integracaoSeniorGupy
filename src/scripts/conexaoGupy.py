@@ -3,7 +3,6 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv,find_dotenv
-from utils.config import dict_extract
 # from data.querySenior import ConsultaSenior
 from conexaoSenior import DatabaseSenior
 # Caminho para encontrar a pasta 'src'
@@ -18,7 +17,7 @@ class conexaoGupy():
         self.token = os.getenv("token")   
         self.data = []   
         self.db_connection = DatabaseSenior()    
-        print(f"token carregado: {self.token}")
+        # print(f"token carregado: {self.token}")
     
     def listaUsuariosGupy(self,emailSenior):
         # Requisição API gupy
