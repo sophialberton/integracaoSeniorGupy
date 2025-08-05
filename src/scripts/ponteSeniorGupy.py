@@ -62,10 +62,21 @@ class ponteSeniorGupy():
         # print(usuarios) # Esta tratando dados
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:
-                email = item[4] 
-                if email and email.strip() != "": # and @fgm.ind.br
-                    usuarios_validos.append(item)
+                email = item[4]
+                if email and email.strip() != "":
+                    # Separar os e-mails, assumindo que estão separados por vírgula ou espaço
+                    emails = [e.strip() for e in email.replace(',', ' ').split() if e.strip()]
+                    # Filtrar apenas os e-mails do domínio @fgmdentalgroup.com
+                    emails_fgmdental = [e for e in emails if "@fgmdentalgroup.com" in e]
+                    if emails_fgmdental:
+                        # Substituir o campo de e-mail com apenas os válidos do domínio
+                        item[4] = ', '.join(emails_fgmdental[:1])  # incluir apenas um
+                        usuarios_validos.append(item)
+                    else:
+                        # Se não houver e-mail do domínio desejado, considerar inválido
+                        usuarios_invalidos.append(item)
                 else:
+                    # E-mail vazio
                     usuarios_invalidos.append(item)
             else:
                 print(f"Formato inesperado: {item}")
