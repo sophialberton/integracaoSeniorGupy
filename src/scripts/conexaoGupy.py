@@ -20,7 +20,14 @@ class conexaoGupy():
             "authorization": f"Bearer {self.token}"
         } 
         response = requests.get(url,  headers=headers)
-        print(response.text)
+        # print(response.text)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        if response.status_code == 201:
+            logging.info(f">Listando usuario na gupy: {emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
+        if response.status_code == 400:
+            logging.error(f">{detalhe} >> Usuário: {emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+
    
     def criaUsuarioGupy(self,nomeSenior,emailSenior):
         url = "https://api.gupy.io/api/v1/users"
@@ -37,7 +44,7 @@ class conexaoGupy():
         
         data = response.json()
         detalhe = data.get("detail", "Erro desconhecido")
-        print("Detalhe do erro:", data.get("detail"))        
+        # print("Detalhe do erro:", data.get("detail"))        
         if response.status_code == 201:
             logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         if response.status_code == 400:
@@ -75,7 +82,7 @@ class conexaoGupy():
         response = requests.delete(url, headers=headers)
         data = response.json()
         detalhe = data.get("detail", "Erro desconhecido")
-        print("Detalhe do erro:", data.get("detail"))        
+        # print("Detalhe do erro:", data.get("detail"))        
         if response.status_code == 201:
             logging.info(f">Deletando usuário desligado: {idGupy, nomeSenior} (verificaColaboradores.api.deletaUsuarioGupy)")
         if response.status_code == 400:

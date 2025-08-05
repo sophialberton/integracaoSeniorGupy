@@ -60,6 +60,7 @@ class ponteSeniorGupy():
         usuarios_validos = []
         usuarios_invalidos = []
         # print(usuarios) # Esta tratando dados
+        logging.info(">Valida apenas colaboradores com email @fgmdental.group.com (verificaColaboradores)")        
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:
                 email = item[4]
