@@ -63,7 +63,7 @@ class ponteSeniorGupy():
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:
                 email = item[4] 
-                if email and email.strip() != "":
+                if email and email.strip() != "": # and @fgm.ind.br
                     usuarios_validos.append(item)
                 else:
                     usuarios_invalidos.append(item)
