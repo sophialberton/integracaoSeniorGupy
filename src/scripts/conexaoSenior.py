@@ -41,9 +41,8 @@ class DatabaseSenior():
             logging.info(f"-------------->>>Informações da Database--------------")
             logging.info(">Conexão com o banco de dados estabelecida com sucesso")
             return self.cursor
-            # logging.info(f"------------------------------------------------------------------------------------")           
         except oracledb.DatabaseError as e:
-            logging.error("Erro ao estabelecer conexão: %s", e)
+            logging.error(">Erro ao estabelecer conexão: %s", e)
             return False
                         
     def buscaColaboradorSenior(self):
@@ -58,15 +57,15 @@ class DatabaseSenior():
                     FROM 
                         (
                         SELECT
-                            FUN.NUMEMP AS "Empresa",
-                            FUN.TIPCOL AS "TipoColaborador",
-                            FUN.NUMCAD AS "Matricula",
-                            FUN.NUMCPF AS "Cpf",
-                            FUN.SITAFA AS "Situacao",
-                            FUN.NOMFUN AS "Nome",
-                            EM.EMACOM AS "Email",
-                            CAR.TITCAR AS "Cargo",
-                            ORN.NOMLOC AS "Filial",
+                            FUN.SITAFA AS "Situacao", -- 0
+                            FUN.NUMCAD AS "Matricula", -- 1 
+                            FUN.NUMCPF AS "Cpf", -- 2
+                            FUN.NOMFUN AS "Nome", -- 3
+                            EM.EMACOM AS "Email", -- 4
+                            CAR.TITCAR AS "Cargo", -- 5
+                            ORN.NOMLOC AS "Filial", -- 6
+                            FUN.NUMEMP AS "Empresa", -- //
+                            FUN.TIPCOL AS "TipoColaborador", --//
                                         ROW_NUMBER() OVER (PARTITION BY FUN.NUMCAD
                         ORDER BY
                             FUN.SITAFA) AS RN
@@ -122,12 +121,7 @@ class DatabaseSenior():
             logging.info("-------------->>>Script Rodandno------------------------")
             # print(self.row_data_list)
         return row_data_list    
-                
-    # connectData()
-
-# Database(**dict_extract["Senior"])
-        
-        
+                  
         
         
         

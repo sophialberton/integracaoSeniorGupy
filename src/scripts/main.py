@@ -9,9 +9,7 @@ import socket
 from datetime import datetime
 from conexaoGupy import conexaoGupy
 from conexaoSenior import DatabaseSenior
-# from conexaoGupy import conexaoGupy
 from ponteSeniorGupy import ponteSeniorGupy
-from dotenv import load_dotenv,find_dotenv
 from utils.config import dict_extract
 
 class main:
@@ -26,14 +24,13 @@ class main:
     def logs():
         nome_host = socket.gethostname()
         ip_local = socket.gethostbyname(nome_host)
-        # log_directory = r"C:/github/BirthMail/src/Logs" #path para ser colocado as Logs
         diretorioLocal = os.getcwd()
-        log_directory = f"{diretorioLocal}/Logs" #path para ser colocado as Logs
+        log_directory = f"{diretorioLocal}/Logs" 
         
         if not os.path.exists(log_directory):
-            os.makedirs(log_directory) #caso o path nao exista ele vai criar
+            os.makedirs(log_directory) #caso a pasta nao exista ele vai criar
 
-        current_datetime = datetime.now() #data de hoje
+        current_datetime = datetime.now()
         log_filename = os.path.join(log_directory, current_datetime.strftime("%Y-%m-%d") + "_log_.log") #declara o nome do arquivo log
         logging.basicConfig(
             level=logging.INFO,
@@ -49,19 +46,11 @@ class main:
 
     logs()
     
-    def main():  
-        
-        if __name__ == "__main__":
-            start = conexaoGupy()
-            # start = conexaoGupy(**dict_extract["Gupy"])
-            conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
-            # print(conexao)
-            colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
-            # print(colaboradores)
-            ligacao = ponteSeniorGupy.verificaColaboradores(colaboradores)
-            
-            # apiGupy = conexaoGupy()
-            # apiGupy.connectionDB()
-
-    main()
+if __name__ == "__main__":
+    conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
+    # print(conexao)
+    colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
+    # print(colaboradores)
+    ponte = ponteSeniorGupy()
+    ligacao = ponte.verificaColaboradores(colaboradores)
         
