@@ -41,8 +41,15 @@ class conexaoGupy():
             "authorization": f"Bearer {self.token}"
             }
         response = requests.post(url, json=payload, headers=headers)
-        print(response.text)
         
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        print("Detalhe do erro:", data.get("detail"))        
+        if response.status_code == 201:
+            logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.criaUsuarioGupy)")
+        if response.status_code == 400:
+            logging.error(f">{detalhe} >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.conexao.criaUsuarioGupy)")
+                          
     def atualizaUsuarioGupy(self,idGupy,nomeSenior,emailSenior,cargoSenior,areaSenior,filialSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         payload = {
@@ -58,7 +65,8 @@ class conexaoGupy():
         "authorization": f"Bearer {self.token}"
         }
         response = requests.put(url, json=payload, headers=headers)
-        print(response.text)
+        logging.info(response.status_code)
+        # print(response.text)
     
     def deletaUsuarioGupy(self,idGupy):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
@@ -67,7 +75,8 @@ class conexaoGupy():
             "authorization": f"Bearer {self.token}"
         }
         response = requests.delete(url, headers=headers)
-        print(response.text)
+        logging.info(response.status_code)
+        # print(response.text)
         
         
         dados = self.listaUsuariosGupy()

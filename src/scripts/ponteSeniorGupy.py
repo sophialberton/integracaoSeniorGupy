@@ -103,7 +103,6 @@ class ponteSeniorGupy():
                 # le matriculas vinculadas ao cpf (loop) e conta a quantidade de matricula
                 contador_matricula = 0
                 qtd_matriculas = len(matriculas)
-
                 for item in usuarios_validos:
                     if item[2] == cpfSenior:
                         situacaoSenior = item[0]
@@ -112,13 +111,11 @@ class ponteSeniorGupy():
                         emailSenior = item[4]
                         cargoSenior = item[5]
                         filialSenior = item[6]
-
                         # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                         if situacaoSenior != 7:
                             # se tem nao cadastro na gupy
                             if not conexao.listaUsuariosGupy(emailSenior):
                                 # cria cadastro
-                                logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.criaUsuarioGupy)")
                                 conexao.criaUsuarioGupy(nomeSenior, emailSenior)
                         else:
                             # se tem cadastro na gupy
@@ -144,7 +141,6 @@ class ponteSeniorGupy():
                             # se tem nao cadastro na gupy
                             if not conexao.listaUsuariosGupy(emailSenior):
                                 # Cria cadastro
-                                logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.criaUsuarioGupy)")
                                 conexao.criaUsuarioGupy(nomeSenior, emailSenior)
                         else:
                             # Se tem cadastro na Gupy
@@ -154,67 +150,3 @@ class ponteSeniorGupy():
                                 conexao.deletaUsuarioGupy(cpfSenior)
 
         logging.info(">Colaboradores Verificados")
-
- 
-    def listaColaboradores(self):
-        logging.info(">ListaColaboradores")
-        # DEPOIS DE FILTRAR SE É SITUACAO != 7 ELE VAI VIR PARA CÁ, AQUI VAI SER VERIFICADO SE O USUARIO JÁ TEM CADASTRO NA GUPY, 
-        # SE NAO TIVER ELE VAI PARA O CADASTRO
-        pass
-   
-    def criaColaboradoresGupy(self):
-        logging.info("criaColaboradores")
-        dados = self.querySenior()
-        url = "https://api.gupy.io/api/v1/users"
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "authorization": "Bearer f21dcc63-73bc-4b69-85f0-b9ac179d457f"
-        }
-        response = requests.post(url, headers=headers)
-        print(response.text)
-        
-    def updateColaboradores(self):
-        logging.info("updateColaboradores")
-        dados = self.listaColaboradores()
-        for id,nome,email in dados:
-            try:        
-                url = f"https://api.gupy.io/api/v1/users/{id}"
-
-                payload = {
-                    "name": f"{nome}",
-                    "email": f"{email}"
-                }
-                headers = {
-                    "accept": "application/json",
-                    "content-type": "application/json",
-                    "authorization": f"Bearer {self.token}"
-                }
-
-                response = requests.put(url, json=payload, headers=headers)
-
-                print(response.text)   
-            except:
-                pass 
-  
-    def deleteColaboradores(self):
-        logging.info("deleteColaboradores")
-        dados = self.verificaColaboradores()
-        for ids in dados:
-            try:
-                url = f"https://api.gupy.io/api/v1/users/{ids}"
-                headers = {
-                    "accept": "application/json",
-                    "authorization": "Bearer f21dcc63-73bc-4b69-85f0-b9ac179d457f"
-                }
-                response = requests.delete(url, headers=headers)
-
-                print(response.text)
-            except Exception as e:
-                print(e)
-  
-    def run(self):
-        self.updateColaboradores()
-
-# ponteSeniorGupy(**dict_extract["Gupy"]).listaColaboradores()
-    
