@@ -29,7 +29,7 @@ class conexaoGupy():
             logging.error(f">{detalhe} >> Usuário: {emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
 
    
-    def criaUsuarioGupy(self,nomeSenior,emailSenior):
+    def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
         url = "https://api.gupy.io/api/v1/users"
         payload = {
             f"name": str(nomeSenior),
@@ -46,18 +46,20 @@ class conexaoGupy():
         detalhe = data.get("detail", "Erro desconhecido")
         # print("Detalhe do erro:", data.get("detail"))        
         if response.status_code == 201:
+            print(f"Criou usuario {nomeSenior} com email {emailSenior}")
             logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         if response.status_code == 400:
-            logging.error(f">{detalhe} >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+            print(f">WARNING:{detalhe} >> Usuário > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
+            logging.warning(f">{detalhe} >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
                           
     def atualizaUsuarioGupy(self,idGupy,nomeSenior,emailSenior,cargoSenior,areaSenior,filialSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         payload = {
             f"name": str(nomeSenior),
             f"email": str(emailSenior),
-            f"roleId": str(cargoSenior), # Cargo
-            f"departmentId": str(areaSenior), # Departamento é a área
-            f"branchIds": str([filialSenior]) # Branch é a Filial
+            # f"roleId": str(cargoSenior), # Cargo
+            # f"departmentId": str(areaSenior), # Departamento é a área
+            # f"branchIds": str([filialSenior]) # Branch é a Filial
         }        
         headers = {
             "accept": "application/json",
@@ -71,7 +73,7 @@ class conexaoGupy():
         if response.status_code == 201:
             logging.info(f">Atualizando usuario na gupy: {idGupy, nomeSenior} (verificaColaboradores.api.atualizaUsuarioGupy)")
         if response.status_code == 400:
-            logging.error(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.atualizaUsuarioGupy)")
+            logging.warning(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.atualizaUsuarioGupy)")
     
     def deletaUsuarioGupy(self,idGupy, nomeSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
@@ -86,5 +88,5 @@ class conexaoGupy():
         if response.status_code == 201:
             logging.info(f">Deletando usuário desligado: {idGupy, nomeSenior} (verificaColaboradores.api.deletaUsuarioGupy)")
         if response.status_code == 400:
-            logging.error(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.deletaUsuarioGupy)")
+            logging.warning(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.deletaUsuarioGupy)")
   

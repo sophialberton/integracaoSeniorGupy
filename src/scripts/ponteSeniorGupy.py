@@ -121,7 +121,7 @@ class ponteSeniorGupy():
                             # se tem nao cadastro na gupy
                             if not api.listaUsuariosGupy(emailSenior):
                                 # cria cadastro
-                                api.criaUsuarioGupy(nomeSenior, emailSenior)
+                                api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
                         else:
                             # se tem cadastro na gupy
                             if api.listaUsuariosGupy(emailSenior):
@@ -143,7 +143,7 @@ class ponteSeniorGupy():
                             # se tem nao cadastro na gupy
                             if not api.listaUsuariosGupy(emailSenior):
                                 # Cria cadastro
-                                api.criaUsuarioGupy(nomeSenior, emailSenior)
+                                api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
                         else:
                             # Se tem cadastro na Gupy
                             if api.listaUsuariosGupy(emailSenior):

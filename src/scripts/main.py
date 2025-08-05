@@ -53,4 +53,4 @@ if __name__ == "__main__":
     # print(colaboradores)
     ponte = ponteSeniorGupy()
     ligacao = ponte.verificaColaboradores(colaboradores)
-        
+    

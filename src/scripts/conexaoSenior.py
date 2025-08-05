@@ -52,55 +52,43 @@ class DatabaseSenior():
             self.cursor.execute(
                 # IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
                 """
-                SELECT
-                        *
-                    FROM 
-                        (
-                        SELECT
-                            FUN.SITAFA AS "Situacao", -- 0
-                            FUN.NUMCAD AS "Matricula", -- 1 
-                            FUN.NUMCPF AS "Cpf", -- 2
-                            FUN.NOMFUN AS "Nome", -- 3
-                            EM.EMACOM AS "Email", -- 4
-                            CAR.TITCAR AS "Cargo", -- 5
-                            ORN.NOMLOC AS "Filial", -- 6
-                            FUN.NUMEMP AS "Empresa", -- //
-                            FUN.TIPCOL AS "TipoColaborador", --//
-                                        ROW_NUMBER() OVER (PARTITION BY FUN.NUMCAD
-                        ORDER BY
-                            FUN.SITAFA) AS RN
+                    SELECT
+                            FUN.NUMEMP AS "Empresa",
+                            FUN.TIPCOL AS "TipoColaborador",
+                            FUN.NUMCAD AS "Matricula",
+                            FUN.NUMCPF AS "Cpf",
+                            FUN.NOMFUN AS "Nome",
+                            FUN.SITAFA AS "Situacao",
+                            EM.EMACOM AS "Email"
                         FROM
                             senior.R034FUN FUN
-                        INNER JOIN senior.R030EMP EMP ON
-                            FUN.NUMEMP = EMP.NUMEMP
-                        INNER JOIN senior.R024CAR CAR ON
-                            FUN.CODCAR = CAR.CODCAR
-                            AND FUN.ESTCAR = CAR.ESTCAR
-                        INNER JOIN senior.R034CPL EM ON
-                            FUN.NUMCAD = EM.NUMCAD
-                            AND FUN.NUMEMP = EM.NUMEMP
-                        INNER JOIN senior.R016ORN ORN ON
-                            ORN.NUMLOC = FUN.NUMLOC
-                        INNER JOIN senior.R030FIL FIL ON
-                            FUN.CODFIL = FIL.CODFIL
-                            AND FUN.NUMEMP = FIL.NUMEMP
-                        LEFT JOIN senior.R034USU FUS ON
-                            FUN.NUMEMP = FUS.NUMEMP
-                            AND FUN.NUMCAD = FUS.NUMCAD
-                            AND FUN.TIPCOL = FUS.TIPCOL
-                        LEFT JOIN senior.R999USU USU ON
-                            USU.CODUSU = FUS.CODUSU
-                        LEFT JOIN senior.R034FOT PHO ON
-                            FUN.NUMCAD = PHO.NUMCAD
-                            AND FUN.TIPCOL = PHO.TIPCOL
-                            AND FUN.NUMEMP = PHO.NUMEMP
-                        WHERE
-                            FUN.TIPCOL = '1'
-                            AND CAR.TITCAR <> 'PENSIONISTA'
-                            AND FUN.NUMEMP <> 100
-                                    )
+                    INNER JOIN senior.R030EMP EMP ON
+                        FUN.NUMEMP = EMP.NUMEMP
+                    INNER JOIN senior.R024CAR CAR ON
+                        FUN.CODCAR = CAR.CODCAR
+                        AND FUN.ESTCAR = CAR.ESTCAR
+                    INNER JOIN senior.R034CPL EM ON
+                        FUN.NUMCAD = EM.NUMCAD
+                        AND FUN.NUMEMP = EM.NUMEMP
+                    INNER JOIN senior.R016ORN ORN ON
+                        ORN.NUMLOC = FUN.NUMLOC
+                    INNER JOIN senior.R030FIL FIL ON
+                        FUN.CODFIL = FIL.CODFIL
+                        AND FUN.NUMEMP = FIL.NUMEMP
+                    LEFT JOIN senior.R034USU FUS ON
+                        FUN.NUMEMP = FUS.NUMEMP
+                        AND FUN.NUMCAD = FUS.NUMCAD
+                        AND FUN.TIPCOL = FUS.TIPCOL
+                    LEFT JOIN senior.R999USU USU ON
+                        USU.CODUSU = FUS.CODUSU
+                    LEFT JOIN senior.R034FOT PHO ON
+                        FUN.NUMCAD = PHO.NUMCAD
+                        AND FUN.TIPCOL = PHO.TIPCOL
+                        AND FUN.NUMEMP = PHO.NUMEMP
                     WHERE
-                        RN = 1
+                        FUN.TIPCOL = '1'
+                        AND CAR.TITCAR <> 'PENSIONISTA'
+                        AND FUN.NUMEMP <> 100
                 """)
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
             rows = self.cursor.fetchall()
