@@ -53,27 +53,23 @@ class ponteSeniorGupy():
         return usuarios
     
     def verificaColaboradores(self, colaboradores):
-        conexao = conexaoGupy()
-        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
         logging.info(">Verificando Colaboradores (verificaColaboradores)")
-        # print(colaboradores)
-        # print(usuarios) # Esta funcionando
-        
+        # print(colaboradores) # Esta Recebendo
+        api = conexaoGupy()
+        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
         usuarios_validos = []
         usuarios_invalidos = []
-
+        # print(usuarios) # Esta tratando dados
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:
-                email = item[4]  # Supondo que o email esteja na posição 3
+                email = item[4] 
                 if email and email.strip() != "":
                     usuarios_validos.append(item)
                 else:
                     usuarios_invalidos.append(item)
             else:
                 print(f"Formato inesperado: {item}")
-
         # print(f"usuarios válidos: {usuarios_validos}") # recebendo [situação, matrícula, cpf, nome, email, cargo, filial] nesta ordem
-        
         for item in usuarios_validos:
             if isinstance(item, (list, tuple)) and len(item) >= 3:
                 cpfSenior = item[2]
@@ -81,9 +77,7 @@ class ponteSeniorGupy():
             else:
                 print(f"Formato inesperado: {item}")
 
-        
-
-        # Agrupando por CPF
+        logging.info(">Agrupando por CPFs (verificaColaboradores)")
         cpf_dict = defaultdict(list)
         for item in usuarios_validos:
             if isinstance(item, (list, tuple)) and len(item) >= 7:
@@ -92,14 +86,13 @@ class ponteSeniorGupy():
                 cpf_dict[cpf].append(matricula)
             else:
                 print(f"Formato inesperado: {item}")
-        logging.info(">Agrupando por CPFs (verificaColaboradores)")
 
-        
-        logging.info(">Verficando CPFs, se repete ou não (verificaColaboradores)")
-        # Verifica se um CPF se repete:
+        logging.info(">Verficando CPFs (verificaColaboradores)")
+        # verifica se um CPF se repete:
         for cpfSenior, matriculas in cpf_dict.items():
-            # Se cpfSenior repete:
+            # se cpfSenior repete:
             if len(matriculas) > 1:
+                print(f">>>CPF {cpfSenior} repetido")
                 # le matriculas vinculadas ao cpf (loop) e conta a quantidade de matricula
                 contador_matricula = 0
                 qtd_matriculas = len(matriculas)
@@ -114,22 +107,19 @@ class ponteSeniorGupy():
                         # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                         if situacaoSenior != 7:
                             # se tem nao cadastro na gupy
-                            if not conexao.listaUsuariosGupy(emailSenior):
+                            if not api.listaUsuariosGupy(emailSenior):
                                 # cria cadastro
-                                conexao.criaUsuarioGupy(nomeSenior, emailSenior)
+                                api.criaUsuarioGupy(nomeSenior, emailSenior)
                         else:
                             # se tem cadastro na gupy
-                            if conexao.listaUsuariosGupy(emailSenior):
+                            if api.listaUsuariosGupy(emailSenior):
                                 # Deleta
-                                logging.info(f">Deletando usuario demitido na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.deletaUsuarioGupy)")
-                                conexao.deletaUsuarioGupy(cpfSenior)
-
+                                api.deletaUsuarioGupy(cpfSenior)
                         contador_matricula += 1
-
             # se cpf nao se repete
             else:
                 print(f">>>CPF {cpfSenior} aparece apenas uma vez.")
-                # Le matricula vinculada ao CPF
+                # le matricula vinculada ao CPF
                 for item in usuarios_validos:
                     if item[2] == cpfSenior:
                         situacaoSenior = item[0]
@@ -139,14 +129,13 @@ class ponteSeniorGupy():
                         # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                         if situacaoSenior != 7:
                             # se tem nao cadastro na gupy
-                            if not conexao.listaUsuariosGupy(emailSenior):
+                            if not api.listaUsuariosGupy(emailSenior):
                                 # Cria cadastro
-                                conexao.criaUsuarioGupy(nomeSenior, emailSenior)
+                                api.criaUsuarioGupy(nomeSenior, emailSenior)
                         else:
                             # Se tem cadastro na Gupy
-                            if conexao.listaUsuariosGupy(emailSenior):
+                            if api.listaUsuariosGupy(emailSenior):
                                 # Deleta cadastro
-                                logging.info(f">Deletando usuario demitido na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.deletaUsuarioGupy)")
-                                conexao.deletaUsuarioGupy(cpfSenior)
+                                api.deletaUsuarioGupy(cpfSenior)
 
         logging.info(">Colaboradores Verificados")

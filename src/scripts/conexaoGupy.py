@@ -2,8 +2,6 @@ import sys
 import os
 import requests
 import logging
-from dotenv import load_dotenv,find_dotenv
-# from data.querySenior import ConsultaSenior
 from conexaoSenior import DatabaseSenior
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -12,12 +10,7 @@ if src_path not in sys.path:
 
 class conexaoGupy():
     def __init__(self):
-        load_dotenv(find_dotenv())
-        # self.token = kwargs.get("token")  
-        self.token = os.getenv("token")   
-        self.data = []   
-        self.db_connection = DatabaseSenior()    
-        # print(f"token carregado: {self.token}")
+        self.token = os.getenv("token")     
     
     def listaUsuariosGupy(self,emailSenior):
         # Requisição API gupy
@@ -46,9 +39,9 @@ class conexaoGupy():
         detalhe = data.get("detail", "Erro desconhecido")
         print("Detalhe do erro:", data.get("detail"))        
         if response.status_code == 201:
-            logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.conexao.criaUsuarioGupy)")
+            logging.info(f">Criando usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         if response.status_code == 400:
-            logging.error(f">{detalhe} >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.conexao.criaUsuarioGupy)")
+            logging.error(f">{detalhe} >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
                           
     def atualizaUsuarioGupy(self,idGupy,nomeSenior,emailSenior,cargoSenior,areaSenior,filialSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
@@ -65,32 +58,26 @@ class conexaoGupy():
         "authorization": f"Bearer {self.token}"
         }
         response = requests.put(url, json=payload, headers=headers)
-        logging.info(response.status_code)
-        # print(response.text)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        print("Detalhe do erro:", data.get("detail"))        
+        if response.status_code == 201:
+            logging.info(f">Atualizando usuario na gupy: {idGupy, nomeSenior} (verificaColaboradores.api.atualizaUsuarioGupy)")
+        if response.status_code == 400:
+            logging.error(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.atualizaUsuarioGupy)")
     
-    def deletaUsuarioGupy(self,idGupy):
+    def deletaUsuarioGupy(self,idGupy, nomeSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         headers = {
             "accept": "application/json",
             "authorization": f"Bearer {self.token}"
         }
         response = requests.delete(url, headers=headers)
-        logging.info(response.status_code)
-        # print(response.text)
-        
-        
-        dados = self.listaUsuariosGupy()
-        for ids in dados:
-            try:
-                url = f"https://api.gupy.io/api/v1/users/{ids}"
-                headers = {
-                    "accept": "application/json",
-                    "authorization": f"Bearer {self.token}"
-                }
-                response = requests.delete(url, headers=headers)
-
-                print(response.text)
-            except Exception as e:
-                print(e)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        print("Detalhe do erro:", data.get("detail"))        
+        if response.status_code == 201:
+            logging.info(f">Deletando usuário desligado: {idGupy, nomeSenior} (verificaColaboradores.api.deletaUsuarioGupy)")
+        if response.status_code == 400:
+            logging.error(f">{detalhe} >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.deletaUsuarioGupy)")
   
-# conexaoGupy(**dict_extract["Gupy"]).listaUsuariosGupy(emailSenior)

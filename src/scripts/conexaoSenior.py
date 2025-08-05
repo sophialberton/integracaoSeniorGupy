@@ -41,9 +41,8 @@ class DatabaseSenior():
             logging.info(f"-------------->>>Informações da Database--------------")
             logging.info(">Conexão com o banco de dados estabelecida com sucesso")
             return self.cursor
-            # logging.info(f"------------------------------------------------------------------------------------")           
         except oracledb.DatabaseError as e:
-            logging.error("Erro ao estabelecer conexão: %s", e)
+            logging.error(">Erro ao estabelecer conexão: %s", e)
             return False
                         
     def buscaColaboradorSenior(self):
@@ -122,12 +121,7 @@ class DatabaseSenior():
             logging.info("-------------->>>Script Rodandno------------------------")
             # print(self.row_data_list)
         return row_data_list    
-                
-    # connectData()
-
-# Database(**dict_extract["Senior"])
-        
-        
+                  
         
         
         
