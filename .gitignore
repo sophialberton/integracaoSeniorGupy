@@ -170,4 +170,4 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-src/scripts/.ignoradosRH.csv
+.src/scripts/ignoradosRH.csv
