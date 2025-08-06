@@ -171,3 +171,4 @@ cython_debug/
 .pypirc
 
 .src/scripts/ignoradosRH.csv
+src/scripts/ignoradosRH.csv
