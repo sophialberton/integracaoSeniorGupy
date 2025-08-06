@@ -111,7 +111,7 @@ class ponteSeniorGupy():
         for item in usuarios_ignorados:
             if isinstance(item, (list, tuple)) and len(item) > 3:
                 nome = item[3]
-                logging.info(f"Usuário ignorado: {nome}")
+                logging.info(f"Usuario ignorado: {nome}")
             else:
                 logging.warning(f"Formato inesperado: {item}")
        
@@ -157,7 +157,7 @@ class ponteSeniorGupy():
             # se cpf nao se repete
             else:
                 cpfs_unitarios.append(cpfSenior)
-                print(f">>>CPF {cpfSenior} com uma matrícula.")
+                print(f">>>CPF {cpfSenior} com uma matricula.")
                 # le matricula vinculada ao CPF
                 for item in usuarios_validos:
                     if item[2] == cpfSenior:

@@ -24,7 +24,7 @@ class conexaoGupy():
         if response.status_code == 201:
             logging.info(f">Listando usuario na gupy: {emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         if response.status_code == 400:
-            logging.error(f"> '{detalhe}' >> Usuário: {emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+            logging.error(f"> '{detalhe}' >> Usuario: {emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
 
    
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
@@ -45,8 +45,8 @@ class conexaoGupy():
             print(f">Criou usuario {nomeSenior} com email {emailSenior}")
             logging.info(f">Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         if response.status_code == 400:
-            print(f">WARNING: '{detalhe}'>> Usuário > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
-            logging.warning(f"> '{detalhe}' >> Usuário: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+            print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
+            logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
                           
     
     def deletaUsuarioGupy(self,idGupy, nomeSenior):
@@ -59,9 +59,9 @@ class conexaoGupy():
         data = response.json()
         detalhe = data.get("detail", "Erro desconhecido")
         if response.status_code == 201:
-            print(f">Deletou usuário desligado: {idGupy, nomeSenior}")
-            logging.info(f">Deletou usuário desligado: {idGupy, nomeSenior} (verificaColaboradores.api.deletaUsuarioGupy)")
+            print(f">Deletou usuario desligado: {idGupy, nomeSenior}")
+            logging.info(f">Deletou usuario desligado: {idGupy, nomeSenior} (verificaColaboradores.api.deletaUsuarioGupy)")
         if response.status_code == 400:
-            print(f">WARNING: '{detalhe}' >> Usuário: {idGupy, nomeSenior}")
-            logging.warning(f"> '{detalhe}' >> Usuário: {idGupy, nomeSenior}, (verificaColaboradores.api.deletaUsuarioGupy)")
+            print(f">WARNING: '{detalhe}' >> Usuario: {idGupy, nomeSenior}")
+            logging.warning(f"> '{detalhe}' >> Usuario: {idGupy, nomeSenior}, (verificaColaboradores.api.deletaUsuarioGupy)")
   
