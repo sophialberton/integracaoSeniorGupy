@@ -134,26 +134,42 @@ class ponteSeniorGupy():
             # se cpfSenior repete:
             if len(matriculas) > 1:
                 cpfs_repetidos.append(cpfSenior)
-                print(f">>>CPF {cpfSenior} com duas matriculas")
-                # le matriculas vinculadas ao cpf (loop) e conta a quantidade de matricula
-                contador_matricula = 0
-                for item in usuarios_validos:
-                    if item[2] == cpfSenior:
-                        situacaoSenior = item[0]
+                print(f">CPF {cpfSenior} com mais de uma matriculas")
+                
+                
+               
+            # Filtra todas as matrículas válidas desse CPF
+            matriculas_do_cpf = [item for item in usuarios_validos if item[2] == cpfSenior]
+            print(f"  Matrículas encontradas para {cpfSenior}:")
+            for item in matriculas_do_cpf:
+                print(f"    Situação: {item[0]} (tipo: {type(item[0])}) | Nome: {item[3]} | Email: {item[4]}")
+
+            # Verifica se todas estão demitidas
+                todas_demitidas = all(int(item[0]) == 7 for item in matriculas_do_cpf)
+                print(f"  Todas as matrículas estão demitidas? {'Sim' if todas_demitidas else 'Não'}")
+
+                if todas_demitidas:
+                    # Só deleta se TODAS estiverem demitidas
+                    for item in matriculas_do_cpf:
                         nomeSenior = item[3]
                         emailSenior = item[4]
-                        # se situação da matricula for diferente de demitido (ou seja, esta admitido)
-                        if situacaoSenior != 7:
-                            # se tem nao cadastro na gupy
-                            if not api.listaUsuariosGupy(emailSenior):
-                                # cria cadastro
+                        idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
+                        if idGupy:
+                            print(f"  Chamando delete para usuário desligado: ({nomeSenior}, {idGupy})")
+                            api.deletaUsuarioGupy(idGupy, nomeSenior)
+                else:
+                    # Se tem pelo menos uma ativa, garante que o cadastro exista
+                    for item in matriculas_do_cpf:
+                        if int(item[0]) != 7:
+                            nomeSenior = item[3]
+                            emailSenior = item[4]
+                            idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
+                            if not idGupy:
+                                print(f"  Criando usuário para {nomeSenior} ({emailSenior})")
                                 api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
-                        else:
-                            # se tem cadastro na gupy
-                            if api.listaUsuariosGupy(emailSenior):
-                                # Deleta
-                                api.deletaUsuarioGupy(cpfSenior)
-                    contador_matricula += 1
+
+
+
             # se cpf nao se repete
             else:
                 cpfs_unitarios.append(cpfSenior)
@@ -164,16 +180,17 @@ class ponteSeniorGupy():
                         situacaoSenior = item[0]
                         nomeSenior = item[3]
                         emailSenior = item[4]
+                        idGupy = api.listaUsuariosGupy(nomeSenior,emailSenior)
                         # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                         if situacaoSenior != 7:
                             # se tem nao cadastro na gupy
-                            if not api.listaUsuariosGupy(emailSenior):
+                            if not api.listaUsuariosGupy(nomeSenior,emailSenior):
                                 # Cria cadastro
                                 api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
                         else:
                             # Se tem cadastro na Gupy
-                            if api.listaUsuariosGupy(emailSenior):
+                            if api.listaUsuariosGupy(nomeSenior,emailSenior):
                                 # Deleta cadastro
-                                api.deletaUsuarioGupy(cpfSenior)
+                                api.deletaUsuarioGupy(idGupy, nomeSenior)
         # print(cpfs_repetidos)
         logging.info(">Colaboradores Verificados")
