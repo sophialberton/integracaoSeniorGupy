@@ -1,6 +1,7 @@
 import sys
 import os
 import requests
+import csv
 import logging
 from dotenv import load_dotenv,find_dotenv
 # from utils.config import dict_extract
@@ -51,7 +52,7 @@ class ponteSeniorGupy():
         # print(usuarios)
         logging.info(">Dados colaboradores Senior processados (dataSenior)")
         return usuarios
-    
+      
     def verificaColaboradores(self, colaboradores):
         logging.info(">Verificando Colaboradores (verificaColaboradores)")
         # print(colaboradores) # Esta Recebendo
@@ -60,14 +61,37 @@ class ponteSeniorGupy():
         usuarios_validos = []
         usuarios_invalidos = []
         usuarios_ignorados = []
+        
+        logging.info(">Carregando CPF ignorados do arquivo ignoradosRH.csv")
+        # Carregar CPFs ignorados do arquivo ignoradosRH.csv
+        cpfs_ignorados_csv = set()
+        with open('src/scripts/ignoradosRH.csv', encoding='utf-8') as f:
+            reader = csv.reader(f, delimiter=';')
+            for row in reader:
+                if len(row) >= 2:
+                    cpf = row[1].strip()
+                    if cpf:
+                        cpfs_ignorados_csv.add(cpf)
+                        
+        cpfs_ignorados = list(cpfs_ignorados_csv)
+        cpfs_ignorados_str =  ",".join(cpfs_ignorados)
+ 
         # print(usuarios) # Esta tratando dados
         logging.info(">Valida apenas colaboradores com email @fgmdental.group.com (verificaColaboradores)")        
         for item in usuarios:
-            if isinstance(item, (list, tuple)) and len(item) >= 5:
-                email = item[4]
-                if email and email.strip() != "":
+            if isinstance(item, (list, tuple)) and len(item) >= 5:            
+                # Filtro comparaçaõ cpfs com cpfs de ignorados    
+                cpfSenior = item[2]
+                if cpfSenior and cpfs_ignorados_str.strip():
+                    cpfSenior = str(item[2]).strip()
+                    if cpfSenior in cpfs_ignorados_csv:
+                        usuarios_ignorados.append(item)
+
+                # Filtro emails validos ou invalidos
+                emailSenior = item[4]
+                if emailSenior and emailSenior.strip() != "":
                     # Separar os e-mails, assumindo que estão separados por vírgula ou espaço
-                    emails = [e.strip() for e in email.replace(',', ' ').split() if e.strip()]
+                    emails = [e.strip() for e in emailSenior.replace(',', ' ').split() if e.strip()]
                     # Filtrar apenas os e-mails do domínio @fgmdentalgroup.com
                     emails_fgmdental = [e for e in emails if "@fgmdentalgroup.com" in e]
                     if emails_fgmdental:
@@ -82,6 +106,9 @@ class ponteSeniorGupy():
                     usuarios_invalidos.append(item)
             else:
                 print(f"Formato inesperado: {item}")
+        # print(cpfs_ignorados) # esta OK
+        # print(cpfs_ignorados_str) # 
+        print(usuarios_ignorados)
         # print(f"usuarios válidos: {usuarios_validos}") # recebendo [situação, matrícula, cpf, nome, email, cargo, filial] nesta ordem
         for item in usuarios_validos:
             if isinstance(item, (list, tuple)) and len(item) >= 3:
@@ -99,7 +126,6 @@ class ponteSeniorGupy():
                 cpf_dict[cpf].append(matricula)
             else:
                 print(f"Formato inesperado: {item}")
-
         logging.info(">Verficando CPFs (verificaColaboradores)")
         # verifica se um CPF se repete:
         for cpfSenior, matriculas in cpf_dict.items():
