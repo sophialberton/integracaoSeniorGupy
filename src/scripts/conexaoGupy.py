@@ -45,25 +45,25 @@ class conexaoGupy():
 
    
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
-        url = "https://api.gupy.io/api/v1/users"
-        payload = {
-            f"name": str(nomeSenior),
-            f"email": str(emailSenior)
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "authorization": f"Bearer {self.token}"
-            }
-        response = requests.post(url, json=payload, headers=headers)
-        data = response.json()
-        detalhe = data.get("detail", "Erro desconhecido")
-        if response.status_code == 201:
+        # url = "https://api.gupy.io/api/v1/users"
+        # payload = {
+        #     f"name": str(nomeSenior),
+        #     f"email": str(emailSenior)
+        # }
+        # headers = {
+        #     "accept": "application/json",
+        #     "content-type": "application/json",
+        #     "authorization": f"Bearer {self.token}"
+        #     }
+        # response = requests.post(url, json=payload, headers=headers)
+        # data = response.json()
+        # detalhe = data.get("detail", "Erro desconhecido")
+        # if response.status_code == 201:
             print(f">Criou usuario {nomeSenior} com email {emailSenior}")
             logging.info(f">Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
-        if response.status_code == 400:
-            print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
-            logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+        # if response.status_code == 400:
+        #     print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
+        #     logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
     
     def deletaUsuarioGupy(self, idGupy, nomeSenior):
         # url = f"https://api.gupy.io/api/v1/users/{idGupy}"

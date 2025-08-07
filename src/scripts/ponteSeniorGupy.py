@@ -68,8 +68,6 @@ class ponteSeniorGupy():
                     if cpf:
                         cpfs_ignorados_csv.add(cpf)
                         
-        cpfs_ignorados = list(cpfs_ignorados_csv)
-        cpfs_ignorados_str =  ",".join(cpfs_ignorados)
  
         logging.info(">Valida apenas colaboradores com email @fgmdental.group.com;(verificaColaboradores)")        
         logging.info(">Ignora RH e Direção(verificaColaboradores)")        
@@ -178,23 +176,33 @@ class ponteSeniorGupy():
                             # api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
 
             # se cpf NÂO se repete
-            else:
-                cpfs_unitarios.append(cpfSenior)
-                print(f"> CPF {cpfSenior} com uma matricula.")
-                # le matricula vinculada ao CPF
+            else:  
+                todas_demitidas = True
+                # Filtra todas as matrículas válidas desse CPF
+                for i, item in enumerate(matriculas_do_cpf, start=1):
+                    situacao = int(item[0])
+                    nome = item[3]
+                    email = item[4]                    
+                    print(f">    Matricula {i} - {item[1]}:")
+                    print(f">      Situacao: {situacao} (tipo: {type(item[0])})")
+                    print(f">      Nome: {nome}")
+                    print(f">      Email: {email}")
+                    if situacao != 7:
+                        todas_demitidas = False
+                print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
+                nomeSenior = matriculas_do_cpf[0][3]
+                emailSenior = matriculas_do_cpf[0][4]
                 
-                item = matriculas_do_cpf[0]
-                situacaoSenior = int(item[0])
-                nomeSenior = item[3]
-                emailSenior = item[4]
-                idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                if situacaoSenior != 7:
-                    if not idGupy:
-                        api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
-                else:
+                if todas_demitidas:
+                    # Só deleta se TODAS estiverem demitidas
+                    idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                     if idGupy:
                         api.deletaUsuarioGupy(idGupy, nomeSenior)
-
-        
+                    if not idGupy:
+                        api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
+                
+                cpfs_unitarios.append(cpfSenior)
+                
         # print(cpfs_repetidos)
+        # print(cpfs_unitarios)
         logging.info(">Colaboradores Verificados")
