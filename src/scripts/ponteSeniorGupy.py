@@ -27,12 +27,11 @@ class ponteSeniorGupy():
             cpfSenior       = getattr(data, "Cpf", None)
             nomeSenior      = getattr(data, "Nome", None)
             emailSenior     = getattr(data, "Email", None)
-            cargoSenior     = getattr(data, "Cargo", None)
-            filialSenior    = getattr(data, "Filial", None)
+            # cargoSenior     = getattr(data, "Cargo", None)
+            # filialSenior    = getattr(data, "Filial", None)
             listaSenior.append([
                 situacaoSenior, matriculaSenior, cpfSenior,
-                nomeSenior, emailSenior, cargoSenior, filialSenior
-            ])
+                nomeSenior, emailSenior])
         except Exception as e:
             logging.error(f"Erro ao processar colaborador: {e}")
     
@@ -74,26 +73,13 @@ class ponteSeniorGupy():
  
         logging.info(">Valida apenas colaboradores com email @fgmdental.group.com;(verificaColaboradores)")        
         logging.info(">Ignora RH e Direção(verificaColaboradores)")        
-
-        cpf_dict = defaultdict(list)
-
-        for item in usuarios:
-            if isinstance(item, (list, tuple)) and len(item) >= 7:
-                cpf = str(item[2]).strip()
-                matricula = item[1]
-                cpf_dict[cpf].append(item)
-            else:
-                logging.warning(f"Formato inesperado ao agrupar CPFs: {item}")
-
-        
+ 
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:            
                 # Filtro comparação cpfs Senior com cpfs de ignoradosRh.csv    
-                cpfSenior = item[2]
-                if cpfSenior and cpfs_ignorados_str.strip():
-                    cpfSenior = str(item[2]).strip()
-                    if cpfSenior in cpfs_ignorados_csv:
-                        usuarios_ignorados.append(item)
+                cpfSenior = str(item[2]).strip()
+                if cpfSenior in cpfs_ignorados_csv:
+                    usuarios_ignorados.append(item)
                     continue
                 # Filtro emails validos ou invalidos
                 emailSenior = item[4]
@@ -115,17 +101,28 @@ class ponteSeniorGupy():
             else:
                 print(f"Formato inesperado: {item}")
         
+        cpf_dict = defaultdict(list)
+        for item in usuarios_validos:
+            if isinstance(item, (list, tuple)) and len(item) >= 5:
+                cpf = str(item[2]).strip()
+                # matricula = item[1]
+                cpf_dict[cpf].append(item)
+            else:
+                logging.warning(f"Formato inesperado ao agrupar CPFs: {item}")
+        
         # listas: [situação, matrícula, cpf, nome, email, cargo, filial] nesta ordem
         # print(f"usuarios ignorados: {usuarios_ignorados}") # recebendo corretamente
-        # print(f"usuarios válidos: {usuarios_validos}") # recebendo corretamente
+        # print(f"usuarios validos: {usuarios_validos}") # recebendo corretamente
         # print(f"usuarios invalidos: {usuarios_invalidos}") # recebendo corretamente
         
+        """
         for item in usuarios_ignorados:
             if isinstance(item, (list, tuple)) and len(item) > 3:
                 nome = item[3]
                 logging.info(f">Usuario ignorado: {nome}")
             else:
                 logging.warning(f"Formato inesperado: {item}")
+                """
        
         logging.info(">Agrupando por CPFs (verificaColaboradores)")
         
@@ -134,71 +131,70 @@ class ponteSeniorGupy():
         cpfs_unitarios = []
         
         logging.info(">Verficando CPFs repetidos(verificaColaboradores)")
-        for cpfSenior, matriculas in cpf_dict.items():
+        
+        for cpfSenior, matriculas_do_cpf in cpf_dict.items():
             # se cpfSenior repete:
-            if len(matriculas) > 1:
+            if len(matriculas_do_cpf) > 1:
                 cpfs_repetidos.append(cpfSenior)
                 # Filtra todas as matrículas válidas desse CPF
-                print(f">CPF {cpfSenior} com mais de uma matriculas")
-                matriculas_do_cpf = cpf_dict[cpfSenior]
+
+                cpfs_repetidos.append(cpfSenior)
+                print(f"> CPF {cpfSenior} com mais de uma matricula")
                 nomeSenior = matriculas_do_cpf[0][3]
                 print(f">  Matriculas encontradas para {nomeSenior}:")
-                todas_demitidas = True  # Assume que todas estão demitidas até encontrar uma que não esteja
+                todas_demitidas = True
+                # Assume que todas estão demitidas até encontrar uma que não esteja
+                        
                 # Filtra todas as matrículas válidas desse CPF
                 for i, item in enumerate(matriculas_do_cpf, start=1):
                     situacao = int(item[0])
                     nome = item[3]
-                    email = item[4]
-                    
+                    email = item[4]                    
                     print(f">    Matricula {i} - {item[1]}:")
                     print(f">      Situacao: {situacao} (tipo: {type(item[0])})")
                     print(f">      Nome: {nome}")
                     print(f">      Email: {email}")
-                    
                     if situacao != 7:
                         todas_demitidas = False
-
                 print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
-
+                nomeSenior = matriculas_do_cpf[0][3]
+                emailSenior = matriculas_do_cpf[0][4]
+                
                 if todas_demitidas:
                     # Só deleta se TODAS estiverem demitidas
-                    for item in matriculas_do_cpf:
-                        nomeSenior = item[3]
-                        emailSenior = item[4]
-                        idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                        if idGupy:
-                            api.deletaUsuarioGupy(idGupy, nomeSenior)
+                    idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
+                    if idGupy:
+                        api.deletaUsuarioGupy(idGupy, nomeSenior)
                 else:
                     # Se tem pelo menos uma ativa, garante que o cadastro exista
-                    for item in matriculas_do_cpf:
-                        if int(item[0]) != 7:
-                            nomeSenior = item[3]
-                            emailSenior = item[4]
-                            idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                            if not idGupy:
-                                api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
+                    situacao = int(matriculas_do_cpf[0][0])
+                    if int(item[0]) != 7:
+                        # nomeSenior = item[3]
+                        # emailSenior = item[4]
+                        idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
+                        if not idGupy:
+                            print(f">Criou usuario {nomeSenior} com email {emailSenior}")
+                            logging.info(f">Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
+                            # api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
 
             # se cpf NÂO se repete
             else:
                 cpfs_unitarios.append(cpfSenior)
-                print(f">>>CPF {cpfSenior} com uma matricula.")
+                print(f"> CPF {cpfSenior} com uma matricula.")
                 # le matricula vinculada ao CPF
-                for item in usuarios_validos:
-                    if item[2] == cpfSenior:
-                        situacaoSenior = item[0]
-                        nomeSenior = item[3]
-                        emailSenior = item[4]
-                        idGupy = api.listaUsuariosGupy(nomeSenior,emailSenior)
-                        # se situação da matricula for diferente de demitido (ou seja, esta admitido)
-                        if situacaoSenior != 7:
-                            # se tem nao cadastro na gupy
-                            if not idGupy:
-                                # Cria cadastro
-                                api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
-                        else:
-                            # Se tem cadastro na Gupy
-                            if idGupy:
-                                # Deleta cadastro
-                                api.deletaUsuarioGupy(idGupy, nomeSenior)
+                
+                item = matriculas_do_cpf[0]
+                situacaoSenior = int(item[0])
+                nomeSenior = item[3]
+                emailSenior = item[4]
+                idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
+                if situacaoSenior != 7:
+                    if not idGupy:
+                        api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
+                else:
+                    if idGupy:
+                        api.deletaUsuarioGupy(idGupy, nomeSenior)
+
+        
         # print(cpfs_repetidos)
         logging.info(">Colaboradores Verificados")
