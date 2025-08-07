@@ -6,6 +6,13 @@ from dotenv import load_dotenv,find_dotenv
 from collections import defaultdict
 from conexaoGupy import conexaoGupy
 from conexaoSenior import DatabaseSenior
+
+from utils.colaboradores  import (
+    carregar_cpfs_ignorados,
+    classificar_usuarios,
+    agrupar_por_cpf,
+    processar_cpf
+)
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
@@ -47,7 +54,27 @@ class ponteSeniorGupy():
         # print(usuarios) # Recebendo OK
         logging.info(">Dados colaboradores Senior processados (dataSenior)")
         return usuarios
-      
+    
+    def verificaColaboradores(self, colaboradores):
+        logging.info("> Iniciando verificação de colaboradores")
+
+        api = conexaoGupy()
+        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
+
+        cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
+
+        usuarios_validos, usuarios_invalidos, usuarios_ignorados = classificar_usuarios(usuarios, cpfs_ignorados)
+
+        logging.info("> Agrupando colaboradores válidos por CPF")
+        usuarios_por_cpf = agrupar_por_cpf(usuarios_validos)
+
+        for cpf, registros in usuarios_por_cpf.items():
+            processar_cpf(api, cpf, registros)
+
+        logging.info("> Verificação de colaboradores concluída")
+       
+        
+    """
     def verificaColaboradores(self, colaboradores):
         logging.info(">Verificando Colaboradores (verificaColaboradores)")
         # print(colaboradores) # Recebendo
@@ -110,17 +137,8 @@ class ponteSeniorGupy():
         
         # listas: [situação, matrícula, cpf, nome, email, cargo, filial] nesta ordem
         # print(f"usuarios ignorados: {usuarios_ignorados}") # recebendo corretamente
-        # print(f"usuarios validos: {usuarios_validos}") # recebendo corretamente
-        # print(f"usuarios invalidos: {usuarios_invalidos}") # recebendo corretamente
-        
-        """
-        for item in usuarios_ignorados:
-            if isinstance(item, (list, tuple)) and len(item) > 3:
-                nome = item[3]
-                logging.info(f">Usuario ignorado: {nome}")
-            else:
-                logging.warning(f"Formato inesperado: {item}")
-                """
+        print(f"usuarios validos: {usuarios_validos}") # recebendo corretamente
+        # print(f"usuarios invalidos: {usuarios_invalidos}") # recebendo corretamente                
        
         logging.info(">Agrupando por CPFs (verificaColaboradores)")
         
@@ -167,18 +185,15 @@ class ponteSeniorGupy():
                     # Se tem pelo menos uma ativa, garante que o cadastro exista
                     situacao = int(matriculas_do_cpf[0][0])
                     if int(item[0]) != 7:
-                        # nomeSenior = item[3]
-                        # emailSenior = item[4]
                         idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                         if not idGupy:
-                            print(f">Criou usuario {nomeSenior} com email {emailSenior}")
-                            logging.info(f">Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
-                            # api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
+                            api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
 
             # se cpf NÂO se repete
             else:  
+                print(f"> CPF {cpfSenior} com uma matricula")
                 todas_demitidas = True
-                # Filtra todas as matrículas válidas desse CPF
+                # Filtra todas as matrículas válidas desse CPF por preocaução
                 for i, item in enumerate(matriculas_do_cpf, start=1):
                     situacao = int(item[0])
                     nome = item[3]
@@ -207,3 +222,4 @@ class ponteSeniorGupy():
         # print(cpfs_repetidos)
         # print(cpfs_unitarios)
         logging.info(">Colaboradores Verificados")
+        """
