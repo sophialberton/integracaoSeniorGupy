@@ -1,6 +1,7 @@
 import logging
 import csv
 from collections import defaultdict
+import re
 
 def carregar_cpfs_ignorados(caminho_arquivo):
     logging.info("> Carregando CPFs ignorados")
@@ -23,6 +24,7 @@ def classificar_usuarios(usuarios, cpfs_ignorados):
             continue
 
         cpf = str(usuario[2]).strip()
+        cpf = cpf.zfill(11)
         email = usuario[4]
 
         if cpf in cpfs_ignorados:
@@ -42,6 +44,7 @@ def agrupar_por_cpf(usuarios):
     agrupados = defaultdict(list)
     for usuario in usuarios:
         cpf = str(usuario[2]).strip()
+        cpf = cpf.zfill(11)
         agrupados[cpf].append(usuario)
     return agrupados
 
@@ -49,6 +52,9 @@ def processar_cpf(api, cpf, registros):
     nome = registros[0][3]
     email = registros[0][4]
     todas_demitidas = all(int(r[0]) == 7 for r in registros)
+    
+    if not re.fullmatch(r'\d{11}', cpf):
+        logging.warning(f"CPF suspeito: {cpf}")
 
     if len(registros) > 1:
         print(f"> CPF {cpf} com multiplas matriculas")
