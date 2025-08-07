@@ -193,12 +193,13 @@ class ponteSeniorGupy():
                 nomeSenior = matriculas_do_cpf[0][3]
                 emailSenior = matriculas_do_cpf[0][4]
                 
+                idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                 if todas_demitidas:
                     # Só deleta se TODAS estiverem demitidas
-                    idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                     if idGupy:
                         api.deletaUsuarioGupy(idGupy, nomeSenior)
-                    if not idGupy:
+                else: # Tem ativa
+                    if not idGupy: # Se nao tem cadastro, cria. 
                         api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
                 
                 cpfs_unitarios.append(cpfSenior)

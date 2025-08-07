@@ -29,15 +29,15 @@ class conexaoGupy():
             if usuarios:
                 user_id = usuarios[0].get("id")
                 print(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.info(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                logging.warning(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                 return user_id
             else:
                 print(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.info(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                logging.warning(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                 return None
         if response.status_code == 400:
             print(f">WARNING: '{detalhe}'>> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
-            logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+            logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
         else:
             logging.error(f"> Erro ao listar usuario: {detalhe}")
             return None
