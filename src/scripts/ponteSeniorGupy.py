@@ -74,6 +74,18 @@ class ponteSeniorGupy():
  
         logging.info(">Valida apenas colaboradores com email @fgmdental.group.com;(verificaColaboradores)")        
         logging.info(">Ignora RH e Direção(verificaColaboradores)")        
+
+        cpf_dict = defaultdict(list)
+
+        for item in usuarios:
+            if isinstance(item, (list, tuple)) and len(item) >= 7:
+                cpf = str(item[2]).strip()
+                matricula = item[1]
+                cpf_dict[cpf].append(item)
+            else:
+                logging.warning(f"Formato inesperado ao agrupar CPFs: {item}")
+
+        
         for item in usuarios:
             if isinstance(item, (list, tuple)) and len(item) >= 5:            
                 # Filtro comparação cpfs Senior com cpfs de ignoradosRh.csv    
@@ -82,7 +94,7 @@ class ponteSeniorGupy():
                     cpfSenior = str(item[2]).strip()
                     if cpfSenior in cpfs_ignorados_csv:
                         usuarios_ignorados.append(item)
-
+                    continue
                 # Filtro emails validos ou invalidos
                 emailSenior = item[4]
                 if emailSenior and emailSenior.strip() != "":
@@ -111,19 +123,11 @@ class ponteSeniorGupy():
         for item in usuarios_ignorados:
             if isinstance(item, (list, tuple)) and len(item) > 3:
                 nome = item[3]
-                logging.info(f"Usuario ignorado: {nome}")
+                logging.info(f">Usuario ignorado: {nome}")
             else:
                 logging.warning(f"Formato inesperado: {item}")
        
         logging.info(">Agrupando por CPFs (verificaColaboradores)")
-        cpf_dict = defaultdict(list)
-        for item in usuarios_validos:
-            if isinstance(item, (list, tuple)) and len(item) >= 7:
-                cpf = item[2]
-                matricula = item[1]
-                cpf_dict[cpf].append(matricula)
-            else:
-                logging.error(f"Formato inesperado: {item}")
         
         # verifica se um CPF se repete:
         cpfs_repetidos = []
@@ -134,19 +138,27 @@ class ponteSeniorGupy():
             # se cpfSenior repete:
             if len(matriculas) > 1:
                 cpfs_repetidos.append(cpfSenior)
+                # Filtra todas as matrículas válidas desse CPF
                 print(f">CPF {cpfSenior} com mais de uma matriculas")
-                
-                
-               
-            # Filtra todas as matrículas válidas desse CPF
-            matriculas_do_cpf = [item for item in usuarios_validos if item[2] == cpfSenior]
-            print(f"  Matrículas encontradas para {cpfSenior}:")
-            for item in matriculas_do_cpf:
-                print(f"    Situação: {item[0]} (tipo: {type(item[0])}) | Nome: {item[3]} | Email: {item[4]}")
+                matriculas_do_cpf = cpf_dict[cpfSenior]
+                nomeSenior = matriculas_do_cpf[0][3]
+                print(f">  Matriculas encontradas para {nomeSenior}:")
+                todas_demitidas = True  # Assume que todas estão demitidas até encontrar uma que não esteja
+                # Filtra todas as matrículas válidas desse CPF
+                for i, item in enumerate(matriculas_do_cpf, start=1):
+                    situacao = int(item[0])
+                    nome = item[3]
+                    email = item[4]
+                    
+                    print(f">    Matricula {i} - {item[1]}:")
+                    print(f">      Situacao: {situacao} (tipo: {type(item[0])})")
+                    print(f">      Nome: {nome}")
+                    print(f">      Email: {email}")
+                    
+                    if situacao != 7:
+                        todas_demitidas = False
 
-            # Verifica se todas estão demitidas
-                todas_demitidas = all(int(item[0]) == 7 for item in matriculas_do_cpf)
-                print(f"  Todas as matrículas estão demitidas? {'Sim' if todas_demitidas else 'Não'}")
+                print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
                 if todas_demitidas:
                     # Só deleta se TODAS estiverem demitidas
@@ -155,7 +167,6 @@ class ponteSeniorGupy():
                         emailSenior = item[4]
                         idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                         if idGupy:
-                            print(f"  Chamando delete para usuário desligado: ({nomeSenior}, {idGupy})")
                             api.deletaUsuarioGupy(idGupy, nomeSenior)
                 else:
                     # Se tem pelo menos uma ativa, garante que o cadastro exista
@@ -165,12 +176,9 @@ class ponteSeniorGupy():
                             emailSenior = item[4]
                             idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
                             if not idGupy:
-                                print(f"  Criando usuário para {nomeSenior} ({emailSenior})")
                                 api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
 
-
-
-            # se cpf nao se repete
+            # se cpf NÂO se repete
             else:
                 cpfs_unitarios.append(cpfSenior)
                 print(f">>>CPF {cpfSenior} com uma matricula.")
@@ -184,12 +192,12 @@ class ponteSeniorGupy():
                         # se situação da matricula for diferente de demitido (ou seja, esta admitido)
                         if situacaoSenior != 7:
                             # se tem nao cadastro na gupy
-                            if not api.listaUsuariosGupy(nomeSenior,emailSenior):
+                            if not idGupy:
                                 # Cria cadastro
                                 api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
                         else:
                             # Se tem cadastro na Gupy
-                            if api.listaUsuariosGupy(nomeSenior,emailSenior):
+                            if idGupy:
                                 # Deleta cadastro
                                 api.deletaUsuarioGupy(idGupy, nomeSenior)
         # print(cpfs_repetidos)
