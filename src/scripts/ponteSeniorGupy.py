@@ -39,40 +39,35 @@ class ponteSeniorGupy():
     def verificaColaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
         api = conexaoGupy()
-        # Obter os dados como lista de listas
-        
-        """usuarios = ponteSeniorGupy.dadosSenior(self, colaboradores)
 
-        # Converter para DataFrame
-        import pandas as pd
-        colunas = ['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']
-        df_usuarios = pd.DataFrame(usuarios, columns=colunas)"""
         df_usuarios = self.dadosSenior(colaboradores)
+
         # Carregar CPFs ignorados
         cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
 
         # Classificar os usuários
         df_validos, df_invalidos, df_ignorados = classificar_usuarios_df(df_usuarios, cpfs_ignorados)
-        
-        print("df_validos:")
-        print(df_validos)
-        print(f"Total de registros validos: {len(df_validos)}")
 
-        logging.info("> Agrupando colaboradores validos por CPF")
+        # Juntar todos os não ignorados (válidos + inválidos)
+        df_nao_ignorados = pd.concat([df_validos, df_invalidos], ignore_index=True)
+
+        print("df_nao_ignorados:")
+        print(df_nao_ignorados)
+        print(f"Total de registros não ignorados: {len(df_nao_ignorados)}")
+
+        logging.info("> Agrupando colaboradores por CPF")
 
         # Agrupar por CPF
-        usuarios_por_cpf = agrupar_por_cpf_df(df_validos)
+        usuarios_por_cpf = agrupar_por_cpf_df(df_nao_ignorados)
 
         print(f"CPFs agrupados: {len(usuarios_por_cpf)}")
 
         logging.info("Iniciando processamento por CPF")
         for cpf, registros_df in usuarios_por_cpf.items():
-            # logging.info(f"Processando CPF: {cpf}")
             processar_cpf_df(api, cpf, registros_df)
 
-
-
         logging.info("> Verificação de colaboradores concluída")
+
 
        
         

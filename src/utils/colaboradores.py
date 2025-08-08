@@ -48,28 +48,34 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
 
     return usuarios_validos, usuarios_invalidos, usuarios_ignorados
 
+def verificar_cpfs_repetidos(df):
+    cpfs = df['Cpf'].astype(str).str.strip().str.zfill(11)
+    cpfs_repetidos = cpfs[cpfs.duplicated()].unique().tolist()
+    print(f"Total de registros: {len(cpfs)}")
+    print(f"CPFs repetidos encontrados ({len(cpfs_repetidos)}):")
+    for cpf in cpfs_repetidos:
+        print(f"  - {cpf}")
+    return cpfs_repetidos
+
 def agrupar_por_cpf_df(df_validos):
     df_validos['Cpf'] = df_validos['Cpf'].astype(str).str.strip().str.zfill(11)
+    verificar_cpfs_repetidos(df_validos)  # Adiciona verificação explícita
     agrupados = {
         cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')
     }
     return agrupados
 
 def processar_cpf_df(api, cpf, registros_df):
+    registros_df['Situacao'] = registros_df['Situacao'].astype(int)
+    todas_demitidas = (registros_df['Situacao'] == 7).all()
     nome_base = registros_df.iloc[0]['Nome']
-    email_base = registros_df.iloc[0]['Email']
-
-    todas_demitidas = (registros_df['Situacao'].astype(int) == 7).all()
+    email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
 
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
 
-    if len(registros_df) > 1:
-        print(f"> CPF {cpf} com multiplas matriculas")
-    else:
-        print(f"> CPF {cpf} com uma matricula")
-
-    for i, row in registros_df.iterrows():
+    print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matriculas")
+    for _, row in registros_df.iterrows():
         print(f"  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
 
     print(f"  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
@@ -80,5 +86,14 @@ def processar_cpf_df(api, cpf, registros_df):
         if id_gupy:
             api.deletaUsuarioGupy(id_gupy, nome_base)
     else:
-        if not id_gupy:
-            api.criaUsuarioGupy(nome_base, email_base, cpf)
+        if email_base:
+            if id_gupy:
+                print("Atualiza")
+                # api.atualizaUsuarioGupy(id_gupy, nome_base, email_base, cpf)
+            else:
+                api.criaUsuarioGupy(nome_base, email_base, cpf)
+        else:
+            print(f"  Email inválido para CPF {cpf}, não será criado/atualizado.")
+
+
+
