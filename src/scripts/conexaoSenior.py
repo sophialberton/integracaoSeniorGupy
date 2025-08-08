@@ -2,6 +2,7 @@ import os
 import sys
 import oracledb
 import logging
+import pandas as pd
 from collections import namedtuple
 from dotenv import load_dotenv,find_dotenv
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -52,62 +53,60 @@ class DatabaseSenior():
             self.cursor.execute(
                 # IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
                 """
-                SELECT
-                        *
-                    FROM 
-                        (
-                        SELECT
-                            FUN.SITAFA AS "Situacao", -- 0
-                            FUN.NUMCAD AS "Matricula", -- 1 
-                            FUN.NUMCPF AS "Cpf", -- 2
-                            FUN.NOMFUN AS "Nome", -- 3
-                            EM.EMACOM AS "Email", -- 4
-                            CAR.TITCAR AS "Cargo", -- 5
-                            ORN.NOMLOC AS "Filial", -- 6
-                            FUN.NUMEMP AS "Empresa", -- //
-                            FUN.TIPCOL AS "TipoColaborador", --//
-                                        ROW_NUMBER() OVER (PARTITION BY FUN.NUMCAD
-                        ORDER BY
-                            FUN.SITAFA) AS RN
+                    SELECT
+                            FUN.NUMEMP AS "Empresa",
+                            FUN.NOMFUN AS "Nome",
+                            FUN.TIPCOL AS "TipoColaborador",
+                            FUN.NUMCAD AS "Matricula",
+                            FUN.NUMCPF AS "Cpf",
+                            FUN.SITAFA AS "Situacao",
+                            EM.EMACOM AS "Email"
                         FROM
                             senior.R034FUN FUN
-                        INNER JOIN senior.R030EMP EMP ON
-                            FUN.NUMEMP = EMP.NUMEMP
-                        INNER JOIN senior.R024CAR CAR ON
-                            FUN.CODCAR = CAR.CODCAR
-                            AND FUN.ESTCAR = CAR.ESTCAR
-                        INNER JOIN senior.R034CPL EM ON
-                            FUN.NUMCAD = EM.NUMCAD
-                            AND FUN.NUMEMP = EM.NUMEMP
-                        INNER JOIN senior.R016ORN ORN ON
-                            ORN.NUMLOC = FUN.NUMLOC
-                        INNER JOIN senior.R030FIL FIL ON
-                            FUN.CODFIL = FIL.CODFIL
-                            AND FUN.NUMEMP = FIL.NUMEMP
-                        LEFT JOIN senior.R034USU FUS ON
-                            FUN.NUMEMP = FUS.NUMEMP
-                            AND FUN.NUMCAD = FUS.NUMCAD
-                            AND FUN.TIPCOL = FUS.TIPCOL
-                        LEFT JOIN senior.R999USU USU ON
-                            USU.CODUSU = FUS.CODUSU
-                        LEFT JOIN senior.R034FOT PHO ON
-                            FUN.NUMCAD = PHO.NUMCAD
-                            AND FUN.TIPCOL = PHO.TIPCOL
-                            AND FUN.NUMEMP = PHO.NUMEMP
-                        WHERE
-                            FUN.TIPCOL = '1'
-                            AND CAR.TITCAR <> 'PENSIONISTA'
-                            AND FUN.NUMEMP <> 100
-                                    )
+                    INNER JOIN senior.R030EMP EMP ON
+                        FUN.NUMEMP = EMP.NUMEMP
+                    INNER JOIN senior.R024CAR CAR ON
+                        FUN.CODCAR = CAR.CODCAR
+                        AND FUN.ESTCAR = CAR.ESTCAR
+                    INNER JOIN senior.R034CPL EM ON
+                        FUN.NUMCAD = EM.NUMCAD
+                        AND FUN.NUMEMP = EM.NUMEMP
+                    INNER JOIN senior.R016ORN ORN ON
+                        ORN.NUMLOC = FUN.NUMLOC
+                    INNER JOIN senior.R030FIL FIL ON
+                        FUN.CODFIL = FIL.CODFIL
+                        AND FUN.NUMEMP = FIL.NUMEMP
+                    LEFT JOIN senior.R034USU FUS ON
+                        FUN.NUMEMP = FUS.NUMEMP
+                        AND FUN.NUMCAD = FUS.NUMCAD
+                        AND FUN.TIPCOL = FUS.TIPCOL
+                    LEFT JOIN senior.R999USU USU ON
+                        USU.CODUSU = FUS.CODUSU
+                    LEFT JOIN senior.R034FOT PHO ON
+                        FUN.NUMCAD = PHO.NUMCAD
+                        AND FUN.TIPCOL = PHO.TIPCOL
+                        AND FUN.NUMEMP = PHO.NUMEMP
                     WHERE
-                        RN = 1
+                        FUN.TIPCOL = '1'
+                        AND CAR.TITCAR <> 'PENSIONISTA'
+                        AND FUN.NUMEMP <> 100
                 """)
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
+            
+            # Definindo os nomes das colunas
+            colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
+
+            # Criando o DataFrame
+            df = pd.DataFrame(self.cursor.fetchall(), columns=colunas)
+            """
             rows = self.cursor.fetchall()
             for row in rows:
                 row_data_object = RowData(*row)
                 row_data_list.append(row_data_object)
-                # print(row)
+                print(row) 
+                """
+                
+                
             logging.info("-------------->>>Query---------------------------------")
             logging.info(">Consulta executada com sucesso.")
             # logging.info("------------------------------------------------------------------------------------")            
@@ -120,7 +119,7 @@ class DatabaseSenior():
             logging.info(">Cursor fechado")
             logging.info("-------------->>>Script Rodandno------------------------")
             # print(self.row_data_list)
-        return row_data_list    
+        return df    
                   
         
         
