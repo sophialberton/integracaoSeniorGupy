@@ -11,9 +11,7 @@ if src_path not in sys.path:
 class conexaoGupy():
     def __init__(self):
         self.token = os.getenv("token")     
-    
-    
-    
+
     def listaUsuariosGupy(self, nomeSenior, emailSenior):
         url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"
         headers = {
@@ -28,22 +26,20 @@ class conexaoGupy():
             usuarios = data.get("results", [])
             if usuarios:
                 user_id = usuarios[0].get("id")
-                print(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.warning(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
+                logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                 return user_id
             else:
-                print(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.warning(f">Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
+                logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                 return None
         if response.status_code == 400:
-            print(f">WARNING: '{detalhe}'>> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
+            print(f"> WARNING: '{detalhe}'>> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
             logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
         else:
             logging.error(f"> Erro ao listar usuario: {detalhe}")
             return None
 
-
-   
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
         # url = "https://api.gupy.io/api/v1/users"
         # payload = {
@@ -59,8 +55,8 @@ class conexaoGupy():
         # data = response.json()
         # detalhe = data.get("detail", "Erro desconhecido")
         # if response.status_code == 201:
-            print(f">Criou usuario {nomeSenior} com email {emailSenior}")
-            logging.info(f">Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
+            print(f"> Criou usuario {nomeSenior} com email {emailSenior}")
+            logging.info(f"> Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
         # if response.status_code == 400:
         #     print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
         #     logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
@@ -80,5 +76,5 @@ class conexaoGupy():
         # if response.status_code == 400:
         #     print(f">WARNING: '{detalhe}' >> Usuario: {nomeSenior, idGupy}")
         #     logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, idGupy}, (verificaColaboradores.api.deletaUsuarioGupy)")
-        print(f">Chamou o delete para usuario desligado: {nomeSenior, idGupy}")
-        logging.critical(f">Chamou o DELETE para usuario desligado: {nomeSenior, idGupy}")
+        print(f"> Chamou o delete para usuario desligado: {nomeSenior, idGupy}")
+        logging.critical(f"> Chamou o DELETE para usuario desligado: {nomeSenior, idGupy}")
