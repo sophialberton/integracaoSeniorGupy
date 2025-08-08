@@ -56,7 +56,7 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
 def verificar_cpfs_repetidos(df):
     cpfs = df['Cpf'].astype(str).str.strip().str.zfill(11)
     cpfs_repetidos = cpfs[cpfs.duplicated()].unique().tolist()
-    print(f"Total de CPFs repetidos encontrados: {len(cpfs_repetidos)}")
+    print(f"> Total de CPFs repetidos encontrados: {len(cpfs_repetidos)}")
     # for cpf in cpfs_repetidos:
     #     print(f"  - {cpf}")
     # return cpfs_repetidos
@@ -81,9 +81,9 @@ def processar_cpf_df(api, cpf, registros_df):
 
     print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matricula(s)")
     for _, row in registros_df.iterrows():
-        print(f"  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
+        print(f">  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
 
-    print(f"  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
+    print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
     id_gupy = api.listaUsuariosGupy(nome_base, email_base)
 
@@ -93,9 +93,9 @@ def processar_cpf_df(api, cpf, registros_df):
     else:
         if email_base:
             if id_gupy:
-                print("Implementar atualizacao de usuario na versao 2.0")
+                print(">> Implementar atualizacao de usuario na versao 2.0")
                 # api.atualizaUsuarioGupy(id_gupy, nome_base, email_base, cpf)
             else:
                 api.criaUsuarioGupy(nome_base, email_base, cpf)
         else:
-            print(f"  Email inválido para CPF {cpf}, nao sera criado/atualizado.")
+            print(f">  Email inválido para CPF {cpf}, nao sera criado/atualizado.")

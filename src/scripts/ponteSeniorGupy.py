@@ -47,16 +47,22 @@ class ponteSeniorGupy():
         df_nao_ignorados = pd.concat([df_validos, df_invalidos], ignore_index=True)
         # Filtrar usuários ativos sem e-mail válido
         usuarios_ativos_sem_email = df_invalidos[df_invalidos['Situacao'] != 7]
-        print(f"Total de registros: {len(df_nao_ignorados)}")
-        print(f"Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
-        print(f"Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
-        print(f"Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
-        print(f"total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
+        print(f"> Total de registros: {len(df_nao_ignorados)}")
+        print(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
+        print(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
+        print(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
+        print(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
+        logging.info(f"> Total de registros: {len(df_nao_ignorados)}")
+        logging.info(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
+        logging.info(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
+        logging.info(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
+        logging.info(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
+
         # Agrupar por CPF
         logging.info("> Agrupando colaboradores por CPF")
         usuarios_por_cpf = agrupar_por_cpf_df(df_nao_ignorados)
-        print(f"Total de CPFs agrupados: {len(usuarios_por_cpf)}")
-        logging.info("Iniciando processamento por CPF")
+        print(f"> Total de CPFs agrupados: {len(usuarios_por_cpf)}")
+        logging.info("> Iniciando processamento por CPF")
         for cpf, registros_df in usuarios_por_cpf.items():
             processar_cpf_df(api, cpf, registros_df)
         logging.info("> Verificação de colaboradores concluída")
