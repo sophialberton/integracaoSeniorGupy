@@ -1,8 +1,6 @@
 import logging
-import csv
-from collections import defaultdict
 import re
-import pandas as df
+import csv
 
 def carregar_cpfs_ignorados(caminho_arquivo):
     logging.info("> Carregando CPFs ignorados")
@@ -20,11 +18,22 @@ def extrair_email_valido(e):
     if not isinstance(e, str):
         return None
     emails = e.replace(',', ' ').split()
+    email_fgm_dental = None
+    email_fgm_ind = None
+
     for email in emails:
         email = email.strip()
         if "@fgmdentalgroup.com" in email:
-            return email
-    return None
+            email_fgm_dental = email
+        elif "@fgm.ind.br" in email:
+            email_fgm_ind = email
+
+    if email_fgm_dental:
+        return email_fgm_dental
+    elif email_fgm_ind:
+        return email_fgm_ind # .replace("@fgm.ind.br", "@fgmdentalgroup.com") # Troca o domínio para @fgmdentalgroup.com
+    else:
+        return None
 
 def classificar_usuarios_df(usuarios, cpfs_ignorados):
     usuarios['Cpf'] = usuarios['Cpf'].astype(str).str.strip().str.zfill(11)
@@ -34,10 +43,6 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
     usuarios_restante = usuarios[~usuarios['Cpf'].isin(cpfs_ignorados)].copy()
     # Validar e limpar e-mails
     usuarios_restante['EmailValido'] = usuarios_restante['Email'].apply(extrair_email_valido)
-    print("Emails classificados:")
-    print(usuarios_restante[['Email', 'EmailValido']])
-
-    
     # Separar válidos e inválidos
     usuarios_validos = usuarios_restante[usuarios_restante['EmailValido'].notnull()].copy()
     usuarios_validos['Email'] = usuarios_validos['EmailValido']
@@ -48,31 +53,37 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
 
     return usuarios_validos, usuarios_invalidos, usuarios_ignorados
 
+def verificar_cpfs_repetidos(df):
+    cpfs = df['Cpf'].astype(str).str.strip().str.zfill(11)
+    cpfs_repetidos = cpfs[cpfs.duplicated()].unique().tolist()
+    print(f"> Total de CPFs repetidos encontrados: {len(cpfs_repetidos)}")
+    # for cpf in cpfs_repetidos:
+    #     print(f"  - {cpf}")
+    # return cpfs_repetidos
+
 def agrupar_por_cpf_df(df_validos):
     df_validos['Cpf'] = df_validos['Cpf'].astype(str).str.strip().str.zfill(11)
+    verificar_cpfs_repetidos(df_validos)  # Adiciona verificação explícita
     agrupados = {
         cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')
     }
     return agrupados
 
 def processar_cpf_df(api, cpf, registros_df):
+    registros_df['Situacao'] = registros_df['Situacao'].astype(int)
+    todas_demitidas = (registros_df['Situacao'] == 7).all()
     nome_base = registros_df.iloc[0]['Nome']
-    email_base = registros_df.iloc[0]['Email']
+    email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
 
-    todas_demitidas = (registros_df['Situacao'].astype(int) == 7).all()
-
+    # DEBUG
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
 
-    if len(registros_df) > 1:
-        print(f"> CPF {cpf} com multiplas matriculas")
-    else:
-        print(f"> CPF {cpf} com uma matricula")
+    print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matricula(s)")
+    for _, row in registros_df.iterrows():
+        print(f">  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
 
-    for i, row in registros_df.iterrows():
-        print(f"  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
-
-    print(f"  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
+    print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
     id_gupy = api.listaUsuariosGupy(nome_base, email_base)
 
@@ -80,5 +91,11 @@ def processar_cpf_df(api, cpf, registros_df):
         if id_gupy:
             api.deletaUsuarioGupy(id_gupy, nome_base)
     else:
-        if not id_gupy:
-            api.criaUsuarioGupy(nome_base, email_base, cpf)
+        if email_base:
+            if id_gupy:
+                print(">> Implementar atualizacao de usuario na versao 2.0")
+                # api.atualizaUsuarioGupy(id_gupy, nome_base, email_base, cpf)
+            else:
+                api.criaUsuarioGupy(nome_base, email_base, cpf)
+        else:
+            print(f">  Email invalido para CPF {cpf}, nao sera criado/atualizado.")

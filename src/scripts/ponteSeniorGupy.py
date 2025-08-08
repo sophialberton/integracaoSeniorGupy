@@ -1,12 +1,11 @@
 import sys
 import os
-import csv
 import logging
 import pandas as pd
 from dotenv import load_dotenv,find_dotenv
 from collections import defaultdict
-from conexaoGupy import conexaoGupy
-from conexaoSenior import DatabaseSenior
+from data.conexaoGupy import conexaoGupy
+from data.conexaoSenior import DatabaseSenior
 
 from utils.colaboradores  import (
     carregar_cpfs_ignorados,
@@ -35,193 +34,35 @@ class ponteSeniorGupy():
             logging.error(f"Erro ao preparar dados do Senior: {e}")
             return pd.DataFrame(columns=['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email'])
 
-    
     def verificaColaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
         api = conexaoGupy()
-        # Obter os dados como lista de listas
-        
-        """usuarios = ponteSeniorGupy.dadosSenior(self, colaboradores)
-
-        # Converter para DataFrame
-        import pandas as pd
-        colunas = ['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']
-        df_usuarios = pd.DataFrame(usuarios, columns=colunas)"""
         df_usuarios = self.dadosSenior(colaboradores)
+        
         # Carregar CPFs ignorados
-        cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
-
+        cpfs_ignorados = carregar_cpfs_ignorados('src/data/ignoradosRH.csv')
         # Classificar os usuários
         df_validos, df_invalidos, df_ignorados = classificar_usuarios_df(df_usuarios, cpfs_ignorados)
-        
-        print("df_validos:")
-        print(df_validos)
-        print(f"Total de registros validos: {len(df_validos)}")
-
-        logging.info("> Agrupando colaboradores validos por CPF")
+        # Juntar todos os não ignorados (válidos + inválidos)
+        df_nao_ignorados = pd.concat([df_validos, df_invalidos], ignore_index=True)
+        # Filtrar usuários ativos sem e-mail válido
+        usuarios_ativos_sem_email = df_invalidos[df_invalidos['Situacao'] != 7]
+        print(f"> Total de registros: {len(df_nao_ignorados)}")
+        print(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
+        print(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
+        print(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
+        print(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
+        logging.info(f"> Total de registros: {len(df_nao_ignorados)}")
+        logging.info(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
+        logging.info(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
+        logging.info(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
+        logging.info(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
 
         # Agrupar por CPF
-        usuarios_por_cpf = agrupar_por_cpf_df(df_validos)
-
-        print(f"CPFs agrupados: {len(usuarios_por_cpf)}")
-
-        logging.info("Iniciando processamento por CPF")
+        logging.info("> Agrupando colaboradores por CPF")
+        usuarios_por_cpf = agrupar_por_cpf_df(df_nao_ignorados)
+        print(f"> Total de CPFs agrupados: {len(usuarios_por_cpf)}")
+        logging.info("> Iniciando processamento por CPF")
         for cpf, registros_df in usuarios_por_cpf.items():
-            # logging.info(f"Processando CPF: {cpf}")
             processar_cpf_df(api, cpf, registros_df)
-
-
-
         logging.info("> Verificação de colaboradores concluída")
-
-       
-        
-    """
-    def verificaColaboradores(self, colaboradores):
-        logging.info(">Verificando Colaboradores (verificaColaboradores)")
-        # print(colaboradores) # Recebendo
-        api = conexaoGupy()
-        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
-        # print(usuarios) # Dados de Colaboradores tratados.
-        usuarios_validos = []
-        usuarios_invalidos = []
-        usuarios_ignorados = []
-        
-        logging.info(">Carregando CPF ignorados do arquivo ignoradosRH.csv") # nome completo;cpf
-        cpfs_ignorados_csv = set()
-        with open('src/scripts/ignoradosRH.csv', encoding='utf-8') as f:
-            reader = csv.reader(f, delimiter=';')
-            for row in reader:
-                if len(row) >= 2:
-                    cpf = row[1].strip()
-                    if cpf:
-                        cpfs_ignorados_csv.add(cpf)
-                        
- 
-        logging.info(">Valida apenas colaboradores com email @fgmdental.group.com;(verificaColaboradores)")        
-        logging.info(">Ignora RH e Direção(verificaColaboradores)")        
- 
-        for item in usuarios:
-            if isinstance(item, (list, tuple)) and len(item) >= 5:            
-                # Filtro comparação cpfs Senior com cpfs de ignoradosRh.csv    
-                cpfSenior = str(item[2]).strip()
-                if cpfSenior in cpfs_ignorados_csv:
-                    usuarios_ignorados.append(item)
-                    continue
-                # Filtro emails validos ou invalidos
-                emailSenior = item[4]
-                if emailSenior and emailSenior.strip() != "":
-                    # Separar os e-mails, assumindo que estão separados por vírgula ou espaço
-                    emails = [e.strip() for e in emailSenior.replace(',', ' ').split() if e.strip()]
-                    # Filtra apenas os e-mails do domínio @fgmdentalgroup.com
-                    emails_fgmdental = [e for e in emails if "@fgmdentalgroup.com" in e]
-                    if emails_fgmdental:
-                        # Substituir o campo de e-mail com apenas os válidos do domínio
-                        item[4] = ', '.join(emails_fgmdental[:1])  # incluir apenas um
-                        usuarios_validos.append(item)
-                    else:
-                        # Se não houver e-mail do domínio desejado, considerar inválido
-                        usuarios_invalidos.append(item)
-                else:
-                    # E-mail vazio
-                    usuarios_invalidos.append(item)
-            else:
-                print(f"Formato inesperado: {item}")
-        
-        cpf_dict = defaultdict(list)
-        for item in usuarios_validos:
-            if isinstance(item, (list, tuple)) and len(item) >= 5:
-                cpf = str(item[2]).strip()
-                # matricula = item[1]
-                cpf_dict[cpf].append(item)
-            else:
-                logging.warning(f"Formato inesperado ao agrupar CPFs: {item}")
-        
-        # listas: [situação, matrícula, cpf, nome, email, cargo, filial] nesta ordem
-        # print(f"usuarios ignorados: {usuarios_ignorados}") # recebendo corretamente
-        print(f"usuarios validos: {usuarios_validos}") # recebendo corretamente
-        # print(f"usuarios invalidos: {usuarios_invalidos}") # recebendo corretamente                
-       
-        logging.info(">Agrupando por CPFs (verificaColaboradores)")
-        
-        # verifica se um CPF se repete:
-        cpfs_repetidos = []
-        cpfs_unitarios = []
-        
-        logging.info(">Verficando CPFs repetidos(verificaColaboradores)")
-        
-        for cpfSenior, matriculas_do_cpf in cpf_dict.items():
-            # se cpfSenior repete:
-            if len(matriculas_do_cpf) > 1:
-                cpfs_repetidos.append(cpfSenior)
-                # Filtra todas as matrículas válidas desse CPF
-
-                cpfs_repetidos.append(cpfSenior)
-                print(f"> CPF {cpfSenior} com mais de uma matricula")
-                nomeSenior = matriculas_do_cpf[0][3]
-                print(f">  Matriculas encontradas para {nomeSenior}:")
-                todas_demitidas = True
-                # Assume que todas estão demitidas até encontrar uma que não esteja
-                        
-                # Filtra todas as matrículas válidas desse CPF
-                for i, item in enumerate(matriculas_do_cpf, start=1):
-                    situacao = int(item[0])
-                    nome = item[3]
-                    email = item[4]                    
-                    print(f">    Matricula {i} - {item[1]}:")
-                    print(f">      Situacao: {situacao} (tipo: {type(item[0])})")
-                    print(f">      Nome: {nome}")
-                    print(f">      Email: {email}")
-                    if situacao != 7:
-                        todas_demitidas = False
-                print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
-                nomeSenior = matriculas_do_cpf[0][3]
-                emailSenior = matriculas_do_cpf[0][4]
-                
-                if todas_demitidas:
-                    # Só deleta se TODAS estiverem demitidas
-                    idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                    if idGupy:
-                        api.deletaUsuarioGupy(idGupy, nomeSenior)
-                else:
-                    # Se tem pelo menos uma ativa, garante que o cadastro exista
-                    situacao = int(matriculas_do_cpf[0][0])
-                    if int(item[0]) != 7:
-                        idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                        if not idGupy:
-                            api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
-
-            # se cpf NÂO se repete
-            else:  
-                print(f"> CPF {cpfSenior} com uma matricula")
-                todas_demitidas = True
-                # Filtra todas as matrículas válidas desse CPF por preocaução
-                for i, item in enumerate(matriculas_do_cpf, start=1):
-                    situacao = int(item[0])
-                    nome = item[3]
-                    email = item[4]                    
-                    print(f">    Matricula {i} - {item[1]}:")
-                    print(f">      Situacao: {situacao} (tipo: {type(item[0])})")
-                    print(f">      Nome: {nome}")
-                    print(f">      Email: {email}")
-                    if situacao != 7:
-                        todas_demitidas = False
-                print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
-                nomeSenior = matriculas_do_cpf[0][3]
-                emailSenior = matriculas_do_cpf[0][4]
-                
-                idGupy = api.listaUsuariosGupy(nomeSenior, emailSenior)
-                if todas_demitidas:
-                    # Só deleta se TODAS estiverem demitidas
-                    if idGupy:
-                        api.deletaUsuarioGupy(idGupy, nomeSenior)
-                else: # Tem ativa
-                    if not idGupy: # Se nao tem cadastro, cria. 
-                        api.criaUsuarioGupy(nomeSenior, emailSenior, cpfSenior)
-                
-                cpfs_unitarios.append(cpfSenior)
-                
-        # print(cpfs_repetidos)
-        # print(cpfs_unitarios)
-        logging.info(">Colaboradores Verificados")
-        """
