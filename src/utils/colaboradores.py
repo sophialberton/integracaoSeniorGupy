@@ -30,9 +30,8 @@ def extrair_email_valido(e):
 
     if email_fgm_dental:
         return email_fgm_dental
-    # elif email_fgm_ind:
-    #     # Troca o domínio para @fgmdentalgroup.com
-    #     return email_fgm_ind.replace("@fgm.ind.br", "@fgmdentalgroup.com")
+    elif email_fgm_ind:
+        return email_fgm_ind # .replace("@fgm.ind.br", "@fgmdentalgroup.com") # Troca o domínio para @fgmdentalgroup.com
     else:
         return None
 

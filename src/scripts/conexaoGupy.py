@@ -16,8 +16,19 @@ class conexaoGupy():
         if not emailSenior:
             logging.warning(f"> Email nulo para {nomeSenior}, não será possível listar na GUPY.")
             return None
-        email = emailSenior.strip()
-        if "@fgmdentalgroup.com" in email or "@fgm.ind.br" in email:
+        emailSenior = emailSenior.strip()
+
+        # Define o segundo email alternativo com base no domínio original
+        if "@fgmdentalgroup.com" in emailSenior:
+            emailAlternativo = emailSenior.replace("@fgmdentalgroup.com", "@fgm.ind.br")
+        elif "@fgm.ind.br" in emailSenior:
+            emailAlternativo = emailSenior.replace("@fgm.ind.br", "@fgmdentalgroup.com")
+        else:
+            logging.warning(f"> Email {emailSenior} não possui domínio reconhecido.")
+            return None
+
+        # Tenta buscar com os dois emails
+        for email in [emailSenior, emailAlternativo]:
             url = f"https://api.gupy.io/api/v1/users?email={email}&perPage=10&page=1"
             headers = {
                 "accept": "application/json",
@@ -31,19 +42,20 @@ class conexaoGupy():
                 usuarios = data.get("results", [])
                 if usuarios:
                     user_id = usuarios[0].get("id")
-                    print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                    logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                    print(f"> Listou usuario {nomeSenior} com email {email} na GUPY")
+                    logging.warning(f"> Listou usuario {nomeSenior} com email {email} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                     return user_id
                 else:
-                    print(f"> Nenhum usuario encontrado para {emailSenior}")
-                    logging.warning(f"> Nenhum usuario encontrado para {emailSenior} (verificaColaboradores.api.listaUsuariosGupy)")
-                    return None
+                    print(f"> Nenhum usuario encontrado para {email}")
+                    logging.warning(f"> Nenhum usuario encontrado para {email} (verificaColaboradores.api.listaUsuariosGupy)")
             elif response.status_code == 400:
-                print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
-                logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+                print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {email}")
+                logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, email}, (verificaColaboradores.api.criaUsuarioGupy)")
             else:
                 logging.error(f"> Erro ao listar usuario: {detalhe}")
-                return None
+
+        return None
+
 
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
         # url = "https://api.gupy.io/api/v1/users"
