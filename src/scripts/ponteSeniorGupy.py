@@ -4,8 +4,8 @@ import logging
 import pandas as pd
 from dotenv import load_dotenv,find_dotenv
 from collections import defaultdict
-from conexaoGupy import conexaoGupy
-from conexaoSenior import DatabaseSenior
+from data.conexaoGupy import conexaoGupy
+from data.conexaoSenior import DatabaseSenior
 
 from utils.colaboradores  import (
     carregar_cpfs_ignorados,
@@ -40,7 +40,7 @@ class ponteSeniorGupy():
         df_usuarios = self.dadosSenior(colaboradores)
         
         # Carregar CPFs ignorados
-        cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
+        cpfs_ignorados = carregar_cpfs_ignorados('src/data/ignoradosRH.csv')
         # Classificar os usuários
         df_validos, df_invalidos, df_ignorados = classificar_usuarios_df(df_usuarios, cpfs_ignorados)
         # Juntar todos os não ignorados (válidos + inválidos)

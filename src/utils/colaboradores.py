@@ -98,4 +98,4 @@ def processar_cpf_df(api, cpf, registros_df):
             else:
                 api.criaUsuarioGupy(nome_base, email_base, cpf)
         else:
-            print(f">  Email inválido para CPF {cpf}, nao sera criado/atualizado.")
+            print(f">  Email invalido para CPF {cpf}, nao sera criado/atualizado.")

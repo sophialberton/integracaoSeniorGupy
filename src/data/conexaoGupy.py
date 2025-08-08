@@ -2,11 +2,11 @@ import sys
 import os
 import requests
 import logging
-from conexaoSenior import DatabaseSenior
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
     sys.path.append(src_path)
+# from data.conexaoSenior import DatabaseSenior
 
 class conexaoGupy():
     def __init__(self):

@@ -7,8 +7,8 @@ if src_path not in sys.path:
 import logging
 import socket
 from datetime import datetime
-from conexaoGupy import conexaoGupy
-from conexaoSenior import DatabaseSenior
+from data.conexaoGupy import conexaoGupy
+from data.conexaoSenior import DatabaseSenior
 from ponteSeniorGupy import ponteSeniorGupy
 from utils.config import dict_extract
 
