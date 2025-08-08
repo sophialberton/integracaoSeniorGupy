@@ -16,6 +16,16 @@ def carregar_cpfs_ignorados(caminho_arquivo):
                     cpfs.add(cpf)
     return cpfs
 
+def extrair_email_valido(e):
+    if not isinstance(e, str):
+        return None
+    emails = e.replace(',', ' ').split()
+    for email in emails:
+        email = email.strip()
+        if "@fgmdentalgroup.com" in email:
+            return email
+    return None
+
 def classificar_usuarios_df(usuarios, cpfs_ignorados):
     usuarios['Cpf'] = usuarios['Cpf'].astype(str).str.strip().str.zfill(11)
     # Classificar como ignorado
@@ -23,10 +33,11 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
     # Filtrar os que não são ignorados
     usuarios_restante = usuarios[~usuarios['Cpf'].isin(cpfs_ignorados)].copy()
     # Validar e limpar e-mails
-    usuarios_restante['EmailValido'] = usuarios_restante['Email'].apply(
-        lambda e: next(
-            (email.strip() for email in (e or '').replace(',', ' ').split() if "@fgmdentalgroup.com" in email), None)
-    )
+    usuarios_restante['EmailValido'] = usuarios_restante['Email'].apply(extrair_email_valido)
+    print("Emails classificados:")
+    print(usuarios_restante[['Email', 'EmailValido']])
+
+    
     # Separar válidos e inválidos
     usuarios_validos = usuarios_restante[usuarios_restante['EmailValido'].notnull()].copy()
     usuarios_validos['Email'] = usuarios_validos['EmailValido']
@@ -37,8 +48,6 @@ def classificar_usuarios_df(usuarios, cpfs_ignorados):
 
     return usuarios_validos, usuarios_invalidos, usuarios_ignorados
 
-
-
 def agrupar_por_cpf_df(df_validos):
     df_validos['Cpf'] = df_validos['Cpf'].astype(str).str.strip().str.zfill(11)
     agrupados = {
@@ -47,7 +56,6 @@ def agrupar_por_cpf_df(df_validos):
     return agrupados
 
 def processar_cpf_df(api, cpf, registros_df):
-    logging.info("> chegou aqyui")
     nome_base = registros_df.iloc[0]['Nome']
     email_base = registros_df.iloc[0]['Email']
 
@@ -57,14 +65,14 @@ def processar_cpf_df(api, cpf, registros_df):
         logging.warning(f"CPF suspeito: {cpf}")
 
     if len(registros_df) > 1:
-        print(f"> CPF {cpf} com múltiplas matrículas")
+        print(f"> CPF {cpf} com multiplas matriculas")
     else:
-        print(f"> CPF {cpf} com uma matrícula")
+        print(f"> CPF {cpf} com uma matricula")
 
     for i, row in registros_df.iterrows():
-        print(f"  Matrícula - {row['Matricula']} | Situação: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
+        print(f"  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
 
-    print(f"  Todas as matrículas estão demitidas? {'Sim' if todas_demitidas else 'Não'}")
+    print(f"  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
     id_gupy = api.listaUsuariosGupy(nome_base, email_base)
 

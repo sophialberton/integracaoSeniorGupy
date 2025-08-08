@@ -27,33 +27,27 @@ class ponteSeniorGupy():
         self.connection = None  # Declara conexão como None
         self.cursor = None # Declara cursor como None
 
-    def dadosSenior(self, colaboradores):
-        dados = []
-        for data in colaboradores:
-            try:
-                dados.append({
-                    'Situacao': getattr(data, "Situacao", None),
-                    'Matricula': getattr(data, "Matricula", None),
-                    'Cpf': getattr(data, "Cpf", None),
-                    'Nome': getattr(data, "Nome", None),
-                    'Email': getattr(data, "Email", None)
-                })
-            except Exception as e:
-                logging.error(f"Erro ao processar colaborador: {e}")
-        df = pd.DataFrame(dados)
-        return df
+    def dadosSenior(self, colaboradores_df):
+        try:
+            df = colaboradores_df[['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']].copy()
+            return df
+        except Exception as e:
+            logging.error(f"Erro ao preparar dados do Senior: {e}")
+            return pd.DataFrame(columns=['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email'])
+
     
     def verificaColaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
         api = conexaoGupy()
         # Obter os dados como lista de listas
-        usuarios = ponteSeniorGupy.dadosSenior(self, colaboradores)
+        
+        """usuarios = ponteSeniorGupy.dadosSenior(self, colaboradores)
 
         # Converter para DataFrame
         import pandas as pd
         colunas = ['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']
-        df_usuarios = pd.DataFrame(usuarios, columns=colunas)
-
+        df_usuarios = pd.DataFrame(usuarios, columns=colunas)"""
+        df_usuarios = self.dadosSenior(colaboradores)
         # Carregar CPFs ignorados
         cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
 
@@ -73,7 +67,7 @@ class ponteSeniorGupy():
 
         logging.info("Iniciando processamento por CPF")
         for cpf, registros_df in usuarios_por_cpf.items():
-            logging.info(f"Processando CPF: {cpf}")
+            # logging.info(f"Processando CPF: {cpf}")
             processar_cpf_df(api, cpf, registros_df)
 
 
