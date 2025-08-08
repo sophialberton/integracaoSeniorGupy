@@ -13,32 +13,37 @@ class conexaoGupy():
         self.token = os.getenv("token")     
 
     def listaUsuariosGupy(self, nomeSenior, emailSenior):
-        url = f"https://api.gupy.io/api/v1/users?email={emailSenior}&perPage=10&page=1"
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.token}"
-        } 
-        response = requests.get(url, headers=headers)
-        data = response.json()
-        detalhe = data.get("detail", "Erro desconhecido")
-        
-        if response.status_code == 200:
-            usuarios = data.get("results", [])
-            if usuarios:
-                user_id = usuarios[0].get("id")
-                print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
-                return user_id
-            else:
-                print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
-                logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
-                return None
-        if response.status_code == 400:
-            print(f"> WARNING: '{detalhe}'>> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
-            logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
-        else:
-            logging.error(f"> Erro ao listar usuario: {detalhe}")
+        if not emailSenior:
+            logging.warning(f"> Email nulo para {nomeSenior}, não será possível listar na GUPY.")
             return None
+        email = emailSenior.strip()
+        if "@fgmdentalgroup.com" in email or "@fgm.ind.br" in email:
+            url = f"https://api.gupy.io/api/v1/users?email={email}&perPage=10&page=1"
+            headers = {
+                "accept": "application/json",
+                "authorization": f"Bearer {self.token}"
+            }
+            response = requests.get(url, headers=headers)
+            data = response.json()
+            detalhe = data.get("detail", "Erro desconhecido")
+
+            if response.status_code == 200:
+                usuarios = data.get("results", [])
+                if usuarios:
+                    user_id = usuarios[0].get("id")
+                    print(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY")
+                    logging.warning(f"> Listou usuario {nomeSenior} com email {emailSenior} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                    return user_id
+                else:
+                    print(f"> Nenhum usuario encontrado para {emailSenior}")
+                    logging.warning(f"> Nenhum usuario encontrado para {emailSenior} (verificaColaboradores.api.listaUsuariosGupy)")
+                    return None
+            elif response.status_code == 400:
+                print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {emailSenior}")
+                logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+            else:
+                logging.error(f"> Erro ao listar usuario: {detalhe}")
+                return None
 
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
         # url = "https://api.gupy.io/api/v1/users"

@@ -30,8 +30,9 @@ def extrair_email_valido(e):
 
     if email_fgm_dental:
         return email_fgm_dental
-    elif email_fgm_ind:
-        return email_fgm_ind
+    # elif email_fgm_ind:
+    #     # Troca o domínio para @fgmdentalgroup.com
+    #     return email_fgm_ind.replace("@fgm.ind.br", "@fgmdentalgroup.com")
     else:
         return None
 
@@ -74,11 +75,11 @@ def processar_cpf_df(api, cpf, registros_df):
     todas_demitidas = (registros_df['Situacao'] == 7).all()
     nome_base = registros_df.iloc[0]['Nome']
     email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
-    
+
     # DEBUG
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
-    
+
     print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matricula(s)")
     for _, row in registros_df.iterrows():
         print(f"  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
@@ -86,6 +87,7 @@ def processar_cpf_df(api, cpf, registros_df):
     print(f"  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
     id_gupy = api.listaUsuariosGupy(nome_base, email_base)
+
     if todas_demitidas:
         if id_gupy:
             api.deletaUsuarioGupy(id_gupy, nome_base)
