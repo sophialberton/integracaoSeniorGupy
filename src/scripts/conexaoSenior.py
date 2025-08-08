@@ -2,6 +2,7 @@ import os
 import sys
 import oracledb
 import logging
+import pandas as pd
 from collections import namedtuple
 from dotenv import load_dotenv,find_dotenv
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -54,10 +55,10 @@ class DatabaseSenior():
                 """
                     SELECT
                             FUN.NUMEMP AS "Empresa",
+                            FUN.NOMFUN AS "Nome",
                             FUN.TIPCOL AS "TipoColaborador",
                             FUN.NUMCAD AS "Matricula",
                             FUN.NUMCPF AS "Cpf",
-                            FUN.NOMFUN AS "Nome",
                             FUN.SITAFA AS "Situacao",
                             EM.EMACOM AS "Email"
                         FROM
@@ -91,11 +92,21 @@ class DatabaseSenior():
                         AND FUN.NUMEMP <> 100
                 """)
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
+            
+            # Definindo os nomes das colunas
+            colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
+
+            # Criando o DataFrame
+            df = pd.DataFrame(self.cursor.fetchall(), columns=colunas)
+            """
             rows = self.cursor.fetchall()
             for row in rows:
                 row_data_object = RowData(*row)
                 row_data_list.append(row_data_object)
-                # print(row)
+                print(row) 
+                """
+                
+                
             logging.info("-------------->>>Query---------------------------------")
             logging.info(">Consulta executada com sucesso.")
             # logging.info("------------------------------------------------------------------------------------")            
@@ -108,7 +119,7 @@ class DatabaseSenior():
             logging.info(">Cursor fechado")
             logging.info("-------------->>>Script Rodandno------------------------")
             # print(self.row_data_list)
-        return row_data_list    
+        return df    
                   
         
         

@@ -2,6 +2,7 @@ import sys
 import os
 import csv
 import logging
+import pandas as pd
 from dotenv import load_dotenv,find_dotenv
 from collections import defaultdict
 from conexaoGupy import conexaoGupy
@@ -9,9 +10,9 @@ from conexaoSenior import DatabaseSenior
 
 from utils.colaboradores  import (
     carregar_cpfs_ignorados,
-    classificar_usuarios,
-    agrupar_por_cpf,
-    processar_cpf
+    classificar_usuarios_df,
+    agrupar_por_cpf_df,
+    processar_cpf_df
 )
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -25,53 +26,60 @@ class ponteSeniorGupy():
         self.conexaoSenior = DatabaseSenior()
         self.connection = None  # Declara conexão como None
         self.cursor = None # Declara cursor como None
-    
-    def process_user(self, data):            
-        listaSenior = []
-        try:
-            situacaoSenior  = getattr(data, "Situacao", None)
-            matriculaSenior = getattr(data, "Matricula", None)
-            cpfSenior       = getattr(data, "Cpf", None)
-            nomeSenior      = getattr(data, "Nome", None)
-            emailSenior     = getattr(data, "Email", None)
-            # cargoSenior     = getattr(data, "Cargo", None)
-            # filialSenior    = getattr(data, "Filial", None)
-            listaSenior.append([
-                situacaoSenior, matriculaSenior, cpfSenior,
-                nomeSenior, emailSenior])
-        except Exception as e:
-            logging.error(f"Erro ao processar colaborador: {e}")
-    
-        return listaSenior
-    
-    def dataSenior(self, colaboradores):
-        # print(colaboradores) # Recebendo
-        logging.info(">Processando dados colaboradores Senior (dataSenior)")
-        usuarios = []
-        for colaborador in colaboradores:
-                usuario = self.process_user(colaborador)
-                usuarios.extend(usuario)  # Process_user retorna uma lista com um item
-        # print(usuarios) # Recebendo OK
-        logging.info(">Dados colaboradores Senior processados (dataSenior)")
-        return usuarios
+
+    def dadosSenior(self, colaboradores):
+        dados = []
+        for data in colaboradores:
+            try:
+                dados.append({
+                    'Situacao': getattr(data, "Situacao", None),
+                    'Matricula': getattr(data, "Matricula", None),
+                    'Cpf': getattr(data, "Cpf", None),
+                    'Nome': getattr(data, "Nome", None),
+                    'Email': getattr(data, "Email", None)
+                })
+            except Exception as e:
+                logging.error(f"Erro ao processar colaborador: {e}")
+        df = pd.DataFrame(dados)
+        return df
     
     def verificaColaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
-
         api = conexaoGupy()
-        usuarios = ponteSeniorGupy.dataSenior(self, colaboradores)
+        # Obter os dados como lista de listas
+        usuarios = ponteSeniorGupy.dadosSenior(self, colaboradores)
 
+        # Converter para DataFrame
+        import pandas as pd
+        colunas = ['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']
+        df_usuarios = pd.DataFrame(usuarios, columns=colunas)
+
+        # Carregar CPFs ignorados
         cpfs_ignorados = carregar_cpfs_ignorados('src/scripts/ignoradosRH.csv')
 
-        usuarios_validos, usuarios_invalidos, usuarios_ignorados = classificar_usuarios(usuarios, cpfs_ignorados)
+        # Classificar os usuários
+        df_validos, df_invalidos, df_ignorados = classificar_usuarios_df(df_usuarios, cpfs_ignorados)
+        
+        print("df_validos:")
+        print(df_validos)
+        print(f"Total de registros validos: {len(df_validos)}")
 
-        logging.info("> Agrupando colaboradores válidos por CPF")
-        usuarios_por_cpf = agrupar_por_cpf(usuarios_validos)
+        logging.info("> Agrupando colaboradores validos por CPF")
 
-        for cpf, registros in usuarios_por_cpf.items():
-            processar_cpf(api, cpf, registros)
+        # Agrupar por CPF
+        usuarios_por_cpf = agrupar_por_cpf_df(df_validos)
+
+        print(f"CPFs agrupados: {len(usuarios_por_cpf)}")
+
+        logging.info("Iniciando processamento por CPF")
+        for cpf, registros_df in usuarios_por_cpf.items():
+            logging.info(f"Processando CPF: {cpf}")
+            processar_cpf_df(api, cpf, registros_df)
+
+
 
         logging.info("> Verificação de colaboradores concluída")
+
        
         
     """
