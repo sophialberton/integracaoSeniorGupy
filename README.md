@@ -1,5 +1,18 @@
 # integracaoSeniorGupy
 Chamado: 123007 - Solicitação de Integração via API Cadastro de Colaboradores na Gupy
+>Olá, time!
+>Gostaríamos de solicitar o apoio de vocês para viabilizar a integração via API entre os sistemas, com o objetivo de manter o cadastro de colaboradores na Gupy sempre atualizado.
+>Essa automação é fundamental para garantir:
+>A facilidade nas inscrições internas de colaboradores;
+>A remoção automática de usuários que não fazem mais parte da empresa, reforçando o compromisso com a conformidade (compliance);
+>A liberação dos acessos corretos no momento da admissão concluída, conforme o cargo de cada colaborador.
+>Essa iniciativa já foi alinhada com o Adriano, e abaixo seguem os links de referência do suporte GUPY:
+>Links:
+>https://suporte.gupy.io/s/suporte/article/Como-utilizar-a-API-da-Gupy-Operacoes-disponiveis?language=pt_BR#h_01F24ZARWPEM2CB3QK4TJTC38G
+
+## Checklist de Integração v.1 (11/08)
+- [x] A remoção automática de usuários que não fazem mais parte da empresa, reforçando o compromisso com a conformidade (compliance)
+- [ ] A liberação dos acessos corretos no momento da admissão concluída, conforme o cargo de cada colaborador.
 
 ### Visão geral do projeto
 O projeto é um script de integração Python projetado para sincronizar dados de colaboradores de um banco de dados **Senior** com um sistema **Gupy**. O processo envolve a busca de informações de colaboradores no banco de dados Senior, a validação e classificação desses dados, e a posterior criação, atualização ou exclusão de usuários na API Gupy com base no status do colaborador.
@@ -51,7 +64,7 @@ pip install -r requirements.txt
 |   ├── conexaoGupy.py         # Consome API da gupy e chama funções auxiliares
 │
 ├── utils/                     # Funções auxiliares
-│   ├── config.py          # Habilita token  da Gupy e dados da Senior 
+│   ├── config.py          # Habilita token da Gupy e dados da Senior 
 |   ├── colaboradores.py   # Funções auxiliares
 │
 ├── README.md                  # Documentação do projeto
