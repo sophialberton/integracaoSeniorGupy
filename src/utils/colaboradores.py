@@ -85,7 +85,7 @@ def processar_cpf_df(api, cpf, registros_df):
 
     print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
 
-    id_gupy = api.listaUsuariosGupy(nome_base, email_base)
+    id_gupy = api.listaIdUsuariosGupy(nome_base, email_base)
 
     if todas_demitidas:
         if id_gupy:
