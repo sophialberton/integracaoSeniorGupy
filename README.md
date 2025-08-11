@@ -35,7 +35,7 @@ O código utiliza as seguintes bibliotecas e tecnologias:
 pip install -r requirements.txt
 ```
 
-### Lógica e Fluxo do Código
+### Lógica e Fluxo do Código v.1 (11/08)
 
 1. **Inicialização (`main.py`)**: O script começa no arquivo `main.py`, onde a configuração de logs é definida. Em seguida, ele estabelece a conexão com o banco de dados Senior e busca a lista completa de colaboradores.
 
