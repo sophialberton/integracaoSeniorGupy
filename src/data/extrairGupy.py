@@ -11,11 +11,11 @@ class ExtratorGupy:
             print("Token nao encontrado. Defina a variável de ambiente 'token'.")
             return
 
-        base_url = "https://api.gupy.io/api/v1/branches"
+        base_url = "https://api.gupy.io/api/v1/departments"
         per_page = 10
-        total_pages = 9
+        total_pages = 50
         diretorioLocal = os.getcwd()
-        csv_directory = f"{diretorioLocal}/src/data/extracaoGupy" 
+        csv_directory = f"{diretorioLocal}/src/data/extracaoGupy/" 
         csv_file_path = os.path.join(csv_directory, "areagupy.csv")
 
         with open(csv_file_path, mode='w', newline='', encoding='utf-8') as file:
