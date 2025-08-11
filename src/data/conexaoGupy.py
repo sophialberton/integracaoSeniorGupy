@@ -58,40 +58,50 @@ class conexaoGupy():
 
 
     def criaUsuarioGupy(self,nomeSenior,emailSenior,cpfSenior):
-        # url = "https://api.gupy.io/api/v1/users"
-        # payload = {
-        #     f"name": str(nomeSenior),
-        #     f"email": str(emailSenior)
-        # }
-        # headers = {
-        #     "accept": "application/json",
-        #     "content-type": "application/json",
-        #     "authorization": f"Bearer {self.token}"
-        #     }
-        # response = requests.post(url, json=payload, headers=headers)
-        # data = response.json()
-        # detalhe = data.get("detail", "Erro desconhecido")
-        # if response.status_code == 201:
+        url = "https://api.gupy.io/api/v1/users"
+        payload = {
+            f"name": str(nomeSenior),
+            f"email": str(emailSenior)
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.token}"
+            }
+        response = requests.post(url, json=payload, headers=headers)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        if response.status_code == 201:
             print(f"> Criou usuario {nomeSenior} com email {emailSenior}")
             logging.info(f"> Criou usuario na gupy: {nomeSenior, emailSenior} (verificaColaboradores.api.criaUsuarioGupy)")
-        # if response.status_code == 400:
-        #     print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
-        #     logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
+        if response.status_code == 400:
+            print(f">WARNING: '{detalhe}'>> Usuario > Cpf: {cpfSenior}; Nome: {nomeSenior}; Email: {emailSenior}")
+            logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
     
     def deletaUsuarioGupy(self, idGupy, nomeSenior):
-        # url = f"https://api.gupy.io/api/v1/users/{idGupy}"
-        # headers = {
-        #     "accept": "application/json",
-        #     "authorization": f"Bearer {self.token}"
-        # }
-        # response = requests.delete(url, headers=headers)
-        # data = response.json()
-        # detalhe = data.get("detail", "Erro desconhecido")
-        # if response.status_code == 201:
-        #     print(f">Deletou usuario desligado: {nomeSenior, idGupy}")
-        #     logging.info(f">Deletou usuario desligado: {nomeSenior, idGupy} (verificaColaboradores.api.deletaUsuarioGupy)")
-        # if response.status_code == 400:
-        #     print(f">WARNING: '{detalhe}' >> Usuario: {nomeSenior, idGupy}")
-        #     logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, idGupy}, (verificaColaboradores.api.deletaUsuarioGupy)")
+        url = f"https://api.gupy.io/api/v1/users/{idGupy}"
+        headers = {
+            "accept": "application/json",
+            "authorization": f"Bearer {self.token}"
+        }
+        response = requests.delete(url, headers=headers)
+
+        try:
+            data = response.json()
+            detalhe = data.get("detail", "Erro desconhecido")
+        except ValueError:
+            detalhe = "Resposta não está em formato JSON ou está vazia."
+            data = None
+
+        if response.status_code == 201:
+            print(f"> Deletou usuario desligado: {nomeSenior, idGupy}")
+            logging.info(f"> Deletou usuario desligado: {nomeSenior, idGupy} (verificaColaboradores.api.deletaUsuarioGupy)")
+        elif response.status_code == 400:
+            print(f"> WARNING: '{detalhe}' >> Usuario: {nomeSenior, idGupy}")
+            logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, idGupy}, (verificaColaboradores.api.deletaUsuarioGupy)")
+        else:
+            print(f"> DELETE retornou status {response.status_code} para usuario: {nomeSenior, idGupy}")
+            logging.warning(f"> DELETE retornou status {response.status_code} para usuario: {nomeSenior, idGupy}")
+
         print(f"> Chamou o delete para usuario desligado: {nomeSenior, idGupy}")
         logging.critical(f"> Chamou o DELETE para usuario desligado: {nomeSenior, idGupy}")

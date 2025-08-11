@@ -90,6 +90,8 @@ def processar_cpf_df(api, cpf, registros_df):
     if todas_demitidas:
         if id_gupy:
             api.deletaUsuarioGupy(id_gupy, nome_base)
+        if not id_gupy:
+            pass
     else:
         if email_base:
             if id_gupy:
