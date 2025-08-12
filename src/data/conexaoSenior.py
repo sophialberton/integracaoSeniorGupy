@@ -50,9 +50,51 @@ class DatabaseSenior():
         row_data_list = []
         try:
             self.cursor = self.connection.cursor()
-            self.cursor.execute(
+            self.cursor.execute("""
+                    SELECT
+                        --FUN.TIPCOL AS "TipoColaborador",
+                        FUN.NOMFUN AS "Nome",
+                        FUN.NUMEMP AS "Filial_cod",
+                        F.NOMFIL AS "Filial_nome",
+                        E.NOMCCU AS "Setor",
+                        G.NOMLOC AS "Area_Setor",
+                        CAR.TITCAR AS "Cargo",
+                        R.DESSIS AS "Nivel_Cargo",
+                        FUN.NUMCAD AS "Matricula",
+                        FUN.NUMCPF AS "Cpf",
+                        FUN.SITAFA AS "Situacao",
+                        EM.EMACOM AS "Email",
+                        S.INIETB,
+                        S.FIMETB
+                    FROM
+                        R034FUN FUN
+                    INNER JOIN senior.R024CAR CAR ON
+                        FUN.CODCAR = CAR.CODCAR AND FUN.ESTCAR = CAR.ESTCAR
+                    JOIN R018CCU E ON
+                        E.NUMEMP = FUN.NUMEMP AND E.CODCCU = FUN.CODCCU
+                    JOIN R030FIL F ON
+                        FUN.NUMEMP = F.NUMEMP AND FUN.CODFIL = F.CODFIL
+                    JOIN R016ORN G ON
+                        G.TABORG = FUN.TABORG AND G.NUMLOC = FUN.NUMLOC
+                    LEFT JOIN R024SIS R ON
+                        CAR.SISCAR = R.SISCAR
+                    LEFT JOIN R034CPL EM ON
+                        FUN.NUMEMP = EM.NUMEMP AND FUN.NUMCAD = EM.NUMCAD AND FUN.TIPCOL = EM.TIPCOL
+                    LEFT JOIN R038HEB S ON
+                        FUN.NUMEMP = S.NUMEMP AND FUN.TIPCOL = S.TIPCOL AND FUN.NUMCAD = S.NUMCAD AND FUN.DATETB = S.INIETB
+                    WHERE
+                        FUN.NUMEMP IN (219, 220, 221, 620)
+                        AND FUN.TIPCOL = 1
+                        AND FUN.SITAFA <> 7
+                        AND FUN.CODCAR NOT IN (110355)
+                    ORDER BY
+                        FUN.NUMEMP,
+                        FUN.CODFIL,
+                        FUN.NUMCAD;
+            """)
+            """(
                 # IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
-                """
+                
                     SELECT
                             FUN.NUMEMP AS "Empresa",
                             FUN.NOMFUN AS "Nome",
@@ -90,7 +132,7 @@ class DatabaseSenior():
                         FUN.TIPCOL = '1'
                         AND CAR.TITCAR <> 'PENSIONISTA'
                         AND FUN.NUMEMP <> 100
-                """)
+                )"""
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
             
             # Definindo os nomes das colunas
@@ -98,14 +140,6 @@ class DatabaseSenior():
 
             # Criando o DataFrame
             df = pd.DataFrame(self.cursor.fetchall(), columns=colunas)
-            """
-            rows = self.cursor.fetchall()
-            for row in rows:
-                row_data_object = RowData(*row)
-                row_data_list.append(row_data_object)
-                print(row) 
-                """
-                
                 
             logging.info("-------------->>>Query---------------------------------")
             logging.info(">Consulta executada com sucesso.")

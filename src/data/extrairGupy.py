@@ -13,7 +13,7 @@ class ExtratorGupy:
 
         base_url = "https://api.gupy.io/api/v1/departments"
         per_page = 10
-        total_pages = 50
+        total_pages = 60
         diretorioLocal = os.getcwd()
         csv_directory = f"{diretorioLocal}/src/data/extracaoGupy/" 
         csv_file_path = os.path.join(csv_directory, "areagupy.csv")
