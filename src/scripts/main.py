@@ -50,7 +50,7 @@ if __name__ == "__main__":
     conexao = DatabaseSenior(**dict_extract["Senior"]).conexaoBancoSenior()
     # print(conexao) # Recebendo
     colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
-    # print(colaboradores) # Recebendo
+    print(colaboradores) # Recebendo
     ponte = ponteSeniorGupy()
     ligacao = ponte.verificaColaboradores(colaboradores)
     
