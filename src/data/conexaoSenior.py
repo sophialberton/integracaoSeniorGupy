@@ -52,18 +52,28 @@ class DatabaseSenior():
             self.cursor = self.connection.cursor()
             self.cursor.execute("""
                     SELECT
-                        --FUN.TIPCOL AS "TipoColaborador",
-                        FUN.NOMFUN AS "Nome",
-                        FUN.NUMEMP AS "Filial_cod",
-                        F.NOMFIL AS "Filial_nome",
-                        E.NOMCCU AS "Setor",
-                        G.NOMLOC AS "Area_Setor",
-                        CAR.TITCAR AS "Cargo",
-                        R.DESSIS AS "Nivel_Cargo",
-                        FUN.NUMCAD AS "Matricula",
-                        FUN.NUMCPF AS "Cpf",
-                        FUN.SITAFA AS "Situacao",
-                        EM.EMACOM AS "Email",
+                        FUN.NOMFUN AS Nome,
+                        -- ====Branch Gupy====
+                        CASE
+                            WHEN E.NOMCCU LIKE '%VENDAS%' THEN F.NOMFIL || ' - ' || E.NOMCCU
+                            ELSE F.NOMFIL
+                        END AS Branch_gupy,
+                        -- ====Role Gupy====
+                        CAR.TITCAR || ' - ' || R.DESSIS AS Role_gupy,
+                        -- ====Departamento Gupy====
+                        CASE 
+                            WHEN UPPER(G.NOMLOC) LIKE '%VENDAS%' OR UPPER(G.NOMLOC) LIKE '%REGIÃO%' THEN E.NOMCCU
+                            ELSE E.NOMCCU || ' - ' || G.NOMLOC
+                        END AS Departamento_gupy,
+                        --FUN.NUMEMP AS Filial_cod,
+                        --E.NOMCCU AS Setor,
+                        --G.NOMLOC AS Area_Setor,
+                        --CAR.TITCAR AS Cargo,
+                        --R.DESSIS AS Nivel_Cargo,
+                        FUN.NUMCAD AS Matricula,
+                        FUN.NUMCPF AS Cpf,
+                        FUN.SITAFA AS Situacao,
+                        EM.EMACOM AS Email,
                         S.INIETB,
                         S.FIMETB
                     FROM
@@ -87,6 +97,7 @@ class DatabaseSenior():
                         AND FUN.TIPCOL = 1
                         AND FUN.SITAFA <> 7
                         AND FUN.CODCAR NOT IN (110355)
+                        --AND E.NOMCCU LIKE '%VENDAS%'
                     ORDER BY
                         FUN.NUMEMP,
                         FUN.CODFIL,
