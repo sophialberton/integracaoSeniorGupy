@@ -128,6 +128,8 @@ class conexaoGupy():
         print(f"> Chamou o delete para usuario desligado: {nomeSenior, idGupy}")
         logging.critical(f"> Chamou o DELETE para usuario desligado: {nomeSenior, idGupy}")
 
+# ================================ V2. Atualizando Cadastros ========================================
+
     # Lista acessos do cadastro de usuario da Gupy
     def listaAcessoUsuarioGupy(self, idGupy):
         url = f"https://api.gupy.io/api/v1/user-access-profiles?id={idGupy}perPage=10&page=1"
@@ -144,4 +146,35 @@ class conexaoGupy():
         response = requests.put(url, headers=headers)
         print(response.text)
     
-
+    def listaAreaDepartamento(self, idDepartamento, nomeDepartamento):
+        url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
+        headers = {"accept": "application/json"}
+        response = requests.get(url, headers=headers)
+        print(response.text)
+        pass
+    
+    def criaAreaDepartamento(self, nomeAreaDepartamento):
+        url = "https://api.gupy.io/api/v1/departments"
+        payload = { 
+            "similarTo": "financial_management",
+            f"name": str(nomeAreaDepartamento),
+            }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json"
+        }
+        response = requests.post(url, json=payload, headers=headers)
+        print(response.text)
+        pass
+    
+    def listaCargoRole():
+        pass
+    
+    def criaCargoRole():
+        pass
+    
+    def listaFilialBranch():
+        pass
+    
+    def criaFilialBranch():
+        pass

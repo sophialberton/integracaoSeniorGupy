@@ -65,6 +65,7 @@ class DatabaseSenior():
                             OR UPPER(G.NOMLOC) LIKE '%REGIÃO%' THEN E.NOMCCU
                             ELSE E.NOMCCU || ' - ' || G.NOMLOC
                         END AS Departamento_gupy,
+                        FUN.NUMEMP AS "Filial_cod",
                         FUN.NUMCAD AS Matricula,
                         FUN.NUMCPF AS Cpf,
                         FUN.SITAFA AS Situacao,
@@ -108,7 +109,7 @@ class DatabaseSenior():
                """ )
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
             
-            colunas = ['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
+            colunas = ['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
             # Definindo os nomes das colunas
             # colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
 
