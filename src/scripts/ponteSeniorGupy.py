@@ -28,11 +28,11 @@ class ponteSeniorGupy():
 
     def dadosSenior(self, colaboradores_df):
         try:
-            df = colaboradores_df[['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email']].copy()
+            df = colaboradores_df[['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Matricula','Cpf', 'Situacao', 'Email']].copy()
             return df
         except Exception as e:
             logging.error(f"Erro ao preparar dados do Senior: {e}")
-            return pd.DataFrame(columns=['Situacao', 'Matricula', 'Cpf', 'Nome', 'Email'])
+            return pd.DataFrame(columns=['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Matricula','Cpf', 'Situacao', 'Email'])
 
     def verificaColaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
