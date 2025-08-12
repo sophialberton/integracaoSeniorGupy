@@ -48,52 +48,69 @@ class DatabaseSenior():
                         
     def buscaColaboradorSenior(self):
         row_data_list = []
+        df = pd.DataFrame()
         try:
             self.cursor = self.connection.cursor()
             self.cursor.execute(# IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
                     """
                     SELECT
-                            FUN.NUMEMP AS "Empresa",
-                            FUN.NOMFUN AS "Nome",
-                            FUN.TIPCOL AS "TipoColaborador",
-                            FUN.NUMCAD AS "Matricula",
-                            FUN.NUMCPF AS "Cpf",
-                            FUN.SITAFA AS "Situacao",
-                            EM.EMACOM AS "Email"
-                        FROM
-                            senior.R034FUN FUN
-                    INNER JOIN senior.R030EMP EMP ON
-                        FUN.NUMEMP = EMP.NUMEMP
-                    INNER JOIN senior.R024CAR CAR ON
+                        FUN.NOMFUN AS Nome,
+                        CASE
+                            WHEN E.NOMCCU LIKE '%VENDAS%' THEN F.NOMFIL || ' - ' || E.NOMCCU
+                            ELSE F.NOMFIL
+                        END AS Branch_gupy,
+                        CAR.TITCAR || ' - ' || R.DESSIS AS Role_gupy,
+                        CASE
+                            WHEN UPPER(G.NOMLOC) LIKE '%VENDAS%'
+                            OR UPPER(G.NOMLOC) LIKE '%REGIÃO%' THEN E.NOMCCU
+                            ELSE E.NOMCCU || ' - ' || G.NOMLOC
+                        END AS Departamento_gupy,
+                        FUN.NUMCAD AS Matricula,
+                        FUN.NUMCPF AS Cpf,
+                        FUN.SITAFA AS Situacao,
+                        EM.EMACOM AS Email,
+                        S.INIETB,
+                        S.FIMETB
+                    FROM
+                        SENIOR.R034FUN FUN
+                    INNER JOIN SENIOR.R024CAR CAR ON
                         FUN.CODCAR = CAR.CODCAR
                         AND FUN.ESTCAR = CAR.ESTCAR
-                    INNER JOIN senior.R034CPL EM ON
-                        FUN.NUMCAD = EM.NUMCAD
-                        AND FUN.NUMEMP = EM.NUMEMP
-                    INNER JOIN senior.R016ORN ORN ON
-                        ORN.NUMLOC = FUN.NUMLOC
-                    INNER JOIN senior.R030FIL FIL ON
-                        FUN.CODFIL = FIL.CODFIL
-                        AND FUN.NUMEMP = FIL.NUMEMP
-                    LEFT JOIN senior.R034USU FUS ON
-                        FUN.NUMEMP = FUS.NUMEMP
-                        AND FUN.NUMCAD = FUS.NUMCAD
-                        AND FUN.TIPCOL = FUS.TIPCOL
-                    LEFT JOIN senior.R999USU USU ON
-                        USU.CODUSU = FUS.CODUSU
-                    LEFT JOIN senior.R034FOT PHO ON
-                        FUN.NUMCAD = PHO.NUMCAD
-                        AND FUN.TIPCOL = PHO.TIPCOL
-                        AND FUN.NUMEMP = PHO.NUMEMP
+                    JOIN SENIOR.R018CCU E ON
+                        E.NUMEMP = FUN.NUMEMP
+                        AND E.CODCCU = FUN.CODCCU
+                    JOIN SENIOR.R030FIL F ON
+                        FUN.NUMEMP = F.NUMEMP
+                        AND FUN.CODFIL = F.CODFIL
+                    JOIN SENIOR.R016ORN G ON
+                        G.TABORG = FUN.TABORG
+                        AND G.NUMLOC = FUN.NUMLOC
+                    LEFT JOIN SENIOR.R024SIS R ON
+                        CAR.SISCAR = R.SISCAR
+                    LEFT JOIN SENIOR.R034CPL EM ON
+                        FUN.NUMEMP = EM.NUMEMP
+                        AND FUN.NUMCAD = EM.NUMCAD
+                        AND FUN.TIPCOL = EM.TIPCOL
+                    LEFT JOIN SENIOR.R038HEB S ON
+                        FUN.NUMEMP = S.NUMEMP
+                        AND FUN.TIPCOL = S.TIPCOL
+                        AND FUN.NUMCAD = S.NUMCAD
+                        AND FUN.DATETB = S.INIETB
                     WHERE
-                        FUN.TIPCOL = '1'
-                        AND CAR.TITCAR <> 'PENSIONISTA'
-                        AND FUN.NUMEMP <> 100
+                        FUN.NUMEMP IN (219, 220, 221, 620)
+                        AND FUN.TIPCOL = 1
+                        AND FUN.SITAFA <> 7
+                        AND FUN.CODCAR NOT IN (110355)
+                    ORDER BY
+                        FUN.NUMEMP,
+                        FUN.CODFIL,
+                        FUN.NUMCAD
                """ )
             RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
             
+            colunas = ['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
             # Definindo os nomes das colunas
-            colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
+            # colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
 
             # Criando o DataFrame
             df = pd.DataFrame(self.cursor.fetchall(), columns=colunas)
