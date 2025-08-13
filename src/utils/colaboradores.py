@@ -1,10 +1,8 @@
 import logging
 import re
 import csv
-from utils.camposCadastros  import (
-    textoPadrao,
-    mapear_campos_usuario,
-)
+from utils.helpers import mapear_campos_usuario, obter_dados_usuario_gupy
+
 
 def carregar_cpfs_ignorados(caminho_arquivo):
     logging.info("> Carregando CPFs ignorados")
@@ -78,14 +76,34 @@ def processar_cpf_df(api, cpf, registros_df):
     todas_demitidas = (registros_df['Situacao'] == 7).all()
     nome_base = registros_df.iloc[0]['Nome']
     email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
+    nomeFilialBranch = registros_df.iloc[0].get('Branch_gupy', 'Filial Padrão')
 
-    userGupyId = api.listaIdUsuariosGupy(nome_base, email_base)
-    emailUserGupy = api.listaEmailUsuarioGupy(userGupyId,nome_base)
-    departamentGupyId, roleGupyId, branchGupyId = api.listaCamposUsuarioGupy(userGupyId, nome_base, emailUserGupy)
-
+    userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId = obter_dados_usuario_gupy(api, nome_base, email_base)
+    
+    campos = {
+            "departmentId": departamentGupyId or 0,
+            "roleId": roleGupyId or 0,
+            "branchIds": [branchGupyId] if branchGupyId else [0],
+            "branchName": nomeFilialBranch or "Filial Padrão"
+        }
     if None in (departamentGupyId, roleGupyId, branchGupyId):
-        logging.warning(f"> Campos incompletos para usuário {nome_base}, não será atualizado.")
-        return
+            campos = mapear_campos_usuario({
+                "departament_gupy": registros_df.iloc[0].get('Departamento_gupy', ''),
+                "cargo": registros_df.iloc[0].get('Role_gupy', ''),
+                "branchIds": [0]
+            })
+            campos["branchName"] = nomeFilialBranch
+
+            if campos['departmentId'] != 0 and departamentGupyId is None:
+                api.criaAreaDepartamento(campos['departmentId'])
+
+            if campos['roleId'] != 0 and roleGupyId is None:
+                api.criaCargoRole(campos['roleId'])
+
+            if campos['branchIds'] != [0] and branchGupyId is None:
+                filial_cod = registros_df.iloc[0].get('Filial_cod', 'default_branch')
+                api.criaFilialBranch(filial_cod, campos['branchName'])
+
 
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
@@ -107,3 +125,17 @@ def processar_cpf_df(api, cpf, registros_df):
                     api.criaUsuarioGupy(nome_base, email_base, cpf)
             else:
                 print(f">  Email invalido para CPF {cpf}, nao sera criado/atualizado.")
+                
+    return {
+            "usuario": {
+                "userGupyId": userGupyId,
+                "emailUserGupy": emailUserGupy
+            },
+            "campos": {
+                "departmentId": departamentGupyId or 0,
+                "roleId": roleGupyId or 0,
+                "branchId": branchGupyId or 0,
+                "branchName": nomeFilialBranch or "Filial Padrão"
+            }
+        }
+    

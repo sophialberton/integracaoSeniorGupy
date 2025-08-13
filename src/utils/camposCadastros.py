@@ -1,78 +1,30 @@
 import re
 import logging
+from utils.helpers import mapear_campos_usuario
 
-# Mapeamentos de palavras-chave para departamentos
-departament_mapping = {
-    "Tecnologia": "technology",
-    "Segurança": "security",
-    "Vendas/exportação/loja": "sales",
-    "Suprimentos/suplly": "purchases",
-    "Processos": "project_or_processes",
-    "Produção/Banco de Talentos": "operations",
-    "almoxarifado/logistica/PPCPM": "logistics",
-    "Laboratorio/Relacionamento/Consultoria Cientifica/Pesquisa e Desenvolvimento": "innovation_or_product",
-    "Gestao Pessoas": "human_resources",
-    "Financeiro Contas pagar e receber / Adminsitração Diretoria": "financial_management",
-    "Manutenção": "engineering_or_maintenance_or_technical_services",
-    "Marketing": "communication_or_design_or_marketing",
-    "Qualidade": "audit_or_quality",
-    "Central de Relacionamento": "attendance",
-    "Financeiro": "accounting_or_controlling"
-}
 
-# Mapeamentos de palavras-chave para cargos (roles)
-role_mapping = {
-    "Analista/Atendente/Consultor/Desinger/Preparador/Programador": "analyst",
-    "Assistente/Recepcionista": "auxiliary",
-    "Consultor": "consultant",
-    "Coordenador": "coordinator",
-    "Estagiario": "intern",
-    "Inspetor/Metrologista/Técnico": "technician",
-    "Supervisor": "supervisor",
-    "Científico/Especialista/Pesquisador": "specialist",
-    "Operador/Almoxarife/Torneiro": "operator",
-    "Gerente": "manager"
-}
+def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId, nomeFilialBranch):
+    logging.info(f"> Processando campos do usuário dono do email {email_base}")
 
-# Função para padronizar texto
-def textoPadrao(texto):
-    texto = str(texto)
-    # Lista de siglas que devem ser preservadas
-    siglas_preservadas = ['III', 'II', 'I']
+    departamentGupyId, roleGupyId, branchGupyId = api.listaCamposUsuarioGupy(userGupyId, nome_base, emailUserGupy)
+    campos = {
+        "departmentId": departamentGupyId or 0,
+        "roleId": roleGupyId or 0,
+        "branchIds": [branchGupyId] if branchGupyId else [0],
+        "branchName": nomeFilialBranch or "Filial Padrão"  # exemplo
+    }
+    if None in (departamentGupyId, roleGupyId, branchGupyId):
+        logging.warning(f"> Campos incompletos para usuário {nome_base}")
+        campos = mapear_campos_usuario(campos)
 
-    palavras = texto.split()
-    palavras_formatadas = []
+        # Aqui você pode chamar funções para criar os dados faltantes
+        if campos['departmentId'] != 0 and departamentGupyId is None:
+            api.criaAreaDepartamento(campos['departmentId'])
 
-    for palavra in palavras:
-        if palavra.upper() in siglas_preservadas:
-            palavras_formatadas.append(palavra.upper())
-        else:
-            palavras_formatadas.append(palavra.capitalize())
-    return ' '.join(palavras_formatadas)
+        if campos['roleId'] != 0 and roleGupyId is None:
+            api.criaCargoRole(campos['roleId'])
 
-# Função para identificar similarTo equivalente
-def find_similar_to(role_gupy, mapping):
-    role_gupy = role_gupy.lower()
-    for keywords, equivalent in mapping.items():
-        for keyword in keywords.lower().split('/'):
-            if re.search(rf'\b{re.escape(keyword)}\b', role_gupy):
-                return equivalent
-    return None
+        if campos['branchIds'] != [0] and branchGupyId is None:
+            api.criaFilialBranch(campos['branchIds'][0], campos['branchName'])
+    return campos
 
-# Função principal de atualização de cadastro
-def mapear_campos_usuario(usuario):
-    logging.info("> Mapeando campos do usuário")
-    if usuario.get('departmentId', 0) == 0:
-        departamento = find_similar_to(usuario.get('departament_gupy', ''), departament_mapping)
-        if departamento:
-            usuario['departmentId'] = departamento
-    if usuario.get('roleId', 0) == 0:
-        cargo = find_similar_to(usuario.get('cargo', ''), role_mapping)
-        if cargo:
-            usuario['roleId'] = cargo
-    if usuario.get('branchIds', [0]) == [0]:
-        usuario['branchIds'] = ['default_branch']
-    return usuario
-
-def processar_campos():
-    pass

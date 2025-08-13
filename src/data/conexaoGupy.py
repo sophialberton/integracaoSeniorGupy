@@ -147,9 +147,10 @@ class conexaoGupy():
         if response.status_code == 200:
             usuarios = data.get("results", [])
             if usuarios:
-                departamentId = usuarios[0].get("departmentId", None)
-                roleId = usuarios[0].get("roleId", None)
-                branchIds = usuarios[0].get("branchIds", None)
+                usuario = usuarios[0]  # acessa o primeiro usuário da lista
+                departamentId = usuario.get("departmentId", None)
+                roleId = usuario.get("roleId", None)
+                branchIds = usuario.get("branchIds", None)  # <- aqui estava o erro
                 logging.warning(f"> Listou campos de cadastro do usuário {nomeSenior} com email {emailGupy} e id {idGupy}")
                 return departamentId, roleId, branchIds
             else:
@@ -161,8 +162,6 @@ class conexaoGupy():
         else:
             logging.error(f"> Erro ao listar campos de usuário: {detalhe}")
             return None, None, None  # <- Certifique-se de que este retorno está correto
-
-
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
         logging.info("> Chamou para atualizar campos de cadastro do usuario")
@@ -188,35 +187,82 @@ class conexaoGupy():
             print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
             logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
     
+# ============================= Processando Campos para Atualizar =============================================
     def listaAreaDepartamento(self, idDepartamento, nomeDepartamento):
         url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
-        headers = {"accept": "application/json"}
+        headers = {"accept": "application/json",
+                   "authorization": f"Bearer {self.token}"
+                   }
         response = requests.get(url, headers=headers)
         print(response.text)
         pass
     
-    def criaAreaDepartamento(self, nomeAreaDepartamento):
-        url = "https://api.gupy.io/api/v1/departments"
-        payload = { 
-            "similarTo": "financial_management",
-            f"name": str(nomeAreaDepartamento),
-            }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json"
-        }
-        response = requests.post(url, json=payload, headers=headers)
-        print(response.text)
-        pass
+    def criaAreaDepartamento(self, nomeAreaDepartamento, similarTo):
+        # url = "https://api.gupy.io/api/v1/departments"
+        # payload = { 
+        #     f"similarTo": str(similarTo),
+        #     f"name": str(nomeAreaDepartamento),
+        #     }
+        # headers = {
+        #     "accept": "application/json",
+        #     "content-type": "application/json",
+        #     "authorization": f"Bearer {self.token}"
+        # }
+        # response = requests.post(url, json=payload, headers=headers)
+        # data = response.json()
+        # detalhe = data.get("detail", "Erro desconhecido")
+        # if response.status_code == 201:
+            print(f"> Criou area Departamento {nomeAreaDepartamento}")
+            logging.info(f"> Criou area Departamento {nomeAreaDepartamento}")
+        # if response.status_code == 400:
+        #     print(f">WARNING: '{detalhe}'>> Area/Departamento > {nomeAreaDepartamento};")
+        #     logging.warning(f"> '{detalhe}' >> Area/Departamento > {nomeAreaDepartamento}")
     
     def listaCargoRole():
         pass
     
-    def criaCargoRole():
-        pass
+    def criaCargoRole(self, nomeCargoRole, similarTo ):
+        # url = "https://api.gupy.io/api/v1/roles"
+        # payload = { 
+        #     f"similarTo": str(similarTo),
+        #     f"name": str(nomeCargoRole),
+        #     }
+        # headers = {
+        #     "accept": "application/json",
+        #     "content-type": "application/json",
+        #     "authorization": f"Bearer {self.token}"
+        # }
+        # response = requests.post(url, json=payload, headers=headers)
+        # data = response.json()
+        # detalhe = data.get("detail", "Erro desconhecido")
+        # if response.status_code == 201:
+            print(f"> Criou area Departamento {nomeCargoRole}")
+            logging.info(f"> Criou area Departamento {nomeCargoRole}")
+        # if response.status_code == 400:
+        #     print(f">WARNING: '{detalhe}'>> Area/Departamento > {nomeCargoRole};")
+        #     logging.warning(f"> '{detalhe}' >> Area/Departamento > {nomeCargoRole}")
     
     def listaFilialBranch():
         pass
     
-    def criaFilialBranch():
-        pass
+    def criaFilialBranch(self, cod_filialBranch, nomeFilialBranch):
+        # url = "https://api.gupy.io/api/v1/departments"
+        # payload = { 
+        #     f"similarTo": str(cod_filialBranch),
+        #     f"name": str(nomeFilialBranch),
+        #     "path": ["Path FGM"]
+        #     }
+        # headers = {
+        #     "accept": "application/json",
+        #     "content-type": "application/json",
+        #     "authorization": f"Bearer {self.token}"
+        # }
+        # response = requests.post(url, json=payload, headers=headers)
+        # data = response.json()
+        # detalhe = data.get("detail", "Erro desconhecido")
+        # if response.status_code == 201:
+            print(f"> Criou filial com cod {cod_filialBranch} e {nomeFilialBranch}")
+            logging.info(f"> Criou area Departamento {nomeFilialBranch}")
+        # # if response.status_code == 400:
+        #     print(f">WARNING: '{detalhe}'>> Area/Departamento > {nomeFilialBranch};")
+        #     logging.warning(f"> '{detalhe}' >> Area/Departamento > {nomeFilialBranch}")

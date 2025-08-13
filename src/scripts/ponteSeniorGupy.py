@@ -11,12 +11,9 @@ from utils.colaboradores  import (
     classificar_usuarios_df,
     agrupar_por_cpf_df,
     processar_cpf_df,
-    # processar_cpf,
 )
-from utils.camposCadastros  import (
-    textoPadrao,
-    mapear_campos_usuario,
-)
+from utils.helpers import textoPadrao
+
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
@@ -79,8 +76,11 @@ class ponteSeniorGupy():
         print(f"> Total de CPFs agrupados: {len(usuarios_por_cpf)}")
         logging.info("> Iniciando processamento por CPF")
         
-
         for cpf, registros_df in usuarios_por_cpf.items():
-            processar_cpf_df(api, cpf, registros_df)
+            resultado = processar_cpf_df(api, cpf, registros_df)
+            if resultado:
+                usuario = resultado["usuario"]
+                campos = resultado["campos"]
 
-        logging.info("> Verificação de colaboradores concluída")
+                logging.info(f"> Usuário com email {usuario['emailUserGupy']} processado: {campos}")
+
