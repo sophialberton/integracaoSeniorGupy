@@ -12,6 +12,7 @@ from utils.colaboradores  import (
     agrupar_por_cpf_df,
     processar_cpf_df,
 )
+from utils.camposCadastros import processar_campos
 from utils.helpers import textoPadrao
 
 # Caminho para encontrar a pasta 'src'
@@ -82,5 +83,31 @@ class ponteSeniorGupy():
                 usuario = resultado["usuario"]
                 campos = resultado["campos"]
 
-                logging.info(f"> Usuário com email {usuario['emailUserGupy']} processado: {campos}")
+                # Verifica se há campos faltantes
+                campos_faltam = (
+                    campos["departmentId"] == 0 or
+                    campos["roleId"] == 0 
+                    # campos["branchIds"] == [0]
+                )
 
+                if campos_faltam:
+                    nome_base = registros_df.iloc[0]['Nome']
+                    email_base = registros_df.iloc[0]['Email']
+                    nomeFilialBranch = registros_df.iloc[0].get('Branch_gupy', 'Filial Padrão')
+
+                    campos_corrigidos = processar_campos(
+                        api,
+                        nome_base,
+                        email_base,
+                        usuario["userGupyId"],
+                        usuario["emailUserGupy"],
+                        campos["departmentId"] if campos["departmentId"] != 0 else None,
+                        campos["roleId"] if campos["roleId"] != 0 else None,
+                        campos["branchIds"][0] if campos["branchIds"] != [0] else None,
+                        nomeFilialBranch,
+                        registros_df
+                    )
+
+                    logging.info(f"> Usuário com email {usuario['emailUserGupy']} teve campos atualizados: {campos_corrigidos}")
+                else:
+                    logging.info(f"> Usuário com email {usuario['emailUserGupy']} já possui todos os campos. Nenhuma ação necessária.")

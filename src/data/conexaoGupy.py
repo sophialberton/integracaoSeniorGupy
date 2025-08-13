@@ -166,26 +166,26 @@ class conexaoGupy():
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
         logging.info("> Chamou para atualizar campos de cadastro do usuario")
         print("> Chamou para atualizar campos de cadastro do usuario")
-        url = f"https://api.gupy.io/api/v1/users/{idGupy}"
-        payload = {
-        f"roleId": {roleIdGupy},
-        f"departmentId": {departamentIdGupy},
-        f"branchIds": [{branchIdGupy}]
-        }
-        headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "authorization": f"Bearer {self.token}"
-        }
-        response = requests.put(url, json=payload, headers=headers)
-        data = response.json()
-        detalhe = data.get("detail", "Erro desconhecido")
-        if response.status_code == 201:
-            print(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
-            logging.info(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
-        if response.status_code == 400:
-            print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
-            logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+        # url = f"https://api.gupy.io/api/v1/users/{idGupy}"
+        # payload = {
+        # f"roleId": {roleIdGupy},
+        # f"departmentId": {departamentIdGupy},
+        # f"branchIds": [{branchIdGupy}]
+        # }
+        # headers = {
+        # "accept": "application/json",
+        # "content-type": "application/json",
+        # "authorization": f"Bearer {self.token}"
+        # }
+        # response = requests.put(url, json=payload, headers=headers)
+        # data = response.json()
+        # detalhe = data.get("detail", "Erro desconhecido")
+        # if response.status_code == 201:
+        print(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+        logging.info(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+        # if response.status_code == 400:
+        #     print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+        #     logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
     
 # ============================= Processando Campos para Atualizar =============================================
     def listaAreaDepartamento(self, idDepartamento, nomeDepartamento):
