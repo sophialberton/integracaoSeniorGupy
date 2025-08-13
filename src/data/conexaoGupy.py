@@ -62,8 +62,8 @@ class conexaoGupy():
                 usuarios = data.get("results", [])
                 if usuarios:
                     user_id = usuarios[0].get("id")
-                    print(f"> Listou usuario {nomeSenior} com email {email} na GUPY")
-                    logging.warning(f"> Listou usuario {nomeSenior} com email {email} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                    print(f"> Listou usuario {nomeSenior} com email {email} e id {user_id} na GUPY")
+                    logging.warning(f"> Listou usuario {nomeSenior} com email {email} e id {user_id} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
                     return user_id
                 else:
                     print(f"> Nenhum usuario encontrado para {email}")
@@ -130,21 +130,53 @@ class conexaoGupy():
 
 # ================================ V2. Atualizando Cadastros ========================================
 
-    # Lista acessos do cadastro de usuario da Gupy
-    def listaAcessoUsuarioGupy(self, idGupy):
-        url = f"https://api.gupy.io/api/v1/user-access-profiles?id={idGupy}perPage=10&page=1"
+    # Lista campos do cadastro de usuario da Gupy
+    def listaCamposUsuarioGupy(self, idGupy, nomeSenior, emailGupy):
+        url = f"https://api.gupy.io/api/v1/users?email={emailGupy}&perPage=10&page=1"
         headers = {"accept": "application/json"}
         response = requests.get(url, headers=headers)
-        print(response.text)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        if response.status_code == 200:
+                usuarios = data.get("results", [])
+                if usuarios:
+                    # user_id = usuarios[0].get("id")
+                    departamentId = usuarios[3].get("departmentId")
+                    roleId = usuarios[4].get("roleId")
+                    branchIds = usuarios[14].get("branchIds")
+                    print(f"> Listou campos de cadastro do usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+                    logging.info(f"> Listou campos de cadastro do usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+                    return departamentId, roleId, branchIds
+                else:
+                    print(f"> Nenhum usuario encontrado para {emailGupy}")
+                    logging.warning(f"> Nenhum usuario encontrado para {emailGupy} (verificaColaboradores.api.listaUsuariosGupy)")
+        elif response.status_code == 400:
+            print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+            logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+        else:
+            logging.error(f"> Erro ao listar usuario: {detalhe}")
 
-    def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy):
+    def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json"
+        payload = {
+        f"roleId": {roleIdGupy},
+        f"departmentId": {departamentIdGupy},
+        f"branchIds": [{branchIdGupy}]
         }
-        response = requests.put(url, headers=headers)
-        print(response.text)
+        headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "authorization": f"Bearer {self.token}"
+        }
+        response = requests.put(url, json=payload, headers=headers)
+        data = response.json()
+        detalhe = data.get("detail", "Erro desconhecido")
+        if response.status_code == 201:
+            print(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+            logging.info(f"> Atualizou usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
+        if response.status_code == 400:
+            print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+            logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
     
     def listaAreaDepartamento(self, idDepartamento, nomeDepartamento):
         url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"

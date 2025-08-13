@@ -34,8 +34,21 @@ role_mapping = {
 }
 
 # Função para padronizar texto
-def normalize_text(text):
-    return ' '.join(word.capitalize() for word in text.split())
+def textoPadrao(texto):
+    texto = str(texto)
+    # Lista de siglas que devem ser preservadas
+    siglas_preservadas = ['III', 'II', 'I']
+
+    palavras = texto.split()
+    palavras_formatadas = []
+
+    for palavra in palavras:
+        if palavra.upper() in siglas_preservadas:
+            palavras_formatadas.append(palavra.upper())
+        else:
+            palavras_formatadas.append(palavra.capitalize())
+    return ' '.join(palavras_formatadas)
+
 
 # Função para identificar similarTo equivalente
 def find_similar_to(cargo, mapping):
@@ -47,7 +60,7 @@ def find_similar_to(cargo, mapping):
 
 # Função principal de atualização de cadastro
 def atualizar_cadastro(usuario):
-    usuario['cargo'] = normalize_text(usuario['cargo'])
+    usuario['cargo'] = textoPadrao(usuario['cargo'])
 
     if usuario.get('departmentId', 0) == 0:
         departamento = find_similar_to(usuario['cargo'], departament_mapping)

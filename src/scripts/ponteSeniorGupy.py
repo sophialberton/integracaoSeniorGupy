@@ -13,6 +13,9 @@ from utils.colaboradores  import (
     agrupar_por_cpf_df,
     processar_cpf_df
 )
+from utils.camposCadastros  import (
+    textoPadrao,
+)
 # Caminho para encontrar a pasta 'src'
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if src_path not in sys.path:
@@ -29,6 +32,9 @@ class ponteSeniorGupy():
     def dadosSenior(self, colaboradores_df):
         try:
             df = colaboradores_df[['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email']].copy()
+            # Normaliza apenas as colunas desejadas
+            for col in ['Branch_gupy', 'Role_gupy,', 'Departamento_gupy']:
+                df[col] = df[col].apply(textoPadrao)
             return df
         except Exception as e:
             logging.error(f"Erro ao preparar dados do Senior: {e}")
@@ -38,7 +44,9 @@ class ponteSeniorGupy():
         logging.info("> Iniciando verificação de colaboradores")
         api = conexaoGupy()
         df_usuarios = self.dadosSenior(colaboradores)
-        
+        # para ver se a formatação chegou certinho
+        pd.set_option('display.max_columns', None)
+        print(df_usuarios)
         # Carregar CPFs ignorados
         cpfs_ignorados = carregar_cpfs_ignorados('src/data/ignoradosRH.csv')
         # Classificar os usuários
