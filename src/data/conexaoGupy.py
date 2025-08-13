@@ -62,23 +62,26 @@ class conexaoGupy():
                 usuarios = data.get("results", [])
                 if usuarios:
                     user_id = usuarios[0].get("id")
-                    print(f"> Listou usuario {nomeSenior} com email {email} e id {user_id} na GUPY")
-                    logging.warning(f"> Listou usuario {nomeSenior} com email {email} e id {user_id} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                    print(f"> Listou id da gupy do usuario {nomeSenior} com email {email} e id sendo {user_id} na GUPY")
+                    logging.warning(f"> Listou id da gupy do usuario {nomeSenior} com email {email} e id sendo {user_id} na GUPY")
                     return user_id
                 else:
                     print(f"> Nenhum usuario encontrado para {email}")
-                    logging.warning(f"> Nenhum usuario encontrado para {email} (verificaColaboradores.api.listaUsuariosGupy)")
+                    logging.warning(f"> Nenhum usuario encontrado para {email}")
             elif response.status_code == 400:
                 print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {email}")
                 logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, email}, (verificaColaboradores.api.criaUsuarioGupy)")
             else:
-                logging.error(f"> Erro ao listar usuario: {detalhe}")
+                logging.error(f"> Erro ao listar id Gupy de usuario: {detalhe}")
         return None
 
     # Com o ID da Gupy retornar o email que esta cadastrado na Gupy
     def listaEmailUsuarioGupy(self, idGupy, nomeSenior):
         url = f"https://api.gupy.io/api/v1/users?id={idGupy}perPage=10&page=1"
-        headers = {"accept": "application/json"}
+        headers = {
+                "accept": "application/json",
+                "authorization": f"Bearer {self.token}"
+            }
         response = requests.get(url, headers=headers)
         data = response.json()
         detalhe = data.get("detail", "Erro desconhecido")
@@ -86,17 +89,17 @@ class conexaoGupy():
             usuarios = data.get("results", [])
             if usuarios:
                 emailGupy = usuarios[0].get("email")
-                print(f"> Listou usuario {nomeSenior} com email {emailGupy} na GUPY")
-                logging.warning(f"> Listou usuario {nomeSenior} com email {emailGupy} na GUPY (verificaColaboradores.api.listaUsuariosGupy)")
+                print(f"> Listou email de usuario {nomeSenior} com email {emailGupy} na GUPY")
+                logging.warning(f"> Listou email de usuario {nomeSenior} com email {emailGupy} na GUPY")
                 return emailGupy
             else:
                 print(f"> Nenhum usuario encontrado para {emailGupy}")
-                logging.warning(f"> Nenhum usuario encontrado para {emailGupy} (verificaColaboradores.api.listaUsuariosGupy)")
+                logging.warning(f"> Nenhum usuario encontrado para {emailGupy}")
         elif response.status_code == 400:
             print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {emailGupy}")
             logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailGupy}, (verificaColaboradores.api.criaUsuarioGupy)")
         else:
-            logging.error(f"> Erro ao listar usuario: {detalhe}")
+            logging.error(f"> Erro ao listar email de usuario: {detalhe}")
         return None    
         
     # Deleta usuario da Gupy
@@ -133,28 +136,33 @@ class conexaoGupy():
     # Lista campos do cadastro de usuario da Gupy
     def listaCamposUsuarioGupy(self, idGupy, nomeSenior, emailGupy):
         url = f"https://api.gupy.io/api/v1/users?email={emailGupy}&perPage=10&page=1"
-        headers = {"accept": "application/json"}
+        headers = {
+                "accept": "application/json",
+                "authorization": f"Bearer {self.token}"
+            }
         response = requests.get(url, headers=headers)
         data = response.json()
         detalhe = data.get("detail", "Erro desconhecido")
+
         if response.status_code == 200:
-                usuarios = data.get("results", [])
-                if usuarios:
-                    # user_id = usuarios[0].get("id")
-                    departamentId = usuarios[3].get("departmentId")
-                    roleId = usuarios[4].get("roleId")
-                    branchIds = usuarios[14].get("branchIds")
-                    print(f"> Listou campos de cadastro do usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
-                    logging.info(f"> Listou campos de cadastro do usuario {nomeSenior} com email {emailGupy} e id {idGupy}")
-                    return departamentId, roleId, branchIds
-                else:
-                    print(f"> Nenhum usuario encontrado para {emailGupy}")
-                    logging.warning(f"> Nenhum usuario encontrado para {emailGupy} (verificaColaboradores.api.listaUsuariosGupy)")
+            usuarios = data.get("results", [])
+            if usuarios:
+                departamentId = usuarios[0].get("departmentId", None)
+                roleId = usuarios[0].get("roleId", None)
+                branchIds = usuarios[0].get("branchIds", None)
+                logging.warning(f"> Listou campos de cadastro do usuário {nomeSenior} com email {emailGupy} e id {idGupy}")
+                return departamentId, roleId, branchIds
+            else:
+                logging.warning(f"> Nenhum usuário encontrado para {emailGupy}")
+                return None, None, None
         elif response.status_code == 400:
-            print(f">WARNING: '{detalhe}'>> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
-            logging.warning(f"> '{detalhe}' >> Usuario > Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+            logging.warning(f"> '{detalhe}' >> Usuário >> Id: {idGupy}; Nome: {nomeSenior}; Email: {emailGupy}")
+            return None, None, None
         else:
-            logging.error(f"> Erro ao listar usuario: {detalhe}")
+            logging.error(f"> Erro ao listar campos de usuário: {detalhe}")
+            return None, None, None  # <- Certifique-se de que este retorno está correto
+
+
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"

@@ -1,4 +1,5 @@
 import re
+import logging
 
 # Mapeamentos de palavras-chave para departamentos
 departament_mapping = {
@@ -49,35 +50,31 @@ def textoPadrao(texto):
             palavras_formatadas.append(palavra.capitalize())
     return ' '.join(palavras_formatadas)
 
-
 # Função para identificar similarTo equivalente
-def find_similar_to(cargo, mapping):
+def find_similar_to(role_gupy, mapping):
+    role_gupy = role_gupy.lower()
     for keywords, equivalent in mapping.items():
-        for keyword in keywords.split('/'):
-            if re.search(rf'\\b{keyword}\\b', cargo, re.IGNORECASE):
+        for keyword in keywords.lower().split('/'):
+            if re.search(rf'\b{re.escape(keyword)}\b', role_gupy):
                 return equivalent
     return None
 
 # Função principal de atualização de cadastro
-def atualizar_cadastro(usuario):
-    usuario['cargo'] = textoPadrao(usuario['cargo'])
-
+def mapear_campos_usuario(usuario):
+    logging.info("> Mapeando campos do usuário")
     if usuario.get('departmentId', 0) == 0:
-        departamento = find_similar_to(usuario['cargo'], departament_mapping)
+        departamento = find_similar_to(usuario.get('departament_gupy', ''), departament_mapping)
         if departamento:
             usuario['departmentId'] = departamento
-
     if usuario.get('roleId', 0) == 0:
-        role = find_similar_to(usuario['cargo'], role_mapping)
-        if role:
-            usuario['roleId'] = role
-
+        cargo = find_similar_to(usuario.get('cargo', ''), role_mapping)
+        if cargo:
+            usuario['roleId'] = cargo
     if usuario.get('branchIds', [0]) == [0]:
         usuario['branchIds'] = ['default_branch']
-
     return usuario
 
-# Exemplo de uso
+"""# Exemplo de uso
 usuario_exemplo = {
     "id": 123,
     "email": "usuario@example.com",
@@ -88,4 +85,4 @@ usuario_exemplo = {
 }
 
 usuario_atualizado = atualizar_cadastro(usuario_exemplo)
-print(usuario_atualizado)
+print(usuario_atualizado)"""

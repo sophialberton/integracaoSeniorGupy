@@ -52,5 +52,5 @@ if __name__ == "__main__":
     colaboradores = DatabaseSenior.buscaColaboradorSenior(conexao)
     # print(colaboradores) # Recebendo
     ponte = ponteSeniorGupy()
-    ligacao = ponte.verificaColaboradores(colaboradores)
+    ligacao = ponte.processar_colaboradores(colaboradores)
     
