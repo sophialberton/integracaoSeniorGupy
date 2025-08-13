@@ -72,40 +72,6 @@ def agrupar_por_cpf_df(df_validos):
         cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')
     }
     return agrupados
-"""
-def processar_cpf_df(api, cpf, registros_df):
-    registros_df['Situacao'] = registros_df['Situacao'].astype(int)
-    todas_demitidas = (registros_df['Situacao'] == 7).all()
-    nome_base = registros_df.iloc[0]['Nome']
-    email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
-
-    # DEBUG
-    if not re.fullmatch(r'\d{11}', cpf):
-        logging.warning(f"CPF suspeito: {cpf}")
-
-    print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matricula(s)")
-    for _, row in registros_df.iterrows():
-        print(f">  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
-
-    print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
-
-    id_gupy = api.listaIdUsuariosGupy(nome_base, email_base)
-
-    if todas_demitidas:
-        if id_gupy:
-            api.deletaUsuarioGupy(id_gupy, nome_base)
-        if not id_gupy:
-            pass
-    else:
-        if email_base:
-            if id_gupy:
-                print(">> Implementar atualizacao de usuario na versao 2.0")
-                # api.atualizaUsuarioGupy(id_gupy, nome_base, email_base, cpf)
-            else:
-                api.criaUsuarioGupy(nome_base, email_base, cpf)
-        else:
-            print(f">  Email invalido para CPF {cpf}, nao sera criado/atualizado.")
-"""
 
 def processar_cpf_df(api, cpf, registros_df):
     registros_df['Situacao'] = registros_df['Situacao'].astype(int)
@@ -113,7 +79,6 @@ def processar_cpf_df(api, cpf, registros_df):
     nome_base = registros_df.iloc[0]['Nome']
     email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
 
-    # DEBUG
     userGupyId = api.listaIdUsuariosGupy(nome_base, email_base)
     emailUserGupy = api.listaEmailUsuarioGupy(userGupyId,nome_base)
     departamentGupyId, roleGupyId, branchGupyId = api.listaCamposUsuarioGupy(userGupyId, nome_base, emailUserGupy)

@@ -74,15 +74,5 @@ def mapear_campos_usuario(usuario):
         usuario['branchIds'] = ['default_branch']
     return usuario
 
-"""# Exemplo de uso
-usuario_exemplo = {
-    "id": 123,
-    "email": "usuario@example.com",
-    "cargo": "Consultor de vendas",
-    "departmentId": 0,
-    "roleId": 0,
-    "branchIds": [0]
-}
-
-usuario_atualizado = atualizar_cadastro(usuario_exemplo)
-print(usuario_atualizado)"""
+def processar_campos():
+    pass

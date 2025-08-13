@@ -66,8 +66,8 @@ class conexaoGupy():
                     logging.warning(f"> Listou id da gupy do usuario {nomeSenior} com email {email} e id sendo {user_id} na GUPY")
                     return user_id
                 else:
-                    print(f"> Nenhum usuario encontrado para {email}")
-                    logging.warning(f"> Nenhum usuario encontrado para {email}")
+                    print(f"> Nenhum id cadastrado encontrado para {email}")
+                    logging.warning(f"> Nenhum id cadastrado encontrado para {email}")
             elif response.status_code == 400:
                 print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {email}")
                 logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, email}, (verificaColaboradores.api.criaUsuarioGupy)")
@@ -93,11 +93,11 @@ class conexaoGupy():
                 logging.warning(f"> Listou email de usuario {nomeSenior} com email {emailGupy} na GUPY")
                 return emailGupy
             else:
-                print(f"> Nenhum usuario encontrado para {emailGupy}")
-                logging.warning(f"> Nenhum usuario encontrado para {emailGupy}")
+                print(f"> Nenhum email cadastrado encontrado para {emailGupy}")
+                logging.warning(f"> Nenhum email cadastrado encontrado para {emailGupy}")
         elif response.status_code == 400:
             print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {emailGupy}")
-            logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailGupy}, (verificaColaboradores.api.criaUsuarioGupy)")
+            logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailGupy}")
         else:
             logging.error(f"> Erro ao listar email de usuario: {detalhe}")
         return None    
@@ -165,6 +165,8 @@ class conexaoGupy():
 
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
+        logging.info("> Chamou para atualizar campos de cadastro do usuario")
+        print("> Chamou para atualizar campos de cadastro do usuario")
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         payload = {
         f"roleId": {roleIdGupy},
