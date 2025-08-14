@@ -138,7 +138,7 @@ class conexaoGupy():
             return None, None, None 
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
-        logging.info(f"> Chamou API para atualizar campos de cadastro do usuario {nomeSenior} com email {emailGupy}")
+        logging.warning(f"> Chamou API para atualizar campos de cadastro do usuario {nomeSenior} com email {emailGupy}")
         print(f"> Chamou API para atualizar campos de cadastro do usuario {nomeSenior} com email {emailGupy}")
         # url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         # payload = {
@@ -321,7 +321,7 @@ class conexaoGupy():
         #     logging.warning(f"> '{detalhe}' >> Area/Departamento > {nomeFilialBranch}")
         
     def obter_dados_usuario_gupy_por_id(self, user_id):
-        logging.info(f"> Buscando dados do usuário com ID {user_id}")
+        logging.warning(f"> Buscando dados do usuário com ID {user_id}")
         url = f"https://api.gupy.io/api/v1/users/{user_id}"
         headers = {
             "accept": "application/json",

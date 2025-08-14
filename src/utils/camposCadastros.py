@@ -38,10 +38,10 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
     dados_usuario = api.obter_dados_usuario_gupy_por_id(userGupyId)
 
     if dados_atuais != dados_usuario:
-        logging.info(f"> Atualizando cadastro do usuário {nome_base} com campos corrigidos: {campos_faltantes}")
+        logging.warning(f"> Atualizando cadastro do usuário {nome_base} com campos corrigidos: {campos_faltantes}")
         api.atualizaUsuarioGupy(userGupyId, nome_base, emailUserGupy, roleGupyId, departamentGupyId, branchGupyId)
     else:
-        logging.info(f"> Nenhuma atualização necessária para o usuário {nome_base}")
+        logging.warning(f"> Nenhuma atualização necessária para o usuário {nome_base}")
 
     if campos_faltantes:
         logging.warning(f"> Atualizando cadastro do usuário {nome_base} com campos corrigidos: {campos_faltantes}")

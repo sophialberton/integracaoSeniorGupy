@@ -78,7 +78,7 @@ class ponteSeniorGupy():
         logging.info("> Iniciando processamento por CPF")
         
         for cpf, registros_df in usuarios_por_cpf.items():
-            logging.info(f"> Processando CPF: {cpf}")
+            logging.warning(f"> Processando CPF: {cpf}")
             resultado = processar_cpf_df(api, cpf, registros_df)
 
             if not resultado or not resultado.get("usuario"):
