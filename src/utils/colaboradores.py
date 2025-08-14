@@ -2,7 +2,7 @@ import logging
 import re
 import csv
 from utils.helpers import mapear_campos_usuario, obter_dados_usuario_gupy, find_similar_to
-from utils.comum import role_mapping, departament_mapping
+from utils.camposCadastros import processar_campos
 
 
 def carregar_cpfs_ignorados(caminho_arquivo):
@@ -112,32 +112,20 @@ def processar_cpf_df(api, cpf, registros_df):
         "branchIds": [branchGupyId] if branchGupyId else [0],
         "branchName": nomeFilialBranch or "Filial Padrão"
     }
-    branch_ids = campos.get("branchIds", [0])
-    branch_id = branch_ids[0] if branch_ids != [0] else None
-    if None in (departamentGupyId, roleGupyId, branchGupyId):
-        campos = mapear_campos_usuario({
-            "departament_gupy": registros_df.iloc[0].get('Departamento_gupy', ''),
-            "cargo": registros_df.iloc[0].get('Role_gupy', ''),
-            "branchIds": [0]
-        })
-        campos["branchName"] = nomeFilialBranch
-        
-        if departamentGupyId is None:
-            departamento_nome = registros_df.iloc[0].get('Departamento_gupy', '')
-            departamento_mapeado = find_similar_to(departamento_nome, departament_mapping)
-            if departamento_mapeado:
-                api.criaAreaDepartamento(departamento_nome, departamento_mapeado)
-        if roleGupyId is None:
-            cargoRole_nome = registros_df.iloc[0].get('Role_gupy', '')
-            cargoRole_mapeado = find_similar_to(cargoRole_nome, role_mapping)
-            if cargoRole_mapeado:
-                api.criaCargoRole(cargoRole_nome, cargoRole_mapeado)
-        """if campos['roleId'] != 0 and roleGupyId is None:
-            api.criaCargoRole(campos['roleId'])"""
-        if campos['branchIds'] != [0] and branchGupyId is None:
-            filial_cod = registros_df.iloc[0].get('Filial_cod', 'default_branch')
-            api.criaFilialBranch(filial_cod, campos['branchName'])
-
+    
+    if not all([departamentGupyId, roleGupyId, branchGupyId]):
+        campos = processar_campos(
+            api,
+            nome_base,
+            email_base,
+            userGupyId,
+            emailUserGupy,
+            departamentGupyId,
+            roleGupyId,
+            branchGupyId,
+            nomeFilialBranch,
+            registros_df
+        )
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
         print(f"> CPF {cpf} com {'múltiplas' if len(registros_df) > 1 else 'uma'} matrícula(s)")
