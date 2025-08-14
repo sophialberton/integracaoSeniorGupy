@@ -165,8 +165,8 @@ class conexaoGupy():
 # ============================= Processando Campos para Atualizar =============================================
     # Lista Area/departamento da Gupy
     def listaAreaDepartamento(self, nomeDepartamento):
-        logging.warning(f"> Listando >Area/Departament: >>{nomeDepartamento}")
-        url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
+        logging.warning(f"> Listando > Area/Departament: >> {nomeDepartamento}")
+        url = f"https://api.gupy.io/api/v1/departments?name={nomeDepartamento}&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
                    }
@@ -183,14 +183,15 @@ class conexaoGupy():
                 logging.warning(f"> Listou >> Area/Departament: {dapartament_name} >> similarTo: {departament_similarTo} >> id: {departament_id}")
                 return departament_id, dapartament_name, departament_similarTo
             else:
-                print(f"> Nenhum id cadastrado encontrado para {dapartament_name}")
-                logging.warning(f"> Nenhum id cadastrado encontrado para {dapartament_name}")
+                print(f"> Nenhum id cadastrado encontrado para {nomeDepartamento}")
+                logging.warning(f"> Nenhum id cadastrado encontrado para {nomeDepartamento}")
+                return None, None, None
         elif response.status_code == 400:
             print(f"> WARNING: '{detalhe}' >> Area/Departament > {nomeDepartamento}")
             logging.error(f"> '{detalhe}' >> Area/Departament > {nomeDepartamento}")
         else:
             logging.error(f"> Erro ao listar Departamento area Gupy {nomeDepartamento}: > {detalhe}")
-            return None
+            return None, None, None
     
     # Lista Cargo/Role da Gupy   
     def listaCargoRole(self, nomeCargoRole):
