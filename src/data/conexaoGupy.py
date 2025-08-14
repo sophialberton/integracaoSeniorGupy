@@ -110,6 +110,7 @@ class conexaoGupy():
 
     # Lista campos do cadastro de usuario da Gupy
     def listaCamposUsuarioGupy(self, idGupy, nomeSenior, emailGupy):
+        logging.warning(f"> Listando campos do usuário {nomeSenior} - {emailGupy} - {idGupy}")
         url = f"https://api.gupy.io/api/v1/users?email={emailGupy}&perPage=10&page=1"
         headers = {
                 "accept": "application/json",
@@ -125,10 +126,10 @@ class conexaoGupy():
                 departamentId = usuario.get("departmentId", None)
                 roleId = usuario.get("roleId", None)
                 branchIds = usuario.get("branchIds", None)  
-                logging.warning(f"> Listou campos de cadastro do usuário {nomeSenior} com email {emailGupy} e id {idGupy}")
+                logging.warning(f"> Listou campos de cadastro do usuario {nomeSenior} - {emailGupy} - {idGupy}")
                 return departamentId, roleId, branchIds
             else:
-                logging.warning(f"> Nenhum usuário encontrado para {emailGupy}")
+                logging.warning(f"> Nenhum campo cadastrado encontrado para {nomeSenior} - {emailGupy}")
                 return None, None, None
         elif response.status_code == 400:
             logging.warning(f"> '{detalhe}' >> Usuário Gupy: {nomeSenior} >> Email Gupy: {emailGupy} >> Id Gupy: {idGupy}")
@@ -138,8 +139,8 @@ class conexaoGupy():
             return None, None, None 
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
-        logging.warning(f"> Chamou API para atualizar campos de cadastro do usuario {nomeSenior} com email {emailGupy}")
-        print(f"> Chamou API para atualizar campos de cadastro do usuario {nomeSenior} com email {emailGupy}")
+        logging.warning(f"> Atualizando campos de cadastro do usuario {nomeSenior} - {emailGupy}")
+        print(f"> Atualizando campos de cadastro do usuario {nomeSenior} - {emailGupy}")
         # url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         # payload = {
         # f"roleId": {roleIdGupy},
@@ -164,7 +165,7 @@ class conexaoGupy():
 # ============================= Processando Campos para Atualizar =============================================
     # Lista Area/departamento da Gupy
     def listaAreaDepartamento(self, nomeDepartamento):
-        logging.warning(f"> Chamou listar Departamento/Area para: {nomeDepartamento}")
+        logging.warning(f"> Listando Departamento/Area: {nomeDepartamento}")
         url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
@@ -193,7 +194,7 @@ class conexaoGupy():
     
     # Lista Cargo/Role da Gupy   
     def listaCargoRole(self, nomeCargoRole):
-        logging.warning(f"> Chamou listar Cargo para: {nomeCargoRole}")
+        logging.warning(f"> Listando Cargo Role: {nomeCargoRole}")
         url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
@@ -222,7 +223,7 @@ class conexaoGupy():
     
     # Lista FilialBranch da Gupy
     def listaFilialBranch(self, nomeFilialBranch, codFilialBranch):
-        logging.warning(f"> Chamou listar Filial para: {nomeFilialBranch} com codigo {codFilialBranch}")
+        logging.warning(f"> Listando Filial Branch: {nomeFilialBranch} com codigo {codFilialBranch}")
         url = f"https://api.gupy.io/api/v1/branches?name={nomeFilialBranch}&perPage=10&page=1"
         headers = {
                 "accept": "application/json",
@@ -237,8 +238,8 @@ class conexaoGupy():
                     branch_id = branchs[0].get("id")
                     branch_name = branchs[0].get("name")
                     branch_path = branchs[0].get("path")
-                    print(f"> Listou id da gupy da filial {branch_name} com email {branch_path} e id sendo {branch_id} na GUPY")
-                    logging.warning(f"> Listou id da gupy da filial {branch_name} com email {branch_path} e id sendo {branch_id} na GUPY")
+                    print(f"> Listou id da gupy da filial {branch_name} com path {branch_path} e id sendo {branch_id} na GUPY")
+                    logging.warning(f"> Listou id da gupy da filial {branch_name} com path {branch_path} e id sendo {branch_id} na GUPY")
                     return branch_id, branch_name, branch_path
             else:
                 print(f"> Nenhum id cadastrado encontrado para {nomeFilialBranch}")
@@ -252,7 +253,7 @@ class conexaoGupy():
     
     # Cria area departamento
     def criaAreaDepartamento(self, nomeAreaDepartamento, similarTo):
-        logging.critical(f"> Chamou para criar Area Departamento com {nomeAreaDepartamento} e similar {similarTo}")
+        logging.critical(f"> criando Area Departamento com {nomeAreaDepartamento} e similar {similarTo}")
         # url = "https://api.gupy.io/api/v1/departments"
         # payload = { 
         #     f"similarTo": str(similarTo),
@@ -275,7 +276,7 @@ class conexaoGupy():
       
     # Cria cargo role
     def criaCargoRole(self, nomeCargoRole, similarTo ):
-        logging.critical(f"> Chamou para criar Cargo Role com {nomeCargoRole} e similar {similarTo}")
+        logging.critical(f"> Criando Cargo Role com {nomeCargoRole} e similar {similarTo}")
         # url = "https://api.gupy.io/api/v1/roles"
         # payload = { 
         #     f"similarTo": str(similarTo),
@@ -298,7 +299,7 @@ class conexaoGupy():
     
     # Cria filial Branch
     def criaFilialBranch(self, cod_filialBranch, nomeFilialBranch):
-        logging.critical(f"> Chamou para criar Filial Branch com {cod_filialBranch} e nome {nomeFilialBranch}")
+        logging.critical(f"> Criando Filial Branch com {cod_filialBranch} e nome {nomeFilialBranch}")
         # url = "https://api.gupy.io/api/v1/departments"
         # payload = { 
         #     f"similarTo": str(cod_filialBranch),
@@ -322,7 +323,7 @@ class conexaoGupy():
         
     def obter_dados_usuario_gupy_por_id(self, user_id):
         logging.warning(f"> Buscando dados do usuário com ID {user_id}")
-        url = f"https://api.gupy.io/api/v1/users/{user_id}"
+        url = f"https://api.gupy.io/api/v1/users?id={user_id}&perPage=10&page=1"
         headers = {
             "accept": "application/json",
             "authorization": f"Bearer {self.token}"

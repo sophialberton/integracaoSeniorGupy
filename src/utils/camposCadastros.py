@@ -2,18 +2,20 @@ import logging
 from utils.helpers import mapear_campos_usuario, find_similar_to
 from utils.comum import role_mapping, departament_mapping
 
+import logging
+
 def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId, nomeFilialBranch, registros_df):
     logging.warning(f"> Processando campos do usuário {nome_base} dono do email {email_base}")
     campos_faltantes = []
 
     if roleGupyId is None:
         role_nome = registros_df.iloc[0].get("Role_gupy", "")
-        roleGupyId, _, _ = obter_ou_criar_cargo(api, role_nome)
+        roleGupyId, role_nome, similarToRole = obter_ou_criar_cargo(api, role_nome)
         campos_faltantes.append("cargo")
 
     if departamentGupyId is None:
         departamento_nome = registros_df.iloc[0].get("Departamento_gupy", "")
-        departamentGupyId, _, _ = obter_ou_criar_departamento(api, departamento_nome)
+        departamentGupyId, departamento_nome, similarToDepartamento = obter_ou_criar_departamento(api, departamento_nome)
         campos_faltantes.append("departamento")
 
     if branchGupyId is None:
@@ -28,11 +30,11 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
         "branchIds": [branchGupyId],
         "branchName": nomeFilialBranch or "Filial Padrão"
     }
-    # ==================================
+
     dados_atuais = {
-    "departmentId": departamentGupyId,
-    "roleId": roleGupyId,
-    "branchId": branchGupyId
+        "departmentId": departamentGupyId,
+        "roleId": roleGupyId,
+        "branchId": branchGupyId
     }
 
     dados_usuario = api.obter_dados_usuario_gupy_por_id(userGupyId)
@@ -43,29 +45,28 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
     else:
         logging.warning(f"> Nenhuma atualização necessária para o usuário {nome_base}")
 
-    if campos_faltantes:
-        logging.warning(f"> Atualizando cadastro do usuário {nome_base} com campos corrigidos: {campos_faltantes}")
-        api.atualizaUsuarioGupy(userGupyId, nome_base, emailUserGupy, roleGupyId, departamentGupyId, branchGupyId)
-
     return campos
 
 def obter_ou_criar_departamento(api, nome_departamento):
     mapeado = find_similar_to(nome_departamento, departament_mapping)
+    departamento_id, departamento_nome, departamento_similarTo = None, nome_departamento, None
+
     if mapeado:
         departamento_id, departamento_nome, departamento_similarTo = api.listaAreaDepartamento(nome_departamento)
         if not departamento_id:
             departamento_id = api.criaAreaDepartamento(nome_departamento, mapeado)
-        return departamento_id, departamento_nome, departamento_similarTo
-    return 0, "", ""
+
+    return departamento_id, departamento_nome, departamento_similarTo
 
 def obter_ou_criar_cargo(api, nome_cargo):
     mapeado = find_similar_to(nome_cargo, role_mapping)
+    cargo_id, cargo_nome, cargo_similarTo = None, nome_cargo, None
     if mapeado:
         cargo_id, cargo_nome, cargo_similarTo = api.listaCargoRole(nome_cargo)
         if not cargo_id:
             cargo_id = api.criaCargoRole(nome_cargo, mapeado)
-        return cargo_id, cargo_nome, cargo_similarTo
-    return 0, "", ""
+
+    return cargo_id, cargo_nome, cargo_similarTo
 
 def obter_ou_criar_filial(api, nome_filial, cod_filial):
     branch_id = api.listaFilialBranch(nome_filial, cod_filial)
