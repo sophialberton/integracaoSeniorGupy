@@ -49,23 +49,16 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
 
 def obter_ou_criar_departamento(api, nome_departamento):
     mapeado = find_similar_to(nome_departamento, departament_mapping)
-    departamento_id, departamento_nome, departamento_similarTo = None, nome_departamento, None
-
-    if mapeado:
-        departamento_id, departamento_nome, departamento_similarTo = api.listaAreaDepartamento(nome_departamento)
-        if not departamento_id:
-            departamento_id = api.criaAreaDepartamento(nome_departamento, mapeado)
-
+    departamento_id, departamento_nome, departamento_similarTo = api.listaAreaDepartamento(nome_departamento)
+    if not departamento_id:
+        departamento_id = api.criaAreaDepartamento(nome_departamento, mapeado)
     return departamento_id, departamento_nome, departamento_similarTo
 
 def obter_ou_criar_cargo(api, nome_cargo):
     mapeado = find_similar_to(nome_cargo, role_mapping)
-    cargo_id, cargo_nome, cargo_similarTo = None, nome_cargo, None
-    if mapeado:
-        cargo_id, cargo_nome, cargo_similarTo = api.listaCargoRole(nome_cargo)
-        if not cargo_id:
-            cargo_id = api.criaCargoRole(nome_cargo, mapeado)
-
+    cargo_id, cargo_nome, cargo_similarTo = api.listaCargoRole(nome_cargo)
+    if not cargo_id:
+        cargo_id = api.criaCargoRole(nome_cargo, mapeado)
     return cargo_id, cargo_nome, cargo_similarTo
 
 def obter_ou_criar_filial(api, nome_filial, cod_filial):

@@ -30,14 +30,14 @@ class ponteSeniorGupy():
 
     def dadosSenior(self, colaboradores_df):
         try:
-            df = colaboradores_df[['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email']].copy()
+            df = colaboradores_df[['Nome','Branch_gupy','Role_gupy','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email']].copy()
             # Normaliza apenas as colunas desejadas
-            for col in ['Branch_gupy', 'Role_gupy,', 'Departamento_gupy']:
+            for col in ['Branch_gupy', 'Role_gupy', 'Departamento_gupy']:
                 df[col] = df[col].apply(textoPadrao)
             return df
         except Exception as e:
             logging.error(f"Erro ao preparar dados do Senior: {e}")
-            return pd.DataFrame(columns=['Nome','Branch_gupy','Role_gupy,','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email'])
+            return pd.DataFrame(columns=['Nome','Branch_gupy','Role_gupy','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email'])
 
     def processar_colaboradores(self, colaboradores):
         logging.info("> Iniciando verificação de colaboradores")
