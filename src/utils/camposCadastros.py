@@ -16,9 +16,9 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
         role_nome = registros_df.iloc[0].get("Role_gupy", "")
         cargo_mapeado = find_similar_to(role_nome, role_mapping)
         if cargo_mapeado:
-            role_id = api.listaCargoRole(cargo_mapeado)
+            role_id = api.listaCargoRole(role_nome)
             if not role_id:
-                role_id = api.criaCargoRole(cargo_mapeado)
+                role_id = api.criaCargoRole(role_nome, cargo_mapeado)
             campos["roleId"] = role_id
             campos_faltantes.append("cargo")
     # 2. Departamento
@@ -26,11 +26,12 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
         departamento_nome = registros_df.iloc[0].get("Departamento_gupy", "")
         departamento_mapeado = find_similar_to(departamento_nome, departament_mapping)
         if departamento_mapeado:
-            departamento_id = api.listaAreaDepartamento(departamento_mapeado)
+            departamento_id = api.listaAreaDepartamento(departamento_nome)
             if not departamento_id:
-                departamento_id = api.criaAreaDepartamento(departamento_mapeado)
+                departamento_id = api.criaAreaDepartamento(departamento_nome, departamento_mapeado)
             campos["departmentId"] = departamento_id
             campos_faltantes.append("departamento")
+
     # 3. Filial
     if branchGupyId is None:
         filial_nome = registros_df.iloc[0].get("Branch_gupy", "Filial Padrão")

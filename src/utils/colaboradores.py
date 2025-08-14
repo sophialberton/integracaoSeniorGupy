@@ -1,7 +1,8 @@
 import logging
 import re
 import csv
-from utils.helpers import mapear_campos_usuario, obter_dados_usuario_gupy
+from utils.helpers import mapear_campos_usuario, obter_dados_usuario_gupy, find_similar_to
+from utils.comum import role_mapping, departament_mapping
 
 
 def carregar_cpfs_ignorados(caminho_arquivo):
@@ -90,22 +91,17 @@ def processar_cpf_df(api, cpf, registros_df):
     for _, row in registros_df.iterrows():
         nome = row['Nome']
         email = extrair_email_valido(row['Email'])
-
         if not email:
             continue
-
         nome_base = nome
         email_base = email
-
         userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId = obter_dados_usuario_gupy(api, nome, email)
-
         if userGupyId and emailUserGupy:
         # Verifica se o email retornado já está associado a outro nome
             if emailUserGupy != email_base:
                 logging.warning(f"> Email retornado '{emailUserGupy}' não corresponde ao email base '{email_base}' para nome '{nome}'")
                 continue
             break
-
     if not email_base:
         logging.warning(f"> CPF {cpf} sem email válido. Nenhuma ação será tomada.")
         return None
@@ -116,7 +112,8 @@ def processar_cpf_df(api, cpf, registros_df):
         "branchIds": [branchGupyId] if branchGupyId else [0],
         "branchName": nomeFilialBranch or "Filial Padrão"
     }
-
+    branch_ids = campos.get("branchIds", [0])
+    branch_id = branch_ids[0] if branch_ids != [0] else None
     if None in (departamentGupyId, roleGupyId, branchGupyId):
         campos = mapear_campos_usuario({
             "departament_gupy": registros_df.iloc[0].get('Departamento_gupy', ''),
@@ -124,13 +121,19 @@ def processar_cpf_df(api, cpf, registros_df):
             "branchIds": [0]
         })
         campos["branchName"] = nomeFilialBranch
-
-        if campos['departmentId'] != 0 and departamentGupyId is None:
-            api.criaAreaDepartamento(campos['departmentId'])
-
-        if campos['roleId'] != 0 and roleGupyId is None:
-            api.criaCargoRole(campos['roleId'])
-
+        
+        if departamentGupyId is None:
+            departamento_nome = registros_df.iloc[0].get('Departamento_gupy', '')
+            departamento_mapeado = find_similar_to(departamento_nome, departament_mapping)
+            if departamento_mapeado:
+                api.criaAreaDepartamento(departamento_nome, departamento_mapeado)
+        if roleGupyId is None:
+            cargoRole_nome = registros_df.iloc[0].get('Role_gupy', '')
+            cargoRole_mapeado = find_similar_to(cargoRole_nome, role_mapping)
+            if cargoRole_mapeado:
+                api.criaCargoRole(cargoRole_nome, cargoRole_mapeado)
+        """if campos['roleId'] != 0 and roleGupyId is None:
+            api.criaCargoRole(campos['roleId'])"""
         if campos['branchIds'] != [0] and branchGupyId is None:
             filial_cod = registros_df.iloc[0].get('Filial_cod', 'default_branch')
             api.criaFilialBranch(filial_cod, campos['branchName'])
