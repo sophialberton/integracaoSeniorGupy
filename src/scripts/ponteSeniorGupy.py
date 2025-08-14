@@ -78,36 +78,46 @@ class ponteSeniorGupy():
         logging.info("> Iniciando processamento por CPF")
         
         for cpf, registros_df in usuarios_por_cpf.items():
+            logging.info(f"> Processando CPF: {cpf}")
             resultado = processar_cpf_df(api, cpf, registros_df)
-            if resultado:
-                usuario = resultado["usuario"]
-                campos = resultado["campos"]
 
-                # Verifica se há campos faltantes
-                campos_faltam = (
-                    campos["departmentId"] == 0 or
-                    campos["roleId"] == 0 
-                    # campos["branchIds"] == [0]
+            if not resultado or not resultado.get("usuario"):
+                logging.warning(f"> Nenhum resultado válido para CPF {cpf}")
+                continue
+
+            usuario = resultado["usuario"]
+            campos = resultado["campos"]
+
+            # Garante que todas as chaves existam
+            department_id = campos.get("departmentId", 0)
+            role_id = campos.get("roleId", 0)
+            branch_ids = campos.get("branchIds", [0])
+            branch_id = branch_ids[0] if branch_ids != [0] else None
+
+            campos_faltam = (
+                department_id == 0 or
+                role_id == 0 or
+                branch_id is None
+            )
+
+            if campos_faltam:
+                nome_base = registros_df.iloc[0]['Nome']
+                email_base = registros_df.iloc[0]['Email']
+                nomeFilialBranch = registros_df.iloc[0].get('Branch_gupy', 'Filial Padrão')
+
+                campos_corrigidos = processar_campos(
+                    api,
+                    nome_base,
+                    email_base,
+                    usuario["userGupyId"],
+                    usuario["emailUserGupy"],
+                    department_id if department_id != 0 else None,
+                    role_id if role_id != 0 else None,
+                    branch_id,
+                    nomeFilialBranch,
+                    registros_df
                 )
 
-                if campos_faltam:
-                    nome_base = registros_df.iloc[0]['Nome']
-                    email_base = registros_df.iloc[0]['Email']
-                    nomeFilialBranch = registros_df.iloc[0].get('Branch_gupy', 'Filial Padrão')
-
-                    campos_corrigidos = processar_campos(
-                        api,
-                        nome_base,
-                        email_base,
-                        usuario["userGupyId"],
-                        usuario["emailUserGupy"],
-                        campos["departmentId"] if campos["departmentId"] != 0 else None,
-                        campos["roleId"] if campos["roleId"] != 0 else None,
-                        campos["branchIds"][0] if campos["branchIds"] != [0] else None,
-                        nomeFilialBranch,
-                        registros_df
-                    )
-
-                    logging.info(f"> Usuário com email {usuario['emailUserGupy']} teve campos atualizados: {campos_corrigidos}")
-                else:
-                    logging.info(f"> Usuário com email {usuario['emailUserGupy']} já possui todos os campos. Nenhuma ação necessária.")
+                logging.info(f"> Usuário com email {usuario['emailUserGupy']} teve campos atualizados: {campos_corrigidos}")
+            else:
+                logging.info(f"> Usuário com email {usuario['emailUserGupy']} já possui todos os campos. Nenhuma ação necessária.")

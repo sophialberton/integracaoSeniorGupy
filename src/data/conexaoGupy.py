@@ -35,7 +35,7 @@ class conexaoGupy():
             logging.warning(f"> '{detalhe}' >> Usuario: {nomeSenior, emailSenior}, (verificaColaboradores.api.criaUsuarioGupy)")
     
     # Procura cadastro Gupy e retornar o ID da gupy
-    def listaIdUsuariosGupy(self, nomeSenior, emailSenior):
+    def listaUsuarioGupy(self, nomeSenior, emailSenior):
         if not emailSenior:
             logging.warning(f"> Email nulo para {nomeSenior}, não será possível listar na GUPY.")
             return None
@@ -62,9 +62,11 @@ class conexaoGupy():
                 usuarios = data.get("results", [])
                 if usuarios:
                     user_id = usuarios[0].get("id")
-                    print(f"> Listou id da gupy do usuario {nomeSenior} com email {email} e id sendo {user_id} na GUPY")
-                    logging.warning(f"> Listou id da gupy do usuario {nomeSenior} com email {email} e id sendo {user_id} na GUPY")
-                    return user_id
+                    user_name = usuarios[0].get("name")
+                    user_email = usuarios[0].get("email")
+                    print(f"> Listou id da gupy do usuario {user_name} com email {user_email} e id sendo {user_id} na GUPY")
+                    logging.warning(f"> Listou id da gupy do usuario {user_name} com email {user_email} e id sendo {user_id} na GUPY")
+                    return user_id, user_name, user_email
                 else:
                     print(f"> Nenhum id cadastrado encontrado para {email}")
                     logging.warning(f"> Nenhum id cadastrado encontrado para {email}")
@@ -74,34 +76,7 @@ class conexaoGupy():
             else:
                 logging.error(f"> Erro ao listar id Gupy de usuario: {detalhe}")
         return None
-
-    # Com o ID da Gupy retornar o email que esta cadastrado na Gupy
-    def listaEmailUsuarioGupy(self, idGupy, nomeSenior):
-        url = f"https://api.gupy.io/api/v1/users?id={idGupy}perPage=10&page=1"
-        headers = {
-                "accept": "application/json",
-                "authorization": f"Bearer {self.token}"
-            }
-        response = requests.get(url, headers=headers)
-        data = response.json()
-        detalhe = data.get("detail", "Erro desconhecido")
-        if response.status_code == 200:
-            usuarios = data.get("results", [])
-            if usuarios:
-                emailGupy = usuarios[0].get("email")
-                print(f"> Listou email de usuario {nomeSenior} com email {emailGupy} na GUPY")
-                logging.warning(f"> Listou email de usuario {nomeSenior} com email {emailGupy} na GUPY")
-                return emailGupy
-            else:
-                print(f"> Nenhum email cadastrado encontrado para {emailGupy}")
-                logging.warning(f"> Nenhum email cadastrado encontrado para {emailGupy}")
-        elif response.status_code == 400:
-            print(f"> WARNING: '{detalhe}' >> Usuario > Nome: {nomeSenior}; Email: {emailGupy}")
-            logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, emailGupy}")
-        else:
-            logging.error(f"> Erro ao listar email de usuario: {detalhe}")
-        return None    
-        
+     
     # Deleta usuario da Gupy
     def deletaUsuarioGupy(self, idGupy, nomeSenior):
         url = f"https://api.gupy.io/api/v1/users/{idGupy}"
@@ -242,7 +217,8 @@ class conexaoGupy():
         #     print(f">WARNING: '{detalhe}'>> Area/Departamento > {nomeCargoRole};")
         #     logging.warning(f"> '{detalhe}' >> Area/Departamento > {nomeCargoRole}")
     
-    def listaFilialBranch():
+    def listaFilialBranch(self, nomeFilialBranch, codFilialBranch):
+        logging.info(f"> Chamou listar Filial {nomeFilialBranch} com codigo {codFilialBranch}")
         pass
     
     def criaFilialBranch(self, cod_filialBranch, nomeFilialBranch):

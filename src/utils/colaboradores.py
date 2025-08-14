@@ -74,68 +74,93 @@ def agrupar_por_cpf_df(df_validos):
 def processar_cpf_df(api, cpf, registros_df):
     registros_df['Situacao'] = registros_df['Situacao'].astype(int)
     todas_demitidas = (registros_df['Situacao'] == 7).all()
-    nome_base = registros_df.iloc[0]['Nome']
-    email_base = extrair_email_valido(registros_df.iloc[0]['Email'])
+
     nomeFilialBranch = registros_df.iloc[0].get('Branch_gupy', 'Filial Padrão')
 
-    userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId = obter_dados_usuario_gupy(api, nome_base, email_base)
+    # Tenta encontrar um nome/email válido e consistente
+    userGupyId = None
+    emailUserGupy = None
+    departamentGupyId = None
+    roleGupyId = None
+    branchGupyId = None
+    nome_base = None
+    email_base = None
     
+
+    for _, row in registros_df.iterrows():
+        nome = row['Nome']
+        email = extrair_email_valido(row['Email'])
+
+        if not email:
+            continue
+
+        nome_base = nome
+        email_base = email
+
+        userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId = obter_dados_usuario_gupy(api, nome, email)
+
+        if userGupyId and emailUserGupy:
+        # Verifica se o email retornado já está associado a outro nome
+            if emailUserGupy != email_base:
+                logging.warning(f"> Email retornado '{emailUserGupy}' não corresponde ao email base '{email_base}' para nome '{nome}'")
+                continue
+            break
+
+    if not email_base:
+        logging.warning(f"> CPF {cpf} sem email válido. Nenhuma ação será tomada.")
+        return None
+
     campos = {
-            "departmentId": departamentGupyId or 0,
-            "roleId": roleGupyId or 0,
-            "branchIds": [branchGupyId] if branchGupyId else [0],
-            "branchName": nomeFilialBranch or "Filial Padrão"
-        }
+        "departmentId": departamentGupyId or 0,
+        "roleId": roleGupyId or 0,
+        "branchIds": [branchGupyId] if branchGupyId else [0],
+        "branchName": nomeFilialBranch or "Filial Padrão"
+    }
+
     if None in (departamentGupyId, roleGupyId, branchGupyId):
-            campos = mapear_campos_usuario({
-                "departament_gupy": registros_df.iloc[0].get('Departamento_gupy', ''),
-                "cargo": registros_df.iloc[0].get('Role_gupy', ''),
-                "branchIds": [0]
-            })
-            campos["branchName"] = nomeFilialBranch
+        campos = mapear_campos_usuario({
+            "departament_gupy": registros_df.iloc[0].get('Departamento_gupy', ''),
+            "cargo": registros_df.iloc[0].get('Role_gupy', ''),
+            "branchIds": [0]
+        })
+        campos["branchName"] = nomeFilialBranch
 
-            if campos['departmentId'] != 0 and departamentGupyId is None:
-                api.criaAreaDepartamento(campos['departmentId'])
+        if campos['departmentId'] != 0 and departamentGupyId is None:
+            api.criaAreaDepartamento(campos['departmentId'])
 
-            if campos['roleId'] != 0 and roleGupyId is None:
-                api.criaCargoRole(campos['roleId'])
+        if campos['roleId'] != 0 and roleGupyId is None:
+            api.criaCargoRole(campos['roleId'])
 
-            if campos['branchIds'] != [0] and branchGupyId is None:
-                filial_cod = registros_df.iloc[0].get('Filial_cod', 'default_branch')
-                api.criaFilialBranch(filial_cod, campos['branchName'])
-
+        if campos['branchIds'] != [0] and branchGupyId is None:
+            filial_cod = registros_df.iloc[0].get('Filial_cod', 'default_branch')
+            api.criaFilialBranch(filial_cod, campos['branchName'])
 
     if not re.fullmatch(r'\d{11}', cpf):
         logging.warning(f"CPF suspeito: {cpf}")
-        print(f"> CPF {cpf} com {'multiplas' if len(registros_df) > 1 else 'uma'} matricula(s)")
+        print(f"> CPF {cpf} com {'múltiplas' if len(registros_df) > 1 else 'uma'} matrícula(s)")
         for _, row in registros_df.iterrows():
-            print(f">  Matricula - {row['Matricula']} | Situacao: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
-        print(f">  Todas as matriculas estao demitidas? {'Sim' if todas_demitidas else 'Nao'}")
+            print(f">  Matrícula - {row['Matricula']} | Situação: {row['Situacao']} | Nome: {row['Nome']} | Email: {row['Email']}")
+        print(f">  Todas as matrículas estão demitidas? {'Sim' if todas_demitidas else 'Não'}")
+
         if todas_demitidas:
             if userGupyId:
                 api.deletaUsuarioGupy(userGupyId, nome_base)
-            if not userGupyId:
-                pass
         else:
-            if email_base:
-                if userGupyId:
-                    # print(">> Implementar atualizacao de usuario na versao 2.0")
-                    api.atualizaUsuarioGupy(userGupyId, nome_base, emailUserGupy, roleGupyId, departamentGupyId, branchGupyId)
-                else:
-                    api.criaUsuarioGupy(nome_base, email_base, cpf)
+            if userGupyId:
+                api.atualizaUsuarioGupy(userGupyId, nome_base, emailUserGupy, roleGupyId, departamentGupyId, branchGupyId)
             else:
-                print(f">  Email invalido para CPF {cpf}, nao sera criado/atualizado.")
-                
+                api.criaUsuarioGupy(nome_base, email_base, cpf)
+
     return {
-            "usuario": {
-                "userGupyId": userGupyId,
-                "emailUserGupy": emailUserGupy
-            },
-            "campos": {
-                "departmentId": departamentGupyId or 0,
-                "roleId": roleGupyId or 0,
-                "branchId": branchGupyId or 0,
-                "branchName": nomeFilialBranch or "Filial Padrão"
-            }
+        "usuario": {
+            "userGupyId": userGupyId,
+            "emailUserGupy": emailUserGupy
+        },
+        "campos": {
+            "departmentId": campos["departmentId"],
+            "roleId": campos["roleId"],
+            "branchId": campos["branchIds"][0],
+            "branchName": campos["branchName"]
         }
+    }
     

@@ -35,7 +35,7 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
     if branchGupyId is None:
         filial_nome = registros_df.iloc[0].get("Branch_gupy", "Filial Padrão")
         filial_cod = registros_df.iloc[0].get("Filial_cod", "default_branch")
-        branch_id = api.listaFilialBranch(filial_cod)
+        branch_id = api.listaFilialBranch(filial_nome, filial_cod)
         if not branch_id:
             branch_id = api.criaFilialBranch(filial_cod, filial_nome)
         campos["branchIds"] = [branch_id]

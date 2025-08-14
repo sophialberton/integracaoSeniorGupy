@@ -6,26 +6,38 @@ from utils.comum  import (
 )
 
 def obter_dados_usuario_gupy(api, nome_base, email_base):
-    userGupyId = api.listaIdUsuariosGupy(nome_base, email_base)
-    emailUserGupy = api.listaEmailUsuarioGupy(userGupyId, nome_base)
+    userGupyId, nomeUserGupy, emailUserGupy = api.listaUsuarioGupy(nome_base, email_base)
+    if nomeUserGupy and nomeUserGupy.strip().lower() != nome_base.strip().lower():
+        logging.warning(f"> Nome inconsistente: esperado '{nome_base}', recebido '{nomeUserGupy}' para email '{email_base}'")
+        return None, None, None, None, None
     departamentGupyId, roleGupyId, branchGupyId = api.listaCamposUsuarioGupy(userGupyId, nome_base, emailUserGupy)
-
     return userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId
+
 
 # Função principal de atualização de cadastro
 def mapear_campos_usuario(usuario):
     logging.info("> Mapeando campos do usuário")
-    if usuario.get('departmentId', 0) == 0:
-        departamento = find_similar_to(usuario.get('departament_gupy', ''), departament_mapping)
+    # Garante estrutura mínima
+    campos = {
+        "departmentId": usuario.get("departmentId", 0),
+        "roleId": usuario.get("roleId", 0),
+        "branchIds": usuario.get("branchIds", [0])
+    }
+    # Mapeia departamento
+    if campos["departmentId"] == 0:
+        departamento = find_similar_to(usuario.get("departament_gupy", ""), departament_mapping)
         if departamento:
-            usuario['departmentId'] = departamento
-    if usuario.get('roleId', 0) == 0:
-        cargo = find_similar_to(usuario.get('cargo', ''), role_mapping)
+            campos["departmentId"] = departamento
+    # Mapeia cargo
+    if campos["roleId"] == 0:
+        cargo = find_similar_to(usuario.get("cargo", ""), role_mapping)
         if cargo:
-            usuario['roleId'] = cargo
-    if usuario.get('branchIds', [0]) == [0]:
-        usuario['branchIds'] = ['default_branch']
-    return usuario
+            campos["roleId"] = cargo
+    # Mapeia filial
+    if campos["branchIds"] == [0]:
+        campos["branchIds"] = ["default_branch"]
+    return campos
+
 
 # Função para padronizar texto
 def textoPadrao(texto):
