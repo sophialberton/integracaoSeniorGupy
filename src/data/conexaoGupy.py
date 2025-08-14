@@ -126,7 +126,7 @@ class conexaoGupy():
                 departamentId = usuario.get("departmentId", None)
                 roleId = usuario.get("roleId", None)
                 branchIds = usuario.get("branchIds", None)  
-                logging.warning(f"> Listou campos de cadastro do usuario {nomeSenior} - {emailGupy} - {idGupy}")
+                logging.warning(f"> Listou campos do usuario {nomeSenior} - {emailGupy} - {idGupy}")
                 return departamentId, roleId, branchIds
             else:
                 logging.warning(f"> Nenhum campo cadastrado encontrado para {nomeSenior} - {emailGupy}")
@@ -139,8 +139,8 @@ class conexaoGupy():
             return None, None, None 
 
     def atualizaUsuarioGupy(self, idGupy, nomeSenior, emailGupy, roleIdGupy, departamentIdGupy, branchIdGupy):
-        logging.warning(f"> Atualizando campos de cadastro do usuario {nomeSenior} - {emailGupy}")
-        print(f"> Atualizando campos de cadastro do usuario {nomeSenior} - {emailGupy}")
+        logging.warning(f"> Atualizando campos  do usuario {nomeSenior} - {emailGupy}")
+        print(f"> Atualizando campos do usuario {nomeSenior} - {emailGupy}")
         # url = f"https://api.gupy.io/api/v1/users/{idGupy}"
         # payload = {
         # f"roleId": {roleIdGupy},
@@ -165,7 +165,7 @@ class conexaoGupy():
 # ============================= Processando Campos para Atualizar =============================================
     # Lista Area/departamento da Gupy
     def listaAreaDepartamento(self, nomeDepartamento):
-        logging.warning(f"> Listando Departamento/Area: {nomeDepartamento}")
+        logging.warning(f"> Listando >Area/Departament: >>{nomeDepartamento}")
         url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
@@ -179,23 +179,23 @@ class conexaoGupy():
                 departament_id = cargos[0].get("id")
                 dapartament_name = cargos[0].get("name")
                 departament_similarTo = cargos[0].get("similarTo")
-                print(f"> Listou id da gupy da area departamento {dapartament_name} com similarTo {departament_similarTo} e id sendo {departament_id} na GUPY")
-                logging.warning(f"> Listou id da gupy da area departamento {dapartament_name} com similarTo {departament_similarTo} e id sendo {departament_id} na GUPY")
+                print(f"> Listou >> Area/Departament: {dapartament_name} >> similarTo: {departament_similarTo} >> id: {departament_id}")
+                logging.warning(f"> Listou >> Area/Departament: {dapartament_name} >> similarTo: {departament_similarTo} >> id: {departament_id}")
                 return departament_id, dapartament_name, departament_similarTo
             else:
                 print(f"> Nenhum id cadastrado encontrado para {dapartament_name}")
                 logging.warning(f"> Nenhum id cadastrado encontrado para {dapartament_name}")
         elif response.status_code == 400:
-            print(f"> WARNING: '{detalhe}' >> Cargo > Nome: {nomeDepartamento}")
-            logging.error(f"> '{detalhe}' >> Cargo > {nomeDepartamento}")
+            print(f"> WARNING: '{detalhe}' >> Area/Departament > {nomeDepartamento}")
+            logging.error(f"> '{detalhe}' >> Area/Departament > {nomeDepartamento}")
         else:
             logging.error(f"> Erro ao listar Departamento area Gupy {nomeDepartamento}: > {detalhe}")
             return None
     
     # Lista Cargo/Role da Gupy   
     def listaCargoRole(self, nomeCargoRole):
-        logging.warning(f"> Listando Cargo Role: {nomeCargoRole}")
-        url = "https://api.gupy.io/api/v1/departments?id=asd&perPage=10&page=1"
+        logging.warning(f"> Listando > Cargo/Role: >> {nomeCargoRole}")
+        url = f"https://api.gupy.io/api/v1/departments?name={nomeCargoRole}&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
                    }
@@ -208,18 +208,19 @@ class conexaoGupy():
                 role_id = cargos[0].get("id")
                 role_name = cargos[0].get("name")
                 role_similarTo = cargos[0].get("similarTo")
-                print(f"> Listou Id da Gupy do Cargo {role_name} com similarTo {role_similarTo} e id sendo {role_id} na GUPY")
-                logging.warning(f"> Listou id da gupy do cargo {role_name} com similarTo {role_similarTo} e id sendo {role_id} na GUPY")
+                print(f"> Listou >> Cargo/Role: {role_name} >> similarTo: {role_similarTo} >> id: {role_id}")
+                logging.warning(f"> Listou >> Cargo/Role: {role_name} >> similarTo: {role_similarTo} >> id: {role_id}")
                 return role_id, role_name, role_similarTo
             else:
-                print(f"> Nenhum id cadastrado encontrado para {role_name}")
-                logging.warning(f"> Nenhum id cadastrado encontrado para {role_name}")
+                print(f"> Nenhum id cadastrado encontrado para cargo >> {nomeCargoRole}")
+                logging.warning(f"> Nenhum id cadastrado encontrado para caargo >> {nomeCargoRole}")
+                return None, None, None
         elif response.status_code == 400:
-            print(f"> WARNING: '{detalhe}' >> Cargo > Nome: {nomeCargoRole}")
-            logging.error(f"> '{detalhe}' >> Cargo > {nomeCargoRole}")
+            print(f"> WARNING: '{detalhe}' >> Cargo/Role > Nome: {nomeCargoRole}")
+            logging.error(f"> '{detalhe}' >> Cargo/Role > {nomeCargoRole}")
         else:
             logging.error(f"> Erro ao listar Cargo role Gupy de {nomeCargoRole}: {detalhe}")
-            return None
+            return None, None, None
     
     # Lista FilialBranch da Gupy
     def listaFilialBranch(self, nomeFilialBranch, codFilialBranch):
