@@ -75,7 +75,7 @@ class conexaoGupy():
                 logging.error(f"> '{detalhe}' >> Usuario: {nomeSenior, email}, (verificaColaboradores.api.criaUsuarioGupy)")
             else:
                 logging.error(f"> Erro ao listar id Gupy de usuario {nomeSenior}: > {detalhe}")
-        return None
+        return None, None, None
      
     # Deleta usuario da Gupy
     def deletaUsuarioGupy(self, idGupy, nomeSenior):
@@ -165,7 +165,7 @@ class conexaoGupy():
 # ============================= Processando Campos para Atualizar =============================================
     # Lista Area/departamento da Gupy
     def listaAreaDepartamento(self, nomeDepartamento):
-        logging.warning(f"> Listando > Area/Departament: >> {nomeDepartamento}")
+        logging.warning(f"> Listando > Area/Departament: >> '{nomeDepartamento}'")
         url = f"https://api.gupy.io/api/v1/departments?name={nomeDepartamento}&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
@@ -195,7 +195,7 @@ class conexaoGupy():
     
     # Lista Cargo/Role da Gupy   
     def listaCargoRole(self, nomeCargoRole):
-        logging.warning(f"> Listando > Cargo/Role: >> {nomeCargoRole}")
+        logging.warning(f"> Listando > Cargo/Role: >> '{nomeCargoRole}'")
         url = f"https://api.gupy.io/api/v1/departments?name={nomeCargoRole}&perPage=10&page=1"
         headers = {"accept": "application/json",
                    "authorization": f"Bearer {self.token}"
@@ -225,8 +225,8 @@ class conexaoGupy():
     
     # Lista FilialBranch da Gupy
     def listaFilialBranch(self, nomeFilialBranch, codFilialBranch):
-        logging.warning(f"> Listando Filial Branch: {nomeFilialBranch} com codigo {codFilialBranch}")
-        url = f"https://api.gupy.io/api/v1/branches?name={nomeFilialBranch}&perPage=10&page=1"
+        logging.warning(f"> Listando Filial Branch: '{nomeFilialBranch}' com codigo '{codFilialBranch}'")
+        url = f"https://api.gupy.io/api/v1/branches?code={codFilialBranch}&perPage=10&page=1"
         headers = {
                 "accept": "application/json",
                 "authorization": f"Bearer {self.token}"
@@ -251,11 +251,11 @@ class conexaoGupy():
             logging.error(f"> '{detalhe}' >> Branch: {codFilialBranch, nomeFilialBranch}")
         else:
            logging.error(f"> Erro ao listar Filial branch {nomeFilialBranch}: {detalhe}")
-        return None
+        return None, None, None
     
     # Cria area departamento
     def criaAreaDepartamento(self, nomeAreaDepartamento, similarTo):
-        logging.critical(f"> criando Area Departamento com {nomeAreaDepartamento} e similar {similarTo}")
+        logging.critical(f"> criando Area Departamento com '{nomeAreaDepartamento}' e similar '{similarTo}'")
         # url = "https://api.gupy.io/api/v1/departments"
         # payload = { 
         #     f"similarTo": str(similarTo),
@@ -278,7 +278,7 @@ class conexaoGupy():
       
     # Cria cargo role
     def criaCargoRole(self, nomeCargoRole, similarTo ):
-        logging.critical(f"> Criando Cargo Role com {nomeCargoRole} e similar {similarTo}")
+        logging.critical(f"> Criando Cargo Role com '{nomeCargoRole}' e similar '{similarTo}'")
         # url = "https://api.gupy.io/api/v1/roles"
         # payload = { 
         #     f"similarTo": str(similarTo),
@@ -301,7 +301,7 @@ class conexaoGupy():
     
     # Cria filial Branch
     def criaFilialBranch(self, cod_filialBranch, nomeFilialBranch):
-        logging.critical(f"> Criando Filial Branch com {cod_filialBranch} e nome {nomeFilialBranch}")
+        logging.critical(f"> Criando Filial Branch com '{cod_filialBranch}' e nome '{nomeFilialBranch}'")
         # url = "https://api.gupy.io/api/v1/departments"
         # payload = { 
         #     f"similarTo": str(cod_filialBranch),

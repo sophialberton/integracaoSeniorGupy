@@ -21,7 +21,7 @@ def processar_campos(api, nome_base, email_base, userGupyId, emailUserGupy, depa
     if branchGupyId is None:
         filial_nome = registros_df.iloc[0].get("Branch_gupy", "Filial Padrão")
         filial_cod = registros_df.iloc[0].get("Filial_cod", "default_branch")
-        branchGupyId = obter_ou_criar_filial(api, filial_nome, filial_cod)
+        branchGupyId, branchGupyNome, branchGupyPath = obter_ou_criar_filial(api, filial_nome, filial_cod)
         campos_faltantes.append("filial")
 
     campos = {
@@ -62,7 +62,7 @@ def obter_ou_criar_cargo(api, nome_cargo):
     return cargo_id, cargo_nome, cargo_similarTo
 
 def obter_ou_criar_filial(api, nome_filial, cod_filial):
-    branch_id = api.listaFilialBranch(nome_filial, cod_filial)
+    branch_id, branch_nome, branch_path = api.listaFilialBranch(nome_filial, cod_filial)
     if not branch_id:
         branch_id = api.criaFilialBranch(cod_filial, nome_filial)
-    return branch_id
+    return branch_id, branch_nome, branch_path
