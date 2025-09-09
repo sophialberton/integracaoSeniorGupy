@@ -1,59 +1,87 @@
-import os
-import sys
 import oracledb
 import logging
 import pandas as pd
-from collections import namedtuple
-from dotenv import load_dotenv,find_dotenv
-src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if src_path not in sys.path:
-    sys.path.append(src_path)
+from dotenv import load_dotenv, find_dotenv
+import time
+import oracledb
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())  # Isso garante que o .env será encontrado corretamente
 
-class DatabaseSenior():
-    def __init__(self,**kwargs):
+
+class conexaoSenior:
+    def __init__(self, **kwargs):
         load_dotenv(find_dotenv())
-        self.connection = None  # Declara conexão como None
-        self.cursor = None # Declara cursor como None
+        self.connection = None
+        self.cursor = None
         self.user_senior = kwargs.get("user_senior")
         self.password_senior = kwargs.get("password_senior")
         self.host_senior = kwargs.get("host_senior")
         self.port_senior = kwargs.get("port_senior")
         self.service_name_senior = kwargs.get("service_name_senior")
-    
-    def conexaoBancoSenior(self):
-        dsn = {
-            'host_senior': self.host_senior,
-            'port_senior': self.port_senior,
-            'service_name_senior': self.service_name_senior,
-            'user_senior': self.user_senior,
-            'password_senior': self.password_senior
-        }
-        # Verifica se as variaveis de ambiente foram carregadas 
-        if None in dsn.values():
-            logging.error("Faltando uma ou mais variáveis de ambiente.")
+
+    def conexaoBancoSenior(self, tentativas=3, atraso=5):
+        """
+        Tenta conectar ao banco de dados com um número definido de tentativas.
+        """
+        if not all([self.host_senior, self.port_senior, self.service_name_senior]):
+            logging.error("Parâmetros de conexão ausentes: host, porta ou service_name estão nulos.")
+            logging.error(f"host_senior={self.host_senior}, port_senior={self.port_senior}, service_name_senior={self.service_name_senior}")
             return False
-        try:
-            self.connection = oracledb.connect( 
-                user=dsn['user_senior'],
-                password=dsn['password_senior'],
-                dsn=oracledb.makedsn(dsn['host_senior'],dsn['port_senior'],service_name=dsn['service_name_senior'])
-            )
-            self.cursor = self.connection.cursor()
-            logging.info(f"-------------->>>Informações da Database--------------")
-            logging.info(">Conexão com o banco de dados estabelecida com sucesso")
-            return self.cursor
-        except oracledb.DatabaseError as e:
-            logging.error(">Erro ao estabelecer conexão: %s", e)
+
+        dsn_str = oracledb.makedsn(self.host_senior, self.port_senior, service_name=self.service_name_senior)
+            
+        for tentativa in range(tentativas):
+            try:
+                self.connection = oracledb.connect(
+                    user=self.user_senior,
+                    password=self.password_senior,
+                    dsn=dsn_str
+                )
+                self.cursor = self.connection.cursor()
+                logging.info("-------------->>>Informacoes da Database--------------")
+                logging.info(">Conexao com o banco de dados estabelecida com sucesso")
+                return True
+            except oracledb.DatabaseError as e:
+                logging.error(f">Erro ao estabelecer conexão (tentativa {tentativa + 1}/{tentativas}): {e}")
+                if tentativa < tentativas - 1:
+                    logging.info(f"Tentando novamente em {atraso} segundos...")
+                    time.sleep(atraso)
+                else:
+                    logging.error("Não foi possível conectar ao banco de dados após várias tentativas.")
+                    return False
             return False
-                        
-    def buscaColaboradorSenior(self):
-        row_data_list = []
-        df = pd.DataFrame()
-        try:
-            self.cursor = self.connection.cursor()
-            self.cursor.execute(# IMPORTANTE: Achar tabela "areaSenior" do Senior para atualizar a área do usuário da Gupy (departmentId)
-                    """
-                    SELECT
+
+    def desconectar(self):
+        """Fecha o cursor e a conexão com o banco de dados de forma segura."""
+        if self.cursor:
+            try:
+                self.cursor.close()
+                logging.info(">Cursor fechado.")
+            except oracledb.DatabaseError as e:
+                logging.error(f">Erro ao fechar o cursor: {e}")
+            finally:
+                self.cursor = None
+        
+        if self.connection:
+            try:
+                self.connection.close()
+                logging.info(">Conexão com o banco de dados fechada.")
+            except oracledb.DatabaseError as e:
+                logging.error(f">Erro ao fechar a conexão: {e}")
+            finally:
+                self.connection = None
+
+    def consultaDadosSenior(self):
+        """
+        Executa a consulta e retorna um DataFrame.
+        Usa pd.read_sql_query para simplificar a obtenção de dados.
+        """
+        if not self.connection:
+            logging.error("> Conexao com o banco de dados não foi estabelecida.")
+            return pd.DataFrame() # Retorna DataFrame vazio
+
+        query = """
+                SELECT
                         FUN.NOMFUN AS Nome,
                         CASE
                             WHEN E.NOMCCU LIKE '%VENDAS%' THEN F.NOMFIL || ' - ' || E.NOMCCU
@@ -106,31 +134,21 @@ class DatabaseSenior():
                         FUN.NUMEMP,
                         FUN.CODFIL,
                         FUN.NUMCAD
-               """ )
-            RowData = namedtuple('RowData', [desc[0] for desc in self.cursor.description])
-            
-            colunas = ['Nome','Branch_gupy','Role_gupy','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
-            # Definindo os nomes das colunas
-            # colunas = ['Empresa', 'Nome', 'TipoColaborador', 'Matricula', 'Cpf', 'Situacao', 'Email']
-
-            # Criando o DataFrame
-            df = pd.DataFrame(self.cursor.fetchall(), columns=colunas)
-                
+                """
+        try:
             logging.info("-------------->>>Query---------------------------------")
-            logging.info(">Consulta executada com sucesso.")
-            # logging.info("------------------------------------------------------------------------------------")            
-        except oracledb.DatabaseError as e:
-            logging.error("Erro ao executar query: %s", e)
-
+            # Usando read_sql_query para mais eficiência
+            df = pd.read_sql_query(query, self.connection)
+            # Renomeia as colunas para o padrão do projeto
+            df.columns = ['Nome','Branch_gupy','Role_gupy','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
+    
+            logging.info(f">Consulta executada com sucesso. {len(df)} registros encontrados.")
+            return df
+        except (oracledb.DatabaseError, pd.io.sql.DatabaseError) as e:
+            logging.error(f">Erro ao executar query: {e}")
+            return pd.DataFrame() # Retorna DataFrame vazio em caso de erro
         finally:
-            if self.cursor:
-                self.cursor.close()
-            logging.info(">Cursor fechado")
-            logging.info("-------------->>>Script Rodandno------------------------")
-            # print(self.row_data_list)
-        return df    
-                  
-        
+            logging.info("-------------->>>Script Rodando------------------------")
         
         
         

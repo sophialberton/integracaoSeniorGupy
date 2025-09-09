@@ -5,7 +5,7 @@ import pandas as pd
 from dotenv import load_dotenv,find_dotenv
 from collections import defaultdict
 from data.conexaoGupy import conexaoGupy
-from data.conexaoSenior import DatabaseSenior
+from data.conexaoSenior import conexaoSenior
 from utils.colaboradores  import (
     carregar_cpfs_ignorados,
     classificar_usuarios_df,
@@ -24,7 +24,7 @@ class ponteSeniorGupy():
     def __init__(self,):
         load_dotenv(find_dotenv())
         self.data = []   
-        self.conexaoSenior = DatabaseSenior()
+        self.conexaoSenior = conexaoSenior()
         self.connection = None  # Declara conexão como None
         self.cursor = None # Declara cursor como None
 
