@@ -3,7 +3,6 @@ import os
 import logging
 import pandas as pd
 from dotenv import load_dotenv,find_dotenv
-from collections import defaultdict
 from data.conexaoGupy import conexaoGupy
 from data.conexaoSenior import conexaoSenior
 from utils.colaboradores  import (
