@@ -58,6 +58,26 @@ integracaoSeniorGupy/
 ├── README.md
 └── requirements.txt
 
+integracaoSeniorGupy/
+├── Logs/
+├── config/
+│   ├── __init__.py
+│   └── mappings.py         # Mapeamentos de cargos e departamentos
+├── connectors/
+│   ├── __init__.py
+│   ├── graph_connector.py  # Lógica de conexão com a API do Microsoft Graph
+│   ├── gupy_connector.py   # Lógica de conexão com a API da Gupy
+│   └── senior_connector.py # Lógica de conexão com o banco de dados Senior
+├── services/
+│   ├── __init__.py
+│   └── collaborator_service.py # Lógica de negócio para processar colaboradores
+├── .env
+├── .gitignore
+├── main.py                   # Ponto de entrada da aplicação
+├── README.md
+└── requirements.txt
+
+
 
 ## Fluxo do Código
 

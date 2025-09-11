@@ -1,5 +1,6 @@
+#mapping
 # Mapeamentos de palavras-chave para departamentos
-departament_mapping = {
+DEPARTMENT_MAPPING = {
     "Tecnologia": "technology",
     "Segurança": "security",
     "Vendas/exportação/loja/Tevendas": "sales",
@@ -18,7 +19,7 @@ departament_mapping = {
 }
 
 # Mapeamentos de palavras-chave para cargos (roles)
-role_mapping = {
+ROLE_MAPPING = {
     "Analista/Atendente/Consultor/Desinger/Preparador/Programador": "analyst",
     "Auxiliar/Assistente/Recepcionista": "auxiliary",
     "Consultor": "consultant",
@@ -30,4 +31,3 @@ role_mapping = {
     "Operador/Almoxarife/Torneiro/Produçao/Produção": "operator",
     "Gerente": "manager"
 }
-

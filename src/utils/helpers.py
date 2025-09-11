@@ -1,46 +1,33 @@
-import logging
 import re
-from .comum import departament_mapping, role_mapping
 
-def obter_dados_usuario_gupy(api, nome_base, email_base):
-    userGupyId, nomeUserGupy, emailUserGupy = api.listaUsuarioGupy(nome_base, email_base)
-    if nomeUserGupy and nomeUserGupy.strip().lower() != nome_base.strip().lower():
-        logging.warning(f"> Nome inconsistente: esperado '{nome_base}', recebido '{nomeUserGupy}' para email '{email_base}'")
-        return None, None, None, None, None
-    departamentGupyId, roleGupyId, branchGupyId = api.listaCamposUsuarioGupy(userGupyId, nome_base, emailUserGupy)
-    return userGupyId, emailUserGupy, departamentGupyId, roleGupyId, branchGupyId
+def format_text(text):
+    """Formata o texto para o padrão Title Case, preservando siglas."""
+    text = str(text)
+    preserved_acronyms = ['III', 'II', 'I']
+    words = text.split()
+    formatted_words = [word.upper() if word.upper() in preserved_acronyms else word.capitalize() for word in words]
+    return ' '.join(formatted_words)
 
-def mapear_campos_usuario(usuario):
-    logging.info("> Mapeando campos do usuário")
-    campos = {"departmentId": usuario.get("departmentId", 0), "roleId": usuario.get("roleId", 0), "branchIds": usuario.get("branchIds", [0])}
-    if campos["departmentId"] == 0:
-        departamento = find_similar_to(usuario.get("departament_gupy", ""), departament_mapping)
-        if departamento:
-            campos["departmentId"] = departamento
-    if campos["roleId"] == 0:
-        cargo = find_similar_to(usuario.get("cargo", ""), role_mapping)
-        if cargo:
-            campos["roleId"] = cargo
-    if campos["branchIds"] == [0]:
-        campos["branchIds"] = ["default_branch"]
-    return campos
-
-def textoPadrao(texto):
-    texto = str(texto)
-    siglas_preservadas = ['III', 'II', 'I']
-    palavras = texto.split()
-    palavras_formatadas = []
-    for palavra in palavras:
-        if palavra.upper() in siglas_preservadas:
-            palavras_formatadas.append(palavra.upper())
-        else:
-            palavras_formatadas.append(palavra.capitalize())
-    return ' '.join(palavras_formatadas)
-
-def find_similar_to(role_gupy, mapping):
-    role_gupy = role_gupy.lower()
+def find_similar_to(text, mapping):
+    """Encontra um valor correspondente em um dicionário de mapeamento."""
+    text_lower = text.lower()
     for keywords, equivalent in mapping.items():
         for keyword in keywords.lower().split('/'):
-            if re.search(rf'\b{re.escape(keyword)}\b', role_gupy):
+            if re.search(rf'\b{re.escape(keyword)}\b', text_lower):
                 return equivalent
+    return None
+
+def extract_valid_email(email_string):
+    """Extrai um e-mail válido de uma string."""
+    if not isinstance(email_string, str):
+        return None
+    
+    valid_domains = ["@fgmdentalgroup.com", "@fgm.ind.br"]
+    emails = email_string.replace(',', ' ').split()
+    
+    for email in emails:
+        email = email.strip()
+        for domain in valid_domains:
+            if domain in email:
+                return email
     return None

@@ -341,3 +341,79 @@ class conexaoGupy():
         else:
             logging.warning(f"> Falha ao buscar dados do usuário {user_id}: {response.status_code}")
             return {}
+
+
+import requests
+import logging
+
+class GupyConnector:
+    """Classe para interagir com a API da Gupy."""
+    
+    _BASE_URL = "https://api.gupy.io/api/v1"
+
+    def __init__(self, token):
+        self.token = token
+        self.headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "authorization": f"Bearer {self.token}"
+        }
+
+    def _get(self, endpoint, params=None):
+        """Método genérico para requisições GET."""
+        try:
+            response = requests.get(f"{self._BASE_URL}/{endpoint}", headers=self.headers, params=params)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição GET para {endpoint}: {e}")
+            return None
+
+    def _post(self, endpoint, data):
+        """Método genérico para requisições POST."""
+        try:
+            response = requests.post(f"{self._BASE_URL}/{endpoint}", headers=self.headers, json=data)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição POST para {endpoint}: {e}")
+            return None
+            
+    def _put(self, endpoint, data):
+        """Método genérico para requisições PUT."""
+        try:
+            response = requests.put(f"{self._BASE_URL}/{endpoint}", headers=self.headers, json=data)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição PUT para {endpoint}: {e}")
+            return None
+
+    def _delete(self, endpoint):
+        """Método genérico para requisições DELETE."""
+        try:
+            response = requests.delete(f"{self._BASE_URL}/{endpoint}", headers=self.headers)
+            response.raise_for_status()
+            return True
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro na requisição DELETE para {endpoint}: {e}")
+            return False
+
+    def get_user_by_email(self, email):
+        """Busca um usuário na Gupy pelo e-mail."""
+        return self._get(f"users?email={email}")
+
+    def create_user(self, name, email, cpf):
+        """Cria um novo usuário na Gupy."""
+        payload = {"name": name, "email": email}
+        return self._post("users", payload)
+
+    def update_user(self, user_id, data):
+        """Atualiza um usuário na Gupy."""
+        return self._put(f"users/{user_id}", data)
+
+    def delete_user(self, user_id):
+        """Deleta um usuário na Gupy."""
+        return self._delete(f"users/{user_id}")
+
+    # ... (outros métodos para interagir com a API da Gupy, como buscar/criar cargos, departamentos, etc.)

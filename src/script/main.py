@@ -3,32 +3,26 @@ import sys
 import logging
 import socket
 from datetime import datetime
+from dotenv import load_dotenv
 
-# Caminho para encontrar a pasta 'src'
-src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-if src_path not in sys.path:
-    sys.path.append(src_path)
+# Adiciona o caminho do projeto ao sys.path
+project_path = os.path.abspath(os.path.dirname(__file__))
+if project_path not in sys.path:
+    sys.path.append(project_path)
 
-from data.conexaoGupy import conexaoGupy
-from data.conexaoGraph import conexaoGraph
-from data.conexaoSenior import conexaoSenior
-from utils.colaboradores import (
-    carregar_cpfs_ignorados,
-    classificar_usuarios_df,
-    agrupar_por_cpf_df,
-    processar_cpf_df,
+from connectors.senior_connector import SeniorConnector
+from connectors.gupy_connector import GupyConnector
+from connectors.graph_connector import GraphConnector
+from services.collaborator_service import CollaboratorService
+from config.settings import (
+    SENIOR_CONFIG, GUPY_CONFIG, GRAPH_CONFIG, EMAIL_LOG,
+    IGNORED_CPFS_PATH, LOG_DIRECTORY
 )
-from dotenv import load_dotenv, find_dotenv
 
-load_dotenv(find_dotenv())
-
-from utils.config import dict_extract, email_log
-
-def configurar_logs():
-    """Configura o sistema de logging para registrar as operações em um arquivo e no console."""
-    log_directory = os.path.join(os.getcwd(), "Logs")
-    os.makedirs(log_directory, exist_ok=True)
-    log_filename = os.path.join(log_directory, datetime.now().strftime("%Y-%m-%d") + "_log.log")
+def setup_logging():
+    """Configura o sistema de logging."""
+    os.makedirs(LOG_DIRECTORY, exist_ok=True)
+    log_filename = os.path.join(LOG_DIRECTORY, f"{datetime.now().strftime('%Y-%m-%d')}_log.log")
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(message)s",
@@ -40,71 +34,46 @@ def configurar_logs():
     logging.info(f"Executando em: HOST={socket.gethostname()}, IP={socket.gethostbyname(socket.gethostname())}")
 
 class Main:
+    """Classe principal que orquestra a integração."""
     def __init__(self):
-        self.conexao_senior = conexaoSenior(**dict_extract["Senior"])
-        self.apiGupy = conexaoGupy()
-        self.utilitarios = conexaoGraph()
+        load_dotenv()
+        self.senior_connector = SeniorConnector(**SENIOR_CONFIG)
+        self.gupy_connector = GupyConnector(**GUPY_CONFIG)
+        self.graph_connector = GraphConnector(**GRAPH_CONFIG)
+        self.collaborator_service = CollaboratorService(self.gupy_connector, IGNORED_CPFS_PATH)
 
-    def enviar_log_diario(self):
-        """Envia o log do dia atual como anexo via Graph API."""
-        log_directory = os.path.join(os.getcwd(), "Logs")
-        log_filename = os.path.join(log_directory, datetime.now().strftime("%Y-%m-%d") + "_log.log")
+    def run(self):
+        """Executa o processo de integração."""
+        logging.info(">>> Iniciando processo de integração Senior-Gupy.")
+        if not self.senior_connector.connect():
+            logging.error("Falha ao conectar no banco de dados Senior. Encerrando execução.")
+            return
 
+        try:
+            collaborators_df = self.senior_connector.get_collaborators_data()
+            if collaborators_df.empty:
+                logging.warning("Nenhum colaborador encontrado. Encerrando execução.")
+                return
+
+            self.collaborator_service.process_collaborators(collaborators_df)
+
+        finally:
+            self.senior_connector.disconnect()
+            logging.info(">>> Processo finalizado.")
+            self.send_daily_log()
+
+    def send_daily_log(self):
+        """Envia o log diário por e-mail."""
+        log_filename = os.path.join(LOG_DIRECTORY, f"{datetime.now().strftime('%Y-%m-%d')}_log.log")
         if not os.path.exists(log_filename):
             logging.warning(f"Log do dia não encontrado: {log_filename}")
             return
 
-        assunto = "Log Diário - Integração Gupy"
-        corpo = "Segue em anexo o log diário referente a automação de cadastros e atualizações de colaboradores na plataforma gupy."
-        self.utilitarios.enviar_email_log(email_log, log_filename, assunto, corpo)
-
-    def executar(self):
-        """Ponto de entrada principal que executa todo o processo."""
-        logging.info(">>> Iniciando processo de integração Senior-Gupy.")
-        if not self.conexao_senior.conexaoBancoSenior():
-            logging.error("Falha ao conectar no banco de dados. Encerrando execução.")
-            return
-
-        try:
-            colaboradores_df = self.conexao_senior.consultaDadosSenior()
-            if colaboradores_df.empty:
-                logging.warning("Nenhum colaborador encontrado. Encerrando execução.")
-                return
-
-            logging.info("> Iniciando verificação de colaboradores")
-            cpfs_ignorados = carregar_cpfs_ignorados('src/data/ignoradosRH.csv')
-            print(f"> CPFs ignorados carregados: {len(cpfs_ignorados)}")
-
-            df_validos, df_invalidos, df_ignorados = classificar_usuarios_df(colaboradores_df, cpfs_ignorados)
-            df_nao_ignorados = pd.concat([df_validos, df_invalidos], ignore_index=True)
-            usuarios_ativos_sem_email = df_invalidos[df_invalidos['Situacao'] != 7]
-
-            print(f"> Total de registros: {len(df_nao_ignorados)}")
-            print(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
-            print(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
-            print(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
-            print(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
-            logging.info(f"> Total de registros: {len(df_nao_ignorados)}")
-            logging.info(f"> Total de registros ignorados (RH e Diretorias): {len(df_ignorados)}")
-            logging.info(f"> Total de registros validos (Com email valido para criar usuario Gupy): {len(df_validos)}")
-            logging.info(f"> Total de registros invalidos (Sem email valido para criar usuario Gupy): {len(df_invalidos)}")
-            logging.info(f"> Total de registros ATIVOS SEM EMAIL (Deve criar usuario mas nao eh possivel por ausensia de email valido): {len(usuarios_ativos_sem_email)}")
-
-            logging.info("> Agrupando colaboradores por CPF")
-            usuarios_por_cpf = agrupar_por_cpf_df(df_nao_ignorados)
-            print(f"> Total de CPFs agrupados: {len(usuarios_por_cpf)}")
-            logging.info("> Iniciando processamento por CPF")
-
-            for cpf, registros_df in usuarios_por_cpf.items():
-                logging.warning(f"> Processando CPF: {cpf}")
-                processar_cpf_df(self.apiGupy, cpf, registros_df)
-
-        finally:
-            self.conexao_senior.desconectar()
-            logging.info(">>> Processo finalizado.")
-            self.enviar_log_diario()
+        subject = "Log Diário - Integração Gupy"
+        body = "Segue em anexo o log diário referente à automação de cadastros e atualizações de colaboradores na plataforma Gupy."
+        self.graph_connector.send_email_with_attachment(EMAIL_LOG, subject, body, log_filename)
 
 if __name__ == "__main__":
-    configurar_logs()
+    setup_logging()
     main_app = Main()
-    main_app.executar()
+    main_app.run()
