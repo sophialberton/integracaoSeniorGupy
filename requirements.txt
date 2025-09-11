@@ -2,3 +2,4 @@ python-dotenv
 requests
 oracledb
 pandas
+unidecode
