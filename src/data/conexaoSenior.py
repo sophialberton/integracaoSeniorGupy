@@ -3,12 +3,14 @@ import logging
 import pandas as pd
 from dotenv import load_dotenv, find_dotenv
 import time
-from utils.helpers import textoPadrao
+import oracledb
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())  # Isso garante que o .env será encontrado corretamente
 
-load_dotenv(find_dotenv())
 
 class conexaoSenior:
     def __init__(self, **kwargs):
+        load_dotenv(find_dotenv())
         self.connection = None
         self.cursor = None
         self.user_senior = kwargs.get("user_senior")
@@ -18,15 +20,23 @@ class conexaoSenior:
         self.service_name_senior = kwargs.get("service_name_senior")
 
     def conexaoBancoSenior(self, tentativas=3, atraso=5):
+        """
+        Tenta conectar ao banco de dados com um número definido de tentativas.
+        """
         if not all([self.host_senior, self.port_senior, self.service_name_senior]):
             logging.error("Parâmetros de conexão ausentes: host, porta ou service_name estão nulos.")
+            logging.error(f"host_senior={self.host_senior}, port_senior={self.port_senior}, service_name_senior={self.service_name_senior}")
             return False
 
         dsn_str = oracledb.makedsn(self.host_senior, self.port_senior, service_name=self.service_name_senior)
-
+            
         for tentativa in range(tentativas):
             try:
-                self.connection = oracledb.connect(user=self.user_senior, password=self.password_senior, dsn=dsn_str)
+                self.connection = oracledb.connect(
+                    user=self.user_senior,
+                    password=self.password_senior,
+                    dsn=dsn_str
+                )
                 self.cursor = self.connection.cursor()
                 logging.info("-------------->>>Informacoes da Database--------------")
                 logging.info(">Conexao com o banco de dados estabelecida com sucesso")
@@ -39,9 +49,10 @@ class conexaoSenior:
                 else:
                     logging.error("Não foi possível conectar ao banco de dados após várias tentativas.")
                     return False
-        return False
+            return False
 
     def desconectar(self):
+        """Fecha o cursor e a conexão com o banco de dados de forma segura."""
         if self.cursor:
             try:
                 self.cursor.close()
@@ -50,6 +61,7 @@ class conexaoSenior:
                 logging.error(f">Erro ao fechar o cursor: {e}")
             finally:
                 self.cursor = None
+        
         if self.connection:
             try:
                 self.connection.close()
@@ -60,44 +72,89 @@ class conexaoSenior:
                 self.connection = None
 
     def consultaDadosSenior(self):
+        """
+        Executa a consulta e retorna um DataFrame.
+        Usa pd.read_sql_query para simplificar a obtenção de dados.
+        """
         if not self.connection:
             logging.error("> Conexao com o banco de dados não foi estabelecida.")
-            return pd.DataFrame()
+            return pd.DataFrame() # Retorna DataFrame vazio
 
         query = """
                 SELECT
-                    FUN.NOMFUN AS Nome,
-                    CASE WHEN E.NOMCCU LIKE '%VENDAS%' THEN F.NOMFIL || ' - ' || E.NOMCCU ELSE F.NOMFIL END AS "Branch_gupy",
-                    CAR.TITCAR || ' - ' || R.DESSIS AS "Role_gupy" ,
-                    CASE WHEN UPPER(G.NOMLOC) LIKE '%VENDAS%' OR UPPER(G.NOMLOC) LIKE '%REGIÃO%' THEN E.NOMCCU ELSE E.NOMCCU || ' - ' || G.NOMLOC END AS "Departamento_gupy",
-                    FUN.NUMEMP AS "Filial_cod",
-                    FUN.NUMCAD AS Matricula,
-                    FUN.NUMCPF AS Cpf,
-                    FUN.SITAFA AS Situacao,
-                    EM.EMACOM AS Email,
-                    S.INIETB,
-                    S.FIMETB
-                FROM SENIOR.R034FUN FUN
-                INNER JOIN SENIOR.R024CAR CAR ON FUN.CODCAR = CAR.CODCAR AND FUN.ESTCAR = CAR.ESTCAR
-                JOIN SENIOR.R018CCU E ON E.NUMEMP = FUN.NUMEMP AND E.CODCCU = FUN.CODCCU
-                JOIN SENIOR.R030FIL F ON FUN.NUMEMP = F.NUMEMP AND FUN.CODFIL = F.CODFIL
-                JOIN SENIOR.R016ORN G ON G.TABORG = FUN.TABORG AND G.NUMLOC = FUN.NUMLOC
-                LEFT JOIN SENIOR.R024SIS R ON CAR.SISCAR = R.SISCAR
-                LEFT JOIN SENIOR.R034CPL EM ON FUN.NUMEMP = EM.NUMEMP AND FUN.NUMCAD = EM.NUMCAD AND FUN.TIPCOL = EM.TIPCOL
-                LEFT JOIN SENIOR.R038HEB S ON FUN.NUMEMP = S.NUMEMP AND FUN.TIPCOL = S.TIPCOL AND FUN.NUMCAD = S.NUMCAD AND FUN.DATETB = S.INIETB
-                WHERE FUN.NUMEMP IN (219, 220, 221, 620) AND FUN.TIPCOL = 1 AND FUN.SITAFA <> 7 AND FUN.CODCAR NOT IN (110355)
-                ORDER BY FUN.NUMEMP, FUN.CODFIL, FUN.NUMCAD
+                        FUN.NOMFUN AS Nome,
+                        CASE
+                            WHEN E.NOMCCU LIKE '%VENDAS%' THEN F.NOMFIL || ' - ' || E.NOMCCU
+                            ELSE F.NOMFIL
+                        END AS "Branch_gupy",
+                        CAR.TITCAR || ' - ' || R.DESSIS AS "Role_gupy" ,
+                        CASE
+                            WHEN UPPER(G.NOMLOC) LIKE '%VENDAS%'
+                            OR UPPER(G.NOMLOC) LIKE '%REGIÃO%' THEN E.NOMCCU
+                            ELSE E.NOMCCU || ' - ' || G.NOMLOC
+                        END AS "Departamento_gupy",
+                        FUN.NUMEMP AS "Filial_cod",
+                        FUN.NUMCAD AS Matricula,
+                        FUN.NUMCPF AS Cpf,
+                        FUN.SITAFA AS Situacao,
+                        EM.EMACOM AS Email,
+                        S.INIETB,
+                        S.FIMETB
+                    FROM
+                        SENIOR.R034FUN FUN
+                    INNER JOIN SENIOR.R024CAR CAR ON
+                        FUN.CODCAR = CAR.CODCAR
+                        AND FUN.ESTCAR = CAR.ESTCAR
+                    JOIN SENIOR.R018CCU E ON
+                        E.NUMEMP = FUN.NUMEMP
+                        AND E.CODCCU = FUN.CODCCU
+                    JOIN SENIOR.R030FIL F ON
+                        FUN.NUMEMP = F.NUMEMP
+                        AND FUN.CODFIL = F.CODFIL
+                    JOIN SENIOR.R016ORN G ON
+                        G.TABORG = FUN.TABORG
+                        AND G.NUMLOC = FUN.NUMLOC
+                    LEFT JOIN SENIOR.R024SIS R ON
+                        CAR.SISCAR = R.SISCAR
+                    LEFT JOIN SENIOR.R034CPL EM ON
+                        FUN.NUMEMP = EM.NUMEMP
+                        AND FUN.NUMCAD = EM.NUMCAD
+                        AND FUN.TIPCOL = EM.TIPCOL
+                    LEFT JOIN SENIOR.R038HEB S ON
+                        FUN.NUMEMP = S.NUMEMP
+                        AND FUN.TIPCOL = S.TIPCOL
+                        AND FUN.NUMCAD = S.NUMCAD
+                        AND FUN.DATETB = S.INIETB
+                    WHERE
+                        FUN.NUMEMP IN (219, 220, 221, 620)
+                        AND FUN.TIPCOL = 1
+                        AND FUN.SITAFA <> 7
+                        AND FUN.CODCAR NOT IN (110355)
+                    ORDER BY
+                        FUN.NUMEMP,
+                        FUN.CODFIL,
+                        FUN.NUMCAD
                 """
         try:
             logging.info("-------------->>>Query---------------------------------")
+            # Usando read_sql_query para mais eficiência
             df = pd.read_sql_query(query, self.connection)
+            # Renomeia as colunas para o padrão do projeto
             df.columns = ['Nome','Branch_gupy','Role_gupy','Departamento_gupy','Filial_cod','Matricula','Cpf', 'Situacao', 'Email','INIETB','FIMETB']
-            for col in ['Branch_gupy', 'Role_gupy', 'Departamento_gupy']:
-                df[col] = df[col].apply(textoPadrao)
+    
             logging.info(f">Consulta executada com sucesso. {len(df)} registros encontrados.")
             return df
         except (oracledb.DatabaseError, pd.io.sql.DatabaseError) as e:
             logging.error(f">Erro ao executar query: {e}")
-            return pd.DataFrame()
+            return pd.DataFrame() # Retorna DataFrame vazio em caso de erro
         finally:
             logging.info("-------------->>>Script Rodando------------------------")
+        
+        
+        
+        
+        
+        
+        
+        
+        
