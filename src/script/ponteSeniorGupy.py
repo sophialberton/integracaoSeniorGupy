@@ -81,7 +81,7 @@ class ponteSeniorGupy():
             resultado = processar_cpf_df(api, cpf, registros_df)
 
             if not resultado or not resultado.get("usuario"):
-                logging.critical(f"> Nenhum resultado válido para CPF {cpf} ({nome_base})")
+                logging.critical(f"> Nenhum resultado válido para CPF {cpf}")
                 continue
 
             usuario = resultado["usuario"]
