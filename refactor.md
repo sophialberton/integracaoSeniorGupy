@@ -54,12 +54,46 @@ Se encontrar possiveis erros de lógica me avise
     ├── test_colaboradores.py
     └── test_conexoes.py    
 
-Execute o Script em um Ambiente Controlado: Rode o script normalmente. Não se preocupe com ele "estragar" algo em massa, pois as criações serão pontuais.
+REGRAS A IMPLEMENTAR: 
 
-Monitore os Logs Atentamente: Fique de olho nas mensagens de WARNING que indicam a criação de novos cargos, departamentos ou filiais. Anote todos que forem criados.
+- O UNICO EMAIL VÁLIDO QUE DEVE SER USADO DEVE SER DO ENDEREÇO fgmdentalgroup.com, ignore o @fgm.ind.br, se ele tiver apenas o @fgm.ind.br ou nenhum, coloque na lista de PRECISA_ATAULIZAR_EMAIL
+- ANTES DE CRIAR QUALQUER COISA
+     - ***DEVE*** VERIFICAR SE TAL USUARIO, CARGO, BRANCH, DEPARTAMENTO já existe
+          - Usuario consulta pelo email, se JÀ tem um email @fgm.ind.br ou fgmdentalgroup.com cadastrado no nome dele -> NAO CRIA
+          - Cargo e departamento deve ser buscados como "Semelhantes" ou "equivalentes"
+          - Branch/Filial tambem.
+- 
 
-Valide na Gupy: Após a execução, entre na plataforma da Gupy e verifique os novos campos que foram criados. Compare com os que já existiam. Você provavelmente encontrará casos como o do "Líder de Produção" que mencionei.
 
-Ajuste Fino do Mapeamento: Com base na sua validação, você terá uma lista de nomes do Senior que deveriam ser associados a cargos/departamentos já existentes na Gupy. Agora, você vai tratar isso com foco no único lugar necessário: o arquivo utils/mapeamento.py.
+PS C:\github\integracaoSeniorGupy> python main.py
+2025-09-12 12:57:07 INFO Executando em: HOST=DEN-NOTE-06000, IP=10.1.8.103
+2025-09-12 12:57:07 INFO >>> Iniciando processo de integração Senior-Gupy.
+2025-09-12 12:57:07 INFO Conexão com o banco de dados Senior estabelecida com sucesso.
+C:\github\integracaoSeniorGupy\servicos\conexao_senior.py:87: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql_query(query, self.connection)
+2025-09-12 12:57:08 INFO Consulta ao Senior retornou 720 registros.
+2025-09-12 12:57:08 INFO Total de registros recebidos do Senior: 720
+2025-09-12 12:57:08 INFO Registros com e-mail válido para processar: 574
+2025-09-12 12:57:08 INFO Registros sem e-mail válido nos domínios: 138
+2025-09-12 12:57:08 INFO Registros ignorados por CPF: 8
+2025-09-12 12:57:08 INFO Processando CPF: 00254820174 - Nome: Douglas Agustini
+2025-09-12 12:57:09 INFO Colaborador ativo não encontrado na Gupy. Criando usuário: Douglas Agustini
+2025-09-12 12:57:11 INFO Usuário criado na Gupy: Douglas Agustini (douglas.agustini@fgm.ind.br)
+2025-09-12 12:57:11 CRITICAL Ocorreu um erro inesperado no processo principal: 'ServicoGupy' object has no attribute 'obter_ou_criar_cargo'
+Traceback (most recent call last):
+  File "C:\github\integracaoSeniorGupy\main.py", line 50, in main
+    processar_colaboradores(servico_gupy, colaboradores_df)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 120, in processar_colaboradores
+    dados_para_atualizar = _obter_ou_criar_dados_gupy(servico_gupy, registro_principal)
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 54, in _obter_ou_criar_dados_gupy
+    cargo_id = servico_gupy.obter_ou_criar_cargo(nome_cargo, similar_to_cargo)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ServicoGupy' object has no attribute 'obter_ou_criar_cargo'
+2025-09-12 12:57:11 INFO Conexão com o banco de dados Senior fechada.
+2025-09-12 12:57:11 INFO >>> Processo finalizado.
+2025-09-12 12:57:11 INFO Token de acesso para o MS Graph obtido com sucesso.
+2025-09-12 12:57:13 ERROR Falha ao enviar e-mail de log: 503 - Authentication Concurrency Limit Reached
+PS C:\github\integracaoSeniorGupy> 
 
-Por exemplo, se você descobrir que vários cargos do Senior como "Coord De Vendas", "Coordenador Comercial" deveriam ser o mesmo cargo "Coordenador de Vendas" na Gupy, você pode adicionar mais palavras-chave ao seu mapa para capturar essas variações.
+esse foi o log...

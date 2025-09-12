@@ -51,7 +51,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     if nome_cargo:
         similar_to_cargo = encontrar_similar_to(nome_cargo, MAPA_CARGOS)
         # Supondo que ServicoGupy terá um método `obter_ou_criar_cargo`
-        cargo_id = servico_gupy.obter_ou_criar_cargo(nome_cargo, similar_to_cargo)
+        cargo_id = servico_gupy.criar_cargo(nome_cargo, similar_to_cargo)
         if cargo_id:
             dados_atualizacao['roleId'] = cargo_id
 
