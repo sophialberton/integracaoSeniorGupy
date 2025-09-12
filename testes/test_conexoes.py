@@ -33,10 +33,10 @@ class TestServicosExternos(unittest.TestCase):
         mock_request.return_value = mock_response
         
         servico_gupy = ServicoGupy(token="fake_token")
-        usuario = servico_gupy.listar_usuario_por_email("alice@exemplo.com")
+        user_id, user_name, user_email = servico_gupy.listar_usuario_por_email("alice@exemplo.com")
         
-        self.assertIsNotNone(usuario)
-        self.assertEqual(usuario['id'], 123)
+        self.assertIsNotNone(user_name)
+        self.assertEqual(user_id, 123)
         mock_request.assert_called_with(
             "get",
             "https://api.gupy.io/api/v1/users?email=alice@exemplo.com",

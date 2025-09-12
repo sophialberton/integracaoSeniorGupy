@@ -31,16 +31,33 @@ class ServicoGupy:
 
     def listar_usuario_por_email(self, email):
         """Busca um usuário na Gupy pelo e-mail."""
-        if not email:
+        # Define o segundo email alternativo com base no domínio original
+        if "@fgmdentalgroup.com" in email:
+            emailAlternativo = email.replace("@fgmdentalgroup.com", "@fgm.ind.br")
+        elif "@fgm.ind.br" in email:
+            emailAlternativo = email.replace("@fgm.ind.br", "@fgmdentalgroup.com")
+        else:
+            logging.warning(f"> Email {email} não possui domínio reconhecido.")
             return None
         
-        endpoint = f"users?email={email.strip()}"
-        data = self._realizar_requisicao("get", endpoint)
-        
-        if data and data.get("results"):
-            return data["results"][0]
-        return None
-
+        for email in [email, emailAlternativo]:
+            endpoint = f"users?email={email.strip()}"
+            data = self._realizar_requisicao("get", endpoint)
+            if data and data.get("results"):
+                return data["results"][0]
+            usuarios = data.get("results", [])
+            if usuarios:
+                user_id = usuarios[0].get("id")
+                user_name = usuarios[0].get("name")
+                user_email = usuarios[0].get("email")
+                print(f"> Listou id da gupy do usuario {user_name} com email {user_email} e id sendo {user_id} na GUPY")
+                logging.warning(f"> Listou id da gupy do usuario {user_name} com email {user_email} e id sendo {user_id} na GUPY")
+                return user_id, user_name, user_email
+            else:
+                print(f"> Nenhum id cadastrado encontrado para {email}")
+                logging.warning(f"> Nenhum id cadastrado encontrado para {email}")
+        return None, None, None
+    
     def criar_usuario(self, nome, email, cpf):
         """Cria um novo usuário na Gupy."""
         endpoint = "users"

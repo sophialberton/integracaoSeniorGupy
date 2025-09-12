@@ -63,7 +63,23 @@ REGRAS A IMPLEMENTAR:
           - Cargo e departamento deve ser buscados como "Semelhantes" ou "equivalentes"
           - Branch/Filial tambem.
 - 
+E na refatoração na função def _realizar_requisicao(self, method, endpoint, **kwargs):
+        """Função auxiliar para realizar requisições HTTP."""
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            response = requests.request(method, url, headers=self.headers, timeout=20, **kwargs)
+            response.raise_for_status()
+            # Retorna None para status 204 (No Content) que é comum em DELETE
+            if response.status_code == 204:
+                return None
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"Erro HTTP na API Gupy para {url}: {e.response.status_code} - {e.response.text}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro de conexão com a API Gupy para {url}: {e}")
+        return None
 
+algumas outras funções precisam de uma url diferente...
 
 PS C:\github\integracaoSeniorGupy> python main.py
 2025-09-12 12:57:07 INFO Executando em: HOST=DEN-NOTE-06000, IP=10.1.8.103
@@ -132,3 +148,35 @@ PS C:\github\integracaoSeniorGupy>
 
 
 ele nao deveria criar o cadastro do douglas, posi ele ja tem! 
+
+
+PS C:\github\integracaoSeniorGupy> python main.py
+2025-09-12 14:36:29 INFO Executando em: HOST=DEN-NOTE-06000, IP=10.1.8.103
+2025-09-12 14:36:29 INFO >>> Iniciando processo de integração Senior-Gupy.
+2025-09-12 14:36:29 INFO Conexão com o banco de dados Senior estabelecida com sucesso.
+C:\github\integracaoSeniorGupy\servicos\conexao_senior.py:87: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql_query(query, self.connection)
+2025-09-12 14:36:29 INFO Consulta ao Senior retornou 720 registros.
+2025-09-12 14:36:29 INFO Total de registros recebidos do Senior: 720
+2025-09-12 14:36:29 INFO Registros com e-mail válido para processar: 574
+2025-09-12 14:36:29 INFO Registros sem e-mail válido nos domínios: 138
+2025-09-12 14:36:29 INFO Registros ignorados por CPF: 8
+2025-09-12 14:36:29 INFO Processando CPF: 00254820174 - Nome: Douglas Agustini
+> Nenhum id cadastrado encontrado para douglas.agustini@fgm.ind.br
+2025-09-12 14:36:30 WARNING > Nenhum id cadastrado encontrado para douglas.agustini@fgm.ind.br
+2025-09-12 14:36:31 INFO Colaborador ativo (Douglas Agustini) já existe na Gupy. Verificando necessidade de atualização.
+2025-09-12 14:36:31 CRITICAL Ocorreu um erro inesperado no processo principal: 'ServicoGupy' object has no attribute 'obter_ou_criar_departamento'
+Traceback (most recent call last):
+  File "C:\github\integracaoSeniorGupy\main.py", line 50, in main
+    processar_colaboradores(servico_gupy, colaboradores_df)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 127, in processar_colaboradores
+    dados_para_atualizar = _obter_ou_criar_dados_gupy(servico_gupy, registro_principal)
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 63, in _obter_ou_criar_dados_gupy
+    dep_id = servico_gupy.obter_ou_criar_departamento(nome_departamento, similar_to_dep)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ServicoGupy' object has no attribute 'obter_ou_criar_departamento'
+2025-09-12 14:36:31 INFO Conexão com o banco de dados Senior fechada.
+2025-09-12 14:36:31 INFO >>> Processo finalizado.
+2025-09-12 14:36:31 INFO Token de acesso para o MS Graph obtido com sucesso.
+2025-09-12 14:36:32 INFO E-mail de log enviado com sucesso para sophia.alberton@fgmdentalgroup.com.
