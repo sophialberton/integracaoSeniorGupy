@@ -97,3 +97,38 @@ AttributeError: 'ServicoGupy' object has no attribute 'obter_ou_criar_cargo'
 PS C:\github\integracaoSeniorGupy> 
 
 esse foi o log...
+
+
+PS C:\github\integracaoSeniorGupy> python main.py
+2025-09-12 14:07:14 INFO Executando em: HOST=DEN-NOTE-06000, IP=10.1.8.103
+2025-09-12 14:07:14 INFO >>> Iniciando processo de integração Senior-Gupy.
+2025-09-12 14:07:14 INFO Conexão com o banco de dados Senior estabelecida com sucesso.
+C:\github\integracaoSeniorGupy\servicos\conexao_senior.py:87: UserWarning: pandas only supports SQLAlchemy connectable (engine/connection) or database string URI or sqlite3 DBAPI2 connection. Other DBAPI2 objects are not tested. Please consider using SQLAlchemy.
+  df = pd.read_sql_query(query, self.connection)
+2025-09-12 14:07:14 INFO Consulta ao Senior retornou 720 registros.
+2025-09-12 14:07:14 INFO Total de registros recebidos do Senior: 720
+2025-09-12 14:07:14 INFO Registros com e-mail válido para processar: 574
+2025-09-12 14:07:14 INFO Registros sem e-mail válido nos domínios: 138
+2025-09-12 14:07:14 INFO Registros ignorados por CPF: 8
+2025-09-12 14:07:14 INFO Processando CPF: 00254820174 - Nome: Douglas Agustini
+2025-09-12 14:07:15 INFO Colaborador ativo não encontrado na Gupy. Criando usuário: Douglas Agustini
+2025-09-12 14:07:16 INFO Usuário criado na Gupy: Douglas Agustini (douglas.agustini@fgm.ind.br)
+2025-09-12 14:07:16 CRITICAL Ocorreu um erro inesperado no processo principal: 'ServicoGupy' object has no attribute 'obter_ou_criar_departamento'
+Traceback (most recent call last):
+  File "C:\github\integracaoSeniorGupy\main.py", line 50, in main
+    processar_colaboradores(servico_gupy, colaboradores_df)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 120, in processar_colaboradores
+    dados_para_atualizar = _obter_ou_criar_dados_gupy(servico_gupy, registro_principal)
+  File "C:\github\integracaoSeniorGupy\utils\colaboradores.py", line 63, in _obter_ou_criar_dados_gupy
+    dep_id = servico_gupy.obter_ou_criar_departamento(nome_departamento, similar_to_dep)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'ServicoGupy' object has no attribute 'obter_ou_criar_departamento'
+2025-09-12 14:07:16 INFO Conexão com o banco de dados Senior fechada.
+2025-09-12 14:07:16 INFO >>> Processo finalizado.
+2025-09-12 14:07:17 INFO Token de acesso para o MS Graph obtido com sucesso.
+2025-09-12 14:07:18 INFO E-mail de log enviado com sucesso para sophia.alberton@fgmdentalgroup.com.
+PS C:\github\integracaoSeniorGupy>
+
+
+ele nao deveria criar o cadastro do douglas, posi ele ja tem! 
