@@ -59,8 +59,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     nome_departamento = registro.get("Departamento_gupy")
     if nome_departamento:
         similar_to_dep = encontrar_similar_to(nome_departamento, MAPA_DEPARTAMENTOS)
-        # Supondo que ServicoGupy terá um método `obter_ou_criar_departamento`
-        dep_id = servico_gupy.obter_ou_criar_departamento(nome_departamento, similar_to_dep)
+        dep_id = servico_gupy.criar_departamento(nome_departamento, similar_to_dep)
         if dep_id:
             dados_atualizacao['departmentId'] = dep_id
     
@@ -68,8 +67,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     nome_filial = registro.get("Branch_gupy")
     cod_filial = registro.get("Filial_cod")
     if nome_filial and cod_filial:
-        # Supondo que ServicoGupy terá um método `obter_ou_criar_filial`
-        branch_id = servico_gupy.obter_ou_criar_filial(nome_filial, cod_filial)
+        branch_id = servico_gupy.criar_filial(nome_filial, cod_filial)
         if branch_id:
             dados_atualizacao['branchIds'] = [branch_id]
 
@@ -103,7 +101,7 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
         # Verifica a situação de todas as matrículas do CPF. Se TODAS forem 7, ele está desligado.
         todas_desligadas = (registros_df['Situacao'] == 7).all()
         
-        usuario_gupy = servico_gupy.listar_usuario_por_email(email)
+        usuario_gupy = servico_gupy.listar_usuario_por_email(nome, email)
 
         if todas_desligadas:
             if usuario_gupy:

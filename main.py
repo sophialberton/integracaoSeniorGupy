@@ -17,15 +17,29 @@ def configurar_logs():
     """Configura o sistema de logging."""
     log_directory = os.path.join(os.getcwd(), "logs")
     os.makedirs(log_directory, exist_ok=True)
+
     log_filename = os.path.join(log_directory, f"{datetime.now().strftime('%Y-%m-%d')}_log.log")
+
+    # Cria os handlers separadamente
+    file_handler = logging.FileHandler(log_filename, encoding='utf-8')
+    stream_handler = logging.StreamHandler()
+
+    # Define o formato
+    formatter = logging.Formatter(
+        fmt="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"
+    )
+    file_handler.setFormatter(formatter)
+    stream_handler.setFormatter(formatter)
+
+    # Configura o root logger
     logging.basicConfig(
         level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s",
-        encoding='utf-8',
-        datefmt="%Y-%m-%d %H:%M:%S",
-        handlers=[logging.FileHandler(log_filename), logging.StreamHandler()],
+        handlers=[file_handler, stream_handler],
         force=True
     )
+
+    # Mensagem de teste
     logging.info(f"Executando em: HOST={socket.gethostname()}, IP={socket.gethostbyname(socket.gethostname())}")
 
 def main():
