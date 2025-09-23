@@ -81,7 +81,11 @@ class ServicoGupy:
                     user_name = usuarios[0].get("name")
                     user_email = usuarios[0].get("email")
                     logging.info(f"> Listou id da Gupy do usuário {user_name} com email {user_email} e id {user_id}")
-                    return user_id, user_name, user_email
+                    return {
+                            "id": user_id,
+                            "name": user_name,
+                            "email": user_email
+                        }
                 else:
                     logging.warning(f"> Nenhum id cadastrado encontrado para {email_consulta}")
             else:
