@@ -4,8 +4,6 @@ Funções novas e antigas devem ter nome padronizados e descritivos em portugues
 
 REGRAS A IMPLEMENTAR: 
 
-Listar todos Cargo, departamento e filial que retornarem similarTo "none" para que eu possar encontrar um equivalente 
-
 arrumar o criar/lista cargo e cria/lista filial seguindo a logica das outras funções.
 
 Queria ajeitar o loggin geral para que focasse em cada usuario, fiando tipo:
