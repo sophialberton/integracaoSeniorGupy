@@ -1,0 +1,353 @@
+id;name;code;similarTo;createdAt;updatedAt
+668555;Analista Pleno;;analyst;2022-10-14T13:57:24.838Z;2022-10-14T13:57:24.838Z
+687375;Almoxarife;;operator;2022-11-03T14:04:25.270Z;2025-04-28T10:56:47.575Z
+687376;Analista de Adm. de Vendas Júnior;;analyst;2022-11-03T14:04:25.342Z;2025-04-28T11:13:03.180Z
+687377;Analista de Adm. de Vendas Pleno ;;analyst;2022-11-03T14:04:25.413Z;2025-04-28T11:13:16.328Z
+687378;Analista de Adm. de Vendas Sênior;;analyst;2022-11-03T14:04:25.493Z;2025-04-28T11:13:29.728Z
+687379;Analista de Assuntos Regulatórios Júnior;;analyst;2022-11-03T14:04:25.556Z;2025-04-28T11:00:18.392Z
+687380;Analista de Assuntos Regulatórios Pleno;;analyst;2022-11-03T14:04:25.653Z;2025-04-28T11:00:29.655Z
+687381;Analista de Assuntos Regulatórios Sênior;;analyst;2022-11-03T14:04:25.744Z;2025-04-28T11:00:42.423Z
+687382;Analista de Business Intelligence Júnior;;analyst;2022-11-03T14:04:25.819Z;2025-04-28T11:01:32.792Z
+687383;Analista de Business Intelligence Pleno;;analyst;2022-11-03T14:04:25.938Z;2025-04-28T11:01:44.996Z
+687384;Analista de Business Intelligence Sênior;;analyst;2022-11-03T14:04:26.037Z;2025-04-28T11:01:55.296Z
+687385;Assistente de Comércio Exterior;;auxiliary;2022-11-03T14:04:26.108Z;2025-04-28T11:03:04.333Z
+687386;Analista de Comércio Exterior Pleno;;analyst;2022-11-03T14:04:26.178Z;2025-04-28T11:03:31.973Z
+687387;Analista de Comércio Exterior Sênior;;analyst;2022-11-03T14:04:26.275Z;2025-04-28T11:03:45.838Z
+687388;Assistente de Compras ;;auxiliary;2022-11-03T14:04:26.362Z;2025-04-28T11:05:26.031Z
+687389;Analista de Compras Pleno;;analyst;2022-11-03T14:04:26.426Z;2025-04-28T11:25:11.363Z
+687390;Analista de Compras Sênior;;analyst;2022-11-03T14:04:26.499Z;2025-04-28T11:06:59.392Z
+687391;Analista Contábil Júnior;;analyst;2022-11-03T14:04:26.601Z;2025-04-28T11:08:08.887Z
+687393;Analista Contábil Patrimonial Pleno;;analyst;2022-11-03T14:04:26.747Z;2025-04-28T11:11:17.514Z
+687395;Analista Contábil Pleno;;analyst;2022-11-03T14:04:26.877Z;2025-04-28T11:08:21.805Z
+687396;Analista Contábil Sênior;;analyst;2022-11-03T14:04:27.220Z;2025-04-28T11:09:31.450Z
+687397;Analista de Controladoria Júnior;;analyst;2022-11-03T14:04:27.398Z;2025-04-28T11:11:46.177Z
+687398;Analista de Controladoria Pleno;;analyst;2022-11-03T14:04:27.499Z;2025-04-28T11:12:01.751Z
+687399;Analista de Controladoria Sênior;;analyst;2022-11-03T14:04:27.559Z;2025-04-28T11:12:17.993Z
+687400;Analista de Marketing Institucional Júnior;;analyst;2022-11-03T14:04:27.651Z;2025-04-28T11:14:44.750Z
+687401;Analista de Marketing Institucional Pleno;;analyst;2022-11-03T14:04:27.729Z;2025-04-28T11:14:58.588Z
+687402;Analista de Marketing Institucional Sênior;;analyst;2022-11-03T14:04:27.785Z;2025-04-28T11:15:31.607Z
+687403;Analista de Desenvolvimento de Produto Júnior;;analyst;2022-11-03T14:04:27.918Z;2025-04-28T11:19:47.670Z
+687404;Analista de Desenvolvimento de Produto Pleno;;analyst;2022-11-03T14:04:27.980Z;2025-04-28T11:22:05.641Z
+687405;Analista de Desenvolvimento de Produto Sênior;;analyst;2022-11-03T14:04:28.074Z;2025-04-28T11:20:23.463Z
+687406;Analista de Desenvolvimento Humano Júnior;;analyst;2022-11-03T14:04:28.138Z;2025-04-28T11:24:05.979Z
+687407;Analista de Desenvolvimento Humano Pleno;;analyst;2022-11-03T14:04:28.228Z;2025-04-28T11:24:21.852Z
+687408;Analista de Desenvolvimento Humano Sênior;;analyst;2022-11-03T14:04:28.345Z;2025-04-28T11:24:36.764Z
+687409;Analista de Eng. de Produto Júnior;;analyst;2022-11-03T14:04:28.463Z;2025-04-28T11:25:41.082Z
+687410;Analista de Eng. de Produto Pleno;;analyst;2022-11-03T14:04:28.530Z;2025-04-28T11:25:55.344Z
+687412;Analista de Eventos Júnior;;analyst;2022-11-03T14:04:28.694Z;2025-04-28T11:29:03.934Z
+687413;Analista de Eventos Pleno;;analyst;2022-11-03T14:04:28.751Z;2025-04-28T11:29:16.928Z
+687414;Analista de Eventos Sênior;;analyst;2022-11-03T14:04:28.971Z;2025-04-28T11:29:33.433Z
+687415;Analista de Faturamento Júnior;;analyst;2022-11-03T14:04:29.062Z;2025-04-28T11:30:00.026Z
+687416;Analista de Faturamento Pleno ;;analyst;2022-11-03T14:04:29.131Z;2025-04-28T11:30:12.259Z
+687417;Analista de Faturamento Sênior;;analyst;2022-11-03T14:04:29.195Z;2025-04-28T11:31:33.976Z
+687418;Analista Financeiro Júnior;;analyst;2022-11-03T14:04:29.257Z;2025-04-28T11:34:20.979Z
+687419;Analista Financeiro Pleno;;analyst;2022-11-03T14:04:29.804Z;2025-04-28T11:34:34.293Z
+687420;Analista Financeiro Sênior;;analyst;2022-11-03T14:04:29.888Z;2025-04-28T11:34:51.076Z
+687421;Analista Fiscal Júnior;;analyst;2022-11-03T14:04:29.960Z;2025-04-28T11:35:14.749Z
+687422;Analista Fiscal Pleno;;analyst;2022-11-03T14:04:30.114Z;2025-04-28T11:35:29.886Z
+687423;Analista Fiscal Sênior;;analyst;2022-11-03T14:04:30.343Z;2025-04-28T11:35:43.561Z
+687424;Analista de Infraestrutura TI Júnior;;analyst;2022-11-03T14:04:30.440Z;2025-04-28T11:37:32.375Z
+687425;Analista de Infraestrutura TI Pleno;;analyst;2022-11-03T14:04:30.513Z;2025-04-28T11:37:50.842Z
+687426;Analista de Infraestrutura TI Sênior;;analyst;2022-11-03T14:04:30.574Z;2025-04-28T11:38:06.596Z
+687427;Analista de Inteligência de Mercado Júnior;;analyst;2022-11-03T14:04:30.652Z;2025-04-28T11:38:46.199Z
+687428;Analista de Inteligência de Mercado Pleno ;;analyst;2022-11-03T14:04:30.726Z;2025-04-28T11:39:11.719Z
+687429;Analista de Inteligência de Mercado Sênior;;analyst;2022-11-03T14:04:30.809Z;2025-04-28T11:39:29.677Z
+687430;Analista de Logística Júnior;;analyst;2022-11-03T14:04:30.891Z;2025-04-28T11:32:57.212Z
+687431;Analista de Logística Pleno;;analyst;2022-11-03T14:04:31.080Z;2025-04-28T11:33:13.608Z
+687432;Analista de Logística Sênior;;analyst;2022-11-03T14:04:31.145Z;2025-04-28T11:33:32.677Z
+687433;Analista de Marketing Internacional Júnior;;analyst;2022-11-03T14:04:31.211Z;2025-04-28T11:41:05.955Z
+687434;Analista de Marketing Internacional Pleno ;;analyst;2022-11-03T14:04:31.265Z;2025-04-28T11:41:25.069Z
+687435;Analista de Marketing Internacional Sênior;;analyst;2022-11-03T14:04:31.326Z;2025-04-28T11:41:42.676Z
+687436;Analista de Marketing Júnior;;analyst;2022-11-03T14:04:31.420Z;2025-04-28T11:43:19.907Z
+687437;Analista de Marketing Pleno ;;analyst;2022-11-03T14:04:31.517Z;2025-04-28T11:43:34.093Z
+687438;Analista de Marketing Sênior;;analyst;2022-11-03T14:04:31.615Z;2025-04-28T11:43:49.506Z
+687439;Analista de Negócio TI Júnior;;analyst;2022-11-03T14:04:31.706Z;2025-04-28T11:44:15.695Z
+687440;Analista de Negócio TI Pleno;;analyst;2022-11-03T14:04:31.774Z;2025-04-28T11:44:36.949Z
+687441;Analista de Negócio TI Sênior;;analyst;2022-11-03T14:04:31.920Z;2025-04-28T11:44:52.251Z
+687442;Analista de Planejamento de Manutenção Júnior;;analyst;2022-11-03T14:04:31.992Z;2025-04-28T11:45:38.007Z
+687443;Analista de Planejamento de Manutenção Pleno ;;analyst;2022-11-03T14:04:32.051Z;2025-04-28T11:46:03.549Z
+687444;Analista de Planejamento de Manutenção Sênior;;analyst;2022-11-03T14:04:32.123Z;2025-04-28T11:46:21.021Z
+687445;Analista PPCP Júnior;;analyst;2022-11-03T14:04:32.204Z;2025-04-28T11:47:41.282Z
+687446;Analista PPCP Pleno;;analyst;2022-11-03T14:04:32.346Z;2025-04-28T11:48:07.041Z
+687447;Analista PPCP Sênior;;analyst;2022-11-03T14:04:32.430Z;2025-04-28T11:49:16.047Z
+687448;Analista PPCPM Júnior;;analyst;2022-11-03T14:04:32.526Z;2025-04-28T11:49:48.019Z
+687449;Analista PPCPM Pleno;;analyst;2022-11-03T14:04:32.619Z;2025-04-28T11:50:02.995Z
+687450;Analista PPCPM Sênior;;analyst;2022-11-03T14:04:32.714Z;2025-04-28T11:50:19.716Z
+687451;Analista de Processos Júnior;;analyst;2022-11-03T14:04:32.810Z;2025-04-28T11:51:02.624Z
+687452;Analista de Processos Pleno ;;analyst;2022-11-03T14:04:32.883Z;2025-04-28T11:51:20.304Z
+687453;Analista de Processos Sênior;;analyst;2022-11-03T14:04:32.965Z;2025-04-28T11:51:44.101Z
+687454;Analista de Projetos de Governança Júnior;;analyst;2022-11-03T14:04:33.055Z;2025-04-28T11:58:18.150Z
+687455;Analista de Projetos de Governança Pleno ;;analyst;2022-11-03T14:04:33.147Z;2025-04-28T11:58:32.543Z
+687456;Analista de Projetos de Governança Sênior;;analyst;2022-11-03T14:04:33.218Z;2025-04-28T11:58:48.462Z
+687457;Analista de Projetos Júnior;;analyst;2022-11-03T14:04:33.299Z;2025-04-28T11:52:17.903Z
+687458;Analista de Projetos Pleno ;;analyst;2022-11-03T14:04:33.372Z;2025-04-28T11:52:36.127Z
+687459;Analista de Projetos Sênior;;analyst;2022-11-03T14:04:33.429Z;2025-04-28T11:52:53.278Z
+687460;Analista de Qualidade Júnior;;analyst;2022-11-03T14:04:33.506Z;2025-04-28T11:53:46.273Z
+687461;Analista de Qualidade Pleno;;analyst;2022-11-03T14:04:33.580Z;2025-04-28T11:54:07.537Z
+687462;Analista de Qualidade Sênior;;analyst;2022-11-03T14:04:33.641Z;2025-04-28T11:54:35.171Z
+687463;Analista Químico Júnior;;analyst;2022-11-03T14:04:33.707Z;2025-04-28T11:59:13.067Z
+687464;Analista Químico Pleno ;;analyst;2022-11-03T14:04:33.778Z;2025-04-28T11:59:31.415Z
+687465;Analista Químico Sênior;;analyst;2022-11-03T14:04:33.874Z;2025-04-28T11:59:54.339Z
+687466;Analista de Relacionamento Júnior;;analyst;2022-11-03T14:04:33.931Z;2025-04-28T11:56:49.126Z
+687467;Analista de Relacionamento Pleno ;;analyst;2022-11-03T14:04:34.001Z;2025-04-28T11:57:06.949Z
+687468;Analista de Relacionamento Sênior;;analyst;2022-11-03T14:04:34.066Z;2025-04-28T11:57:27.394Z
+687469;Analista de Recursos Humanos Júnior;;analyst;2022-11-03T14:04:34.136Z;2025-04-28T12:00:27.301Z
+687470;Analista de Recursos Humanos Pleno;;analyst;2022-11-03T14:04:34.197Z;2025-04-28T12:00:48.449Z
+687471;Analista de Recursos Humanos Sênior;;analyst;2022-11-03T14:04:34.265Z;2025-04-28T12:01:09.514Z
+687472;Analista de Sistemas Júnior;;analyst;2022-11-03T14:04:34.331Z;2025-04-28T12:10:55.547Z
+687473;Analista de Sistemas Pleno ;;analyst;2022-11-03T14:04:34.402Z;2025-04-28T12:11:13.389Z
+687474;Analista de Sistemas Sênior;;analyst;2022-11-03T14:04:34.468Z;2025-04-28T12:11:33.040Z
+687475;Assessor(a) da Diretoria;;analyst;2022-11-03T14:04:34.530Z;2025-04-28T12:14:34.796Z
+687476;Assistente Administrativo ;;auxiliary;2022-11-03T14:04:34.625Z;2025-04-28T12:13:30.084Z
+687480;Assistente de Assuntos Regulatórios;;auxiliary;2022-11-03T14:04:34.971Z;2025-04-28T12:14:03.008Z
+687485;Assistente de Compras;;auxiliary;2022-11-03T14:04:36.123Z;2025-04-28T12:19:09.403Z
+687488;Assistente Contábil ;;auxiliary;2022-11-03T14:04:36.344Z;2025-04-28T12:19:36.746Z
+687494;Assistente de Controladoria ;;auxiliary;2022-11-03T14:04:37.156Z;2025-04-28T12:20:06.671Z
+687497;Assistente de Marketing;;auxiliary;2022-11-03T14:04:37.353Z;2025-04-28T12:18:23.426Z
+687500;Assistente de Relacionamento ;;auxiliary;2022-11-03T14:04:37.585Z;2025-04-28T12:21:00.385Z
+687503;Assistente de Desenvolvimento de Produto;;auxiliary;2022-11-03T14:04:37.818Z;2025-04-28T12:21:38.194Z
+687506;Assistente de DHO ;;auxiliary;2022-11-03T14:04:38.035Z;2025-04-28T12:24:23.915Z
+687509;Assistente de Eng. de Produto;;auxiliary;2022-11-03T14:04:38.293Z;2025-04-28T12:27:29.181Z
+687512;Assistente de Estoque ;;operator;2022-11-03T14:04:38.506Z;2025-04-28T12:26:10.110Z
+687515;Assistente de Faturamento;;auxiliary;2022-11-03T14:04:38.748Z;2025-04-28T12:25:20.686Z
+687517;Assistente de Faturamento ;;auxiliary;2022-11-03T14:04:38.944Z;2025-04-28T14:08:59.398Z
+687518;Assistente Financeiro ;;auxiliary;2022-11-03T14:04:39.018Z;2025-04-28T12:25:48.672Z
+687521;Assistente Fiscal ;;auxiliary;2022-11-03T14:04:39.284Z;2025-04-28T12:26:27.141Z
+687524;Assistente de Laboratório;;operator;2022-11-03T14:04:39.533Z;2025-04-28T12:28:07.340Z
+687525;Assistente de Laboratório ;;auxiliary;2022-11-03T14:04:39.625Z;2025-04-28T14:06:58.691Z
+687529;Assistente de Logística;;auxiliary;2022-11-03T14:04:39.943Z;2025-04-28T14:07:34.041Z
+687530;Assistente de Manutenção ;;operator;2022-11-03T14:04:40.013Z;2025-04-28T12:28:45.533Z
+687532;Assistente de Marketing Internacional;;auxiliary;2022-11-03T14:04:40.209Z;2025-07-01T10:44:43.787Z
+687537;Assistente de Planejamento de Manutenção;;auxiliary;2022-11-03T14:04:40.694Z;2025-04-28T13:06:19.679Z
+687540;Assistente PPCP;;auxiliary;2022-11-03T14:04:40.937Z;2025-04-28T12:24:00.675Z
+687543;Assistente PPCPM ;;auxiliary;2022-11-03T14:04:41.332Z;2025-04-28T12:26:58.951Z
+687546;Assistente de Processos;;auxiliary;2022-11-03T14:04:41.602Z;2025-04-28T12:29:12.487Z
+687553;Assistente de Qualidade;;auxiliary;2022-11-03T14:04:42.215Z;2025-04-28T12:25:00.586Z
+687555;Assistente de RH;;auxiliary;2022-11-03T14:04:42.423Z;2025-04-28T12:29:28.368Z
+687557;Assistente de Gestão de Pessoas ;;auxiliary;2022-11-03T14:04:42.740Z;2025-05-05T16:23:24.549Z
+687558;Assistente TI;;auxiliary;2022-11-03T14:04:42.828Z;2025-05-05T16:22:02.113Z
+687561;Atendente Televendas Júnior;;auxiliary;2022-11-03T14:04:43.072Z;2025-05-05T13:50:34.714Z
+687562;Atendente Televendas Pleno;;analyst;2022-11-03T14:04:43.156Z;2025-05-05T13:50:52.692Z
+687563;Atendente Televendas Sênior;;analyst;2022-11-03T14:04:43.226Z;2025-05-05T13:51:12.455Z
+687564;Auxiliar Administrativo;;auxiliary;2022-11-03T14:04:43.457Z;2025-05-05T13:51:44.830Z
+687567;AUXILIAR COMPRAS;;auxiliary;2022-11-03T14:04:43.757Z;2022-11-03T14:04:43.757Z
+687577;Auxiliar de Logística;;operator;2022-11-03T14:04:44.635Z;2025-05-05T13:56:18.720Z
+687581;Auxiliar de Laboratório;;auxiliary;2022-11-03T14:04:45.501Z;2025-05-05T13:57:16.522Z
+687582;AUXILIAR LOGISTICA;;operator;2022-11-03T14:04:45.573Z;2022-11-03T14:04:45.573Z
+687584;AUXILIAR MARKETING;;auxiliary;2022-11-03T14:04:45.732Z;2022-11-03T14:04:45.732Z
+687590;Auxiliar de Produção;;auxiliary;2022-11-03T14:04:46.731Z;2025-05-05T13:54:20.262Z
+687594;Auxiliar de Serviços Gerais;;auxiliary;2022-11-03T14:04:47.024Z;2025-05-05T13:58:14.116Z
+687596;Consultor(a) Interno de Negócios Júnior;;analyst;2022-11-03T14:04:47.179Z;2025-05-05T14:00:46.194Z
+687597;Consultor(a) Interno de Negócios Pleno;;analyst;2022-11-03T14:04:47.254Z;2025-05-05T14:04:40.062Z
+687598;Consultor(a) Interno de Negócios Sênior;;analyst;2022-11-03T14:04:47.322Z;2025-05-05T14:04:56.518Z
+687599;Consultor(a) de Negócios Internacional Júnior;;analyst;2022-11-03T14:04:47.384Z;2025-05-05T14:06:53.741Z
+687600;Consultor(a) de Negócios Internacional Pleno;;analyst;2022-11-03T14:04:47.453Z;2025-05-05T14:07:13.649Z
+687601;Consultor(a) de Negócios Internacional Sênior;;analyst;2022-11-03T14:04:47.543Z;2025-05-05T14:07:34.502Z
+687602;Consultor(a) de Negócios Júnior;;analyst;2022-11-03T14:04:47.631Z;2025-05-05T14:05:33.848Z
+687603;Consultor(a) de Negócios Pleno;;consultant;2022-11-03T14:04:47.709Z;2025-05-05T14:05:52.975Z
+687604;Consultor(a) de Negócios Sênior;;analyst;2022-11-03T14:04:47.778Z;2025-05-05T14:06:17.526Z
+687605;Consultor(a) de Relacionamento Júnior;;analyst;2022-11-03T14:04:47.844Z;2025-05-05T14:08:17.822Z
+687606;Consultor(a) de Relacionamento Pleno;;consultant;2022-11-03T14:04:47.913Z;2025-05-05T14:08:36.571Z
+687607;Consultor(a) de Relacionamento Sênior;;analyst;2022-11-03T14:04:48.001Z;2025-05-05T14:09:00.341Z
+687608;Consultor(a) Científico ;;specialist;2022-11-03T14:04:48.064Z;2025-05-05T13:59:34.760Z
+687610;Consultor(a) Técnico de Relacionamento Júnior;;consultant;2022-11-03T14:04:48.208Z;2025-05-05T14:10:45.173Z
+687611;Consultor(a) Técnico de Relacionamento Pleno;;consultant;2022-11-03T14:04:48.276Z;2025-05-05T14:11:00.270Z
+687612;Consultor(a) Técnico de Relacionamento Sênior;;consultant;2022-11-03T14:04:48.348Z;2025-05-05T14:11:20.216Z
+687617;Coordenador(a) Adm. Financeiro;;coordinator;2022-11-03T14:04:48.775Z;2025-05-05T14:12:03.748Z
+687618;Coordenador(a) Comercial;;coordinator;2022-11-03T14:04:48.862Z;2025-05-05T14:12:51.002Z
+687619;Coordenador(a) de Compras;;coordinator;2022-11-03T14:04:48.925Z;2025-05-05T14:12:26.635Z
+687620;Coordenador(a) de Criação;;coordinator;2022-11-03T14:04:49.172Z;2025-05-05T14:17:29.106Z
+687621;Coordenador(a) de Educação;;coordinator;2022-11-03T14:04:49.303Z;2025-05-05T14:13:38.006Z
+687622;Coordenador(a) de Exportação;;coordinator;2022-11-03T14:04:49.375Z;2025-05-05T14:14:21.014Z
+687623;Coordenador(a) Industrial;;coordinator;2022-11-03T14:04:49.474Z;2025-05-05T14:14:58.132Z
+687624;Coordenador(a) de Laboratório;;coordinator;2022-11-03T14:04:49.957Z;2025-05-05T14:15:20.342Z
+687625;Coordenador(a) de Logística;;coordinator;2022-11-03T14:04:50.131Z;2025-05-05T14:15:40.443Z
+687626;Coordenador(a) de Marketing;;coordinator;2022-11-03T14:04:50.321Z;2025-05-05T14:16:19.803Z
+687627;Coordenador(a) PPCP;;coordinator;2022-11-03T14:04:50.429Z;2025-05-05T14:16:49.717Z
+687628;Coordenador(a) de Processos;;coordinator;2022-11-03T14:04:50.515Z;2025-05-05T14:17:13.840Z
+687629;Coordenador(a) de Produção;;coordinator;2022-11-03T14:04:50.605Z;2025-05-05T14:17:49.209Z
+687630;Coordenador(a) de Projetos;;coordinator;2022-11-03T14:04:50.681Z;2025-05-05T14:19:15.023Z
+687631;Coordenador(a) de Qualidade;;coordinator;2022-11-03T14:04:50.751Z;2025-05-05T14:18:21.637Z
+687632;COORDENADOR (A) QUALIDADE FORNECEDORES;;coordinator;2022-11-03T14:04:50.814Z;2022-11-03T14:04:50.814Z
+687633;Coordenador(a) de Relacionamento;;coordinator;2022-11-03T14:04:50.953Z;2025-05-05T14:18:08.380Z
+687634;COORDENADOR (A) RELACIONAMENTO NACIONAL;;coordinator;2022-11-03T14:04:51.030Z;2022-11-03T14:04:51.030Z
+687635;COORDENADOR (A) RELACIONAMENTO REGIONAL;;coordinator;2022-11-03T14:04:51.106Z;2022-11-03T14:04:51.106Z
+687636;Coordenador(a) de Gestão de Pessoas;;coordinator;2022-11-03T14:04:51.215Z;2025-05-05T14:18:50.918Z
+687637;COORDENADOR (A) SISTEMA GESTAO ASSUNTOS REGULATORIOS;;coordinator;2022-11-03T14:04:51.305Z;2022-11-03T14:04:51.305Z
+687638;COORDENADOR (A) TECNICO LABORATORIO;;coordinator;2022-11-03T14:04:51.393Z;2022-11-03T14:04:51.393Z
+687639;Coordenador(a) de Vendas;;coordinator;2022-11-03T14:04:51.472Z;2025-05-05T14:18:34.386Z
+687640;Coordenador(a) de Televendas;;coordinator;2022-11-03T14:04:51.624Z;2025-05-05T14:21:03.461Z
+687641;Coordenador(a) de Engenharia de Produto;;coordinator;2022-11-03T14:04:51.717Z;2025-05-05T14:14:01.407Z
+687642;Coordenador(a) de Manutenção;;coordinator;2022-11-03T14:04:51.838Z;2025-05-05T14:15:59.777Z
+687644;DESIGNER AUDIOVISUAL PL;;analyst;2022-11-03T14:04:51.983Z;2022-11-03T14:04:51.983Z
+687646;Designer Júnior;;analyst;2022-11-03T14:04:52.182Z;2025-05-05T15:33:49.581Z
+687647;Designer Pleno;;analyst;2022-11-03T14:04:52.277Z;2025-05-05T15:34:01.093Z
+687648;Designer Sênior;;analyst;2022-11-03T14:04:52.348Z;2025-05-05T15:34:15.753Z
+687649;Diretor(a) de Exportação;;director;2022-11-03T14:04:52.419Z;2025-05-05T15:35:08.004Z
+687650;Especialista de Assuntos Regulatórios;;specialist;2022-11-03T14:04:52.511Z;2025-05-05T15:35:43.217Z
+687651;Especialista de Contábil;;specialist;2022-11-03T14:04:52.569Z;2025-05-05T17:18:28.874Z
+687652;Especialista em DHO;;specialist;2022-11-03T14:04:52.639Z;2025-05-05T13:59:06.953Z
+687653;Especialista em Engenharia de Produtos;;specialist;2022-11-03T14:04:52.714Z;2025-05-05T15:38:28.127Z
+687654;Especialista de Exportação;;specialist;2022-11-03T14:04:52.805Z;2025-05-05T15:37:32.108Z
+687655;Especialista Fiscal;;specialist;2022-11-03T14:04:52.868Z;2025-05-05T15:36:06.036Z
+687656;Especialista de Marketing;;specialist;2022-11-03T14:04:52.934Z;2025-05-05T15:37:10.312Z
+687657;ESPECIALISTA MARKETING INTERNACIONAL;;specialist;2022-11-03T14:04:53.505Z;2022-11-03T14:04:53.505Z
+687658;ESPECIALISTA PPCPM;;specialist;2022-11-03T14:04:53.634Z;2022-11-03T14:04:53.634Z
+687659;Especialista de Processos ;;specialist;2022-11-03T14:04:53.719Z;2025-05-05T15:39:04.737Z
+687660;Especialista de Projetos;;specialist;2022-11-03T14:04:53.783Z;2025-05-05T15:40:05.879Z
+687661;Especialista de Qualidade;;specialist;2022-11-03T14:04:53.858Z;2025-05-05T15:39:45.390Z
+687662;Especialista em Gestão de Pessoas;;specialist;2022-11-03T14:04:53.962Z;2025-05-05T15:39:20.923Z
+687663;Especialista S&OP;;specialist;2022-11-03T14:04:54.023Z;2025-05-05T15:40:41.558Z
+687664;Estagiário(a);;intern;2022-11-03T14:04:54.091Z;2025-05-05T15:40:24.834Z
+687665;Gerente de Administração de Vendas;;manager;2022-11-03T14:04:54.169Z;2025-05-05T16:26:47.081Z
+687666;Gerente Comercial;;manager;2022-11-03T14:04:54.706Z;2025-05-05T16:26:26.645Z
+687667;Gerente de Compras;;manager;2022-11-03T14:04:54.868Z;2025-05-05T16:27:25.916Z
+687668;Gerente de Manutenção;;manager;2022-11-03T14:04:54.953Z;2025-05-05T16:26:01.045Z
+687669;Gerente de Desenvolvimento de Negócios;;manager;2022-11-03T14:04:55.029Z;2025-05-05T16:28:04.654Z
+687670;Gerente de Exportação;;manager;2022-11-03T14:04:55.088Z;2025-05-05T16:28:14.877Z
+687671;Gerente Financeiro;;manager;2022-11-03T14:04:55.505Z;2025-05-05T16:25:41.841Z
+687672;Gerente de Garantia da Qualidade;;manager;2022-11-03T14:04:55.575Z;2025-05-05T16:26:16.383Z
+687673;Gerente Industrial;;manager;2022-11-03T14:04:55.641Z;2025-05-05T16:24:52.660Z
+687674;Gerente de Logística;;manager;2022-11-03T14:04:55.708Z;2025-05-05T16:24:10.800Z
+687675;Gerente de Marketing;;manager;2022-11-03T14:04:55.807Z;2025-05-05T16:25:10.510Z
+687676;Gerente de P&D;;manager;2022-11-03T14:04:55.891Z;2025-05-05T16:28:41.966Z
+687677;Gerente de PPCP;;manager;2022-11-03T14:04:55.987Z;2025-05-05T16:27:15.718Z
+687678;Gerente de Processos;;manager;2022-11-03T14:04:56.052Z;2025-05-05T16:25:20.502Z
+687679;Gerente de Produção;;manager;2022-11-03T14:04:56.144Z;2025-05-05T16:24:30.953Z
+687680;GERENTE RECURSOS HUMANOS;;manager;2022-11-03T14:04:56.242Z;2022-11-03T14:04:56.242Z
+687681;Gerente de Relacionamento ;;manager;2022-11-03T14:04:56.315Z;2025-05-05T16:29:20.917Z
+687683;Gerente de Segurança Patrimonial;;manager;2022-11-03T14:04:56.472Z;2025-05-05T16:30:00.532Z
+687684;Gerente de Qualidade Corporativa;;manager;2022-11-03T14:04:56.537Z;2025-05-05T16:27:02.612Z
+687685;Gerente de Laboratório;;manager;2022-11-03T14:04:56.596Z;2025-05-05T16:30:15.422Z
+687686;Gerente de TI;;manager;2022-11-03T14:04:56.678Z;2025-05-05T16:25:01.073Z
+687687;Inspetor(a) de Qualidade I ;;technician;2022-11-03T14:04:56.747Z;2025-05-05T16:32:33.217Z
+687688;Inspetor(a) de Qualidade II;;technician;2022-11-03T14:04:56.964Z;2025-05-05T16:32:47.245Z
+687689;Inspetor(a) de Qualidade III;;technician;2022-11-03T14:04:57.055Z;2025-05-05T16:32:57.868Z
+687690;Jovem Aprendiz;;apprentice;2022-11-03T14:04:57.127Z;2025-04-28T11:55:28.546Z
+687693;Líder de Logística;;supervisor;2022-11-03T14:04:57.342Z;2025-05-05T16:34:28.261Z
+687695;Líder de Produção;;supervisor;2022-11-03T14:04:57.743Z;2025-05-05T16:34:44.443Z
+687696;Líder de Qualidade;;supervisor;2022-11-03T14:04:57.821Z;2025-05-05T16:34:57.602Z
+687698;Líder Técnico de Produção;;supervisor;2022-11-03T14:04:57.975Z;2025-05-05T16:35:19.021Z
+687699;Metrologista I;;technician;2022-11-03T14:04:58.051Z;2025-05-05T16:35:51.597Z
+687700;Metrologista II;;technician;2022-11-03T14:04:58.125Z;2025-05-05T16:36:09.311Z
+687701;Metrologista III;;technician;2022-11-03T14:04:58.216Z;2025-05-05T16:36:26.617Z
+687702;Operador(a) Máquina CNC I;;operator;2022-11-03T14:04:58.282Z;2025-05-05T17:19:24.378Z
+687703;Operador(a) Máquina CNC II;;operator;2022-11-03T14:04:58.371Z;2025-05-05T17:19:35.699Z
+687704;Operador(a) Máquina CNC III;;operator;2022-11-03T14:04:58.440Z;2025-05-05T17:19:46.274Z
+687705;OPERADOR EXPEDICAO;;operator;2022-11-03T14:04:58.507Z;2022-11-03T14:04:58.507Z
+687706;Operador(a) Logística I;;operator;2022-11-03T14:04:58.565Z;2025-05-05T16:37:00.376Z
+687707;Operador(a) Logística II;;operator;2022-11-03T14:04:58.624Z;2025-05-05T16:37:09.923Z
+687708;Operador(a) Logística III;;operator;2022-11-03T14:04:58.694Z;2025-05-05T16:37:22.937Z
+687709;Operador(a) Máquina I;;operator;2022-11-03T14:04:58.823Z;2025-05-05T17:23:37.811Z
+687710;Operador(a) Máquina II;;operator;2022-11-03T14:04:58.899Z;2025-05-05T17:23:56.101Z
+687711;Operador(a) Máquina III;;operator;2022-11-03T14:04:58.967Z;2025-05-05T17:24:05.666Z
+687712;Operador(a) de Produção I;;operator;2022-11-03T14:04:59.026Z;2025-05-05T16:37:59.647Z
+687713;Operador(a) de Produção II;;operator;2022-11-03T14:04:59.159Z;2025-05-05T16:38:11.628Z
+687714;Operador(a) de Produção III;;operator;2022-11-03T14:04:59.275Z;2025-05-05T16:38:22.896Z
+687715;Orientador(a) Técnico Júnior;;analyst;2022-11-03T14:04:59.343Z;2025-05-05T17:21:57.446Z
+687716;Pesquisador I;;specialist;2022-11-03T14:04:59.466Z;2025-05-05T16:39:07.319Z
+687717;Pesquisador II;;specialist;2022-11-03T14:04:59.569Z;2025-05-05T16:39:29.898Z
+687718;Pesquisador III;;specialist;2022-11-03T14:04:59.634Z;2025-05-05T16:39:46.478Z
+687719;Preparador(a) I;;analyst;2022-11-03T14:04:59.711Z;2025-05-05T16:40:07.224Z
+687720;Preparador(a) II;;analyst;2022-11-03T14:04:59.977Z;2025-05-05T16:40:15.468Z
+687721;Preparador(a) III;;analyst;2022-11-03T14:05:00.082Z;2025-05-05T16:40:31.279Z
+687722;Programador(a) CNC;;analyst;2022-11-03T14:05:00.208Z;2025-05-05T17:18:55.758Z
+687723;Recepcionista I;;auxiliary;2022-11-03T14:05:00.301Z;2025-05-05T17:20:07.620Z
+687724;Supervisor(a) Financeiro;;supervisor;2022-11-03T14:05:00.374Z;2025-05-05T16:41:37.111Z
+687725;Supervisor(a) de Compras;;supervisor;2022-11-03T14:05:00.460Z;2025-05-05T17:10:44.933Z
+687726;SUPERVISOR (A) CONTAS A RECEBER;;supervisor;2022-11-03T14:05:00.526Z;2022-11-03T14:05:00.526Z
+687727;Supervisor(a) de Criação;;supervisor;2022-11-03T14:05:00.588Z;2025-05-05T16:41:12.836Z
+687728;Supervisor(a) de Relacionamento;;supervisor;2022-11-03T14:05:00.693Z;2025-05-05T17:10:59.767Z
+687729;Supervisor(a) de Engenharia de Produto ;;supervisor;2022-11-03T14:05:00.772Z;2025-05-05T16:42:39.500Z
+687730;Supervisor(a) de Exportação;;supervisor;2022-11-03T14:05:00.839Z;2025-05-05T17:11:28.109Z
+687731;Supervisor(a) Industrial;;supervisor;2022-11-03T14:05:00.904Z;2025-05-05T16:41:03.039Z
+687732;Supervisor(a) de Laboratório;;supervisor;2022-11-03T14:05:00.990Z;2025-05-05T16:41:49.671Z
+687733;Supervisor(a) Logística;;supervisor;2022-11-03T14:05:01.069Z;2025-05-05T16:42:17.032Z
+687734;Supervisor(a) de Manutenção;;supervisor;2022-11-03T14:05:01.146Z;2025-05-05T17:10:30.615Z
+687735;Supervisor(a) de Produção;;supervisor;2022-11-03T14:05:01.237Z;2025-05-05T17:10:19.941Z
+687736;Supervisor(a) de Projetos;;supervisor;2022-11-03T14:05:01.323Z;2025-05-05T17:11:41.462Z
+687737;Supervisor(a) de Garantia da Qualidade;;supervisor;2022-11-03T14:05:01.425Z;2025-05-06T12:49:00.173Z
+687738;SUPERVISOR (A) RELACIONAMENTO;;supervisor;2022-11-03T14:05:01.489Z;2022-11-03T14:05:01.489Z
+687739;Supervisor(a) de Gestão de Pessoas;;supervisor;2022-11-03T14:05:01.583Z;2025-05-05T17:12:03.169Z
+687740;Supervisor(a) de Qualidade Corporativa;;supervisor;2022-11-03T14:05:01.662Z;2025-05-05T17:11:14.598Z
+687741;Superviso(a) de Laboratório;;supervisor;2022-11-03T14:05:01.740Z;2025-05-05T17:14:41.772Z
+687742;Supervisor(a) de Vendas;;supervisor;2022-11-03T14:05:01.897Z;2025-05-05T16:40:53.139Z
+687743;Técnico(a) em Manutenção I;;technician;2022-11-03T14:05:01.963Z;2025-05-05T17:12:40.108Z
+687744;Técnico(a) em Manutenção II;;technician;2022-11-03T14:05:02.025Z;2025-05-05T17:13:08.574Z
+687745;Técnico(a) em Manutenção III;;technician;2022-11-03T14:05:02.101Z;2025-05-05T17:13:27.355Z
+687746;Técnico(a) de Produto I;;technician;2022-11-03T14:05:02.169Z;2025-05-05T17:15:00.876Z
+687747;Técnico(a) de Produto II;;technician;2022-11-03T14:05:02.235Z;2025-05-05T17:15:19.019Z
+687748;Técnico(a) de Produto III;;technician;2022-11-03T14:05:02.304Z;2025-05-05T17:15:29.852Z
+687749;Técnico(a) Químico II;;technician;2022-11-03T14:05:02.415Z;2025-05-05T17:16:04.483Z
+687751;Técnico(a) Químico III;;technician;2022-11-03T14:05:02.557Z;2025-05-05T17:16:25.605Z
+687752;Técnico(a) Químico I;;technician;2022-11-03T14:05:02.654Z;2025-05-05T17:15:50.570Z
+687756;Técnico(a) em Segurança do Trabalho I;;technician;2022-11-03T14:05:03.030Z;2025-05-05T17:13:52.468Z
+687757;Técnico(a) em Segurança do Trabalho II;;technician;2022-11-03T14:05:03.125Z;2025-05-05T17:14:05.322Z
+687758;Técnico(a) em Segurança do Trabalho III;;technician;2022-11-03T14:05:03.200Z;2025-05-05T17:14:22.316Z
+687759;Torneiro Mecânico I;;operator;2022-11-03T14:05:03.299Z;2025-05-05T17:17:02.013Z
+687760;Torneiro Mecânico II;;operator;2022-11-03T14:05:03.391Z;2025-05-05T17:17:09.030Z
+687761;Torneiro Mecânico III;;operator;2022-11-03T14:05:03.466Z;2025-05-05T17:17:16.077Z
+687765;Recepcionista II;;auxiliary;2022-11-03T14:05:03.784Z;2025-05-05T17:20:16.488Z
+687766;Recepcionista III;;auxiliary;2022-11-03T14:05:03.857Z;2025-05-05T17:20:56.177Z
+703161;Banco de Talentos ;;operator;2022-11-16T19:39:47.596Z;2025-05-05T13:52:59.493Z
+772710;Gerente de Gestão de Pessoas;;manager;2023-02-01T14:32:37.018Z;2025-05-05T16:24:42.686Z
+773047;MODELO TESTE;;auxiliary;2023-02-02T13:27:58.616Z;2023-02-02T13:29:18.822Z
+786257;Coordenador (a) Relacionamento e Educação;;coordinator;2023-02-16T16:28:42.717Z;2023-02-16T16:28:42.717Z
+787859;Especialista de Marketing Internacional;;analyst;2023-02-22T14:59:47.458Z;2025-04-28T11:40:55.419Z
+796581;Gerente de Contas;;manager;2023-03-03T12:04:27.779Z;2025-05-05T16:25:51.320Z
+818273;Gerente de Supply Chain;;manager;2023-04-03T18:47:52.508Z;2025-05-05T16:28:31.678Z
+823898;Analista de Validações Júnior;;analyst;2023-04-12T14:32:53.216Z;2025-04-28T11:22:38.804Z
+854375;Supervisor(a) de Marketing;;supervisor;2023-05-16T11:15:44.478Z;2025-05-05T16:41:24.071Z
+921844;Diretor(a) de Governança;;director;2023-08-15T15:22:16.655Z;2025-05-05T15:35:20.689Z
+921845;Diretor(a) Comercial;;director;2023-08-15T15:22:31.033Z;2025-05-05T15:34:54.571Z
+930208;Gerente Trainee;;manager;2023-08-30T20:31:54.332Z;2025-05-05T16:25:31.048Z
+938146;Projetista Mecânico Industrial;;technician;2023-09-27T10:37:35.142Z;2025-05-05T17:23:12.563Z
+938147;Projetista Eletricista Industrial ;;technician;2023-09-27T10:37:48.060Z;2025-05-05T17:22:42.930Z
+977103;Consultor(a) de Educação Clínica;;specialist;2024-01-17T17:25:43.330Z;2025-05-05T14:09:35.282Z
+980048;Analista de Estudos Clínicos;;analyst;2024-01-19T16:17:57.161Z;2025-04-28T11:14:20.760Z
+1156682;Analista de Remuneração e Benefícios Júnior;;analyst;2024-06-26T20:30:33.818Z;2025-04-28T11:18:03.252Z
+1161210;Coordenador(a) de TI;;coordinator;2024-07-10T13:08:41.040Z;2025-05-05T14:21:33.038Z
+1162533;Analista de ESG Pleno;;analyst;2024-07-15T12:10:11.650Z;2025-04-28T11:28:13.972Z
+1192202;Gerente de Projetos;;manager;2024-08-16T20:17:32.963Z;2025-05-05T16:24:21.648Z
+1192705;SUPERVISOR(A) PRODUÇÃO ;;supervisor;2024-08-19T14:11:11.593Z;2024-08-19T14:11:11.593Z
+1193541;Coordenador(a) de Controladoria;;coordinator;2024-08-20T11:54:14.449Z;2025-05-05T14:13:17.350Z
+1216507;Analista de Treinamento e Desenvolvimento Júnior;;analyst;2024-10-07T13:41:40.804Z;2025-04-28T11:26:47.900Z
+1216508;Analista de Treinamento e Desenvolvimento Pleno;;analyst;2024-10-07T13:41:47.760Z;2025-04-28T11:27:00.860Z
+1216509;Analista de Treinamento e Desenvolvimento Sênior;;analyst;2024-10-07T13:41:53.820Z;2025-04-28T11:27:38.906Z
+1254628;Coordenador(a) de Faturamento;;coordinator;2025-01-08T17:49:26.883Z;2025-05-05T14:14:40.314Z
+1254666;GERENTE GESTÃO DE PESSOAS;;manager;2025-01-08T19:32:41.370Z;2025-01-08T19:32:41.370Z
+1254667;GERENTE OPERAÇÕES INDUSTRIAIS;;manager;2025-01-08T19:33:33.908Z;2025-01-08T19:33:33.908Z
+1254671;Gerente Inteligência de Mercado;;manager;2025-01-08T19:41:33.143Z;2025-01-08T19:41:33.143Z
+1254801;Coordenador(a) Contas à Pagar e Receber;;coordinator;2025-01-09T12:25:50.681Z;2025-01-09T12:25:50.681Z
+1294175;Especialista de Controladoria;;specialist;2025-03-13T12:00:10.596Z;2025-05-05T15:36:26.580Z
+1311242;Analista Comercial Júnior;;analyst;2025-04-11T17:32:02.888Z;2025-04-28T11:02:11.117Z
+1311243;Analista Comercial Pleno;;analyst;2025-04-11T17:32:11.318Z;2025-04-28T11:02:22.928Z
+1311244;Analista Comercial Sênior;;analyst;2025-04-11T17:32:18.692Z;2025-04-28T11:02:37.417Z
+1311245;Assistente de Administração de Vendas Júnior;;auxiliary;2025-04-11T17:32:34.103Z;2025-04-28T10:58:19.540Z
+1318969;Analista Júnior;;analyst;2025-04-28T10:55:09.295Z;2025-04-28T10:55:09.295Z
+1318970;Analista Sênior;;analyst;2025-04-28T10:55:30.701Z;2025-04-28T10:55:30.701Z
+1318971;Especialista;;specialist;2025-04-28T10:55:44.036Z;2025-04-28T10:55:44.036Z
+1318972;Supervisão;;supervisor;2025-04-28T10:55:53.921Z;2025-04-28T10:55:53.921Z
+1318973;Coordenação;;consultant;2025-04-28T10:56:03.833Z;2025-04-28T10:56:03.833Z
+1318974;Gerente;;manager;2025-04-28T10:56:14.236Z;2025-04-28T10:56:14.236Z
+1318975;Diretor;;director;2025-04-28T10:56:28.058Z;2025-04-28T10:56:28.058Z
+1318976;Especialista de Administração de Vendas JR;;specialist;2025-04-28T10:59:54.229Z;2025-04-28T10:59:54.229Z
+1318977;Analista de Comércio Exterior Júnior;;analyst;2025-04-28T11:03:19.960Z;2025-04-28T11:03:19.960Z
+1318978;Analista de Compras Júnior;;analyst;2025-04-28T11:05:46.649Z;2025-04-28T11:05:46.649Z
+1318980;Especialista em Controladoria;;specialist;2025-04-28T11:12:40.654Z;2025-04-28T11:12:40.654Z
+1318982;Analista de Remuneração e Benefícios Pleno;;analyst;2025-04-28T11:18:13.549Z;2025-04-28T11:18:13.549Z
+1318983;Analista de Remuneração e Benefícios Sênior;;analyst;2025-04-28T11:18:26.987Z;2025-04-28T11:18:26.987Z
+1318984;Especialista em Remuneração e Benefícios ;;specialist;2025-04-28T11:18:44.996Z;2025-04-28T11:18:44.996Z
+1318987;Especialista em Desenvolvimento de Produto ;;specialist;2025-04-28T11:20:36.702Z;2025-04-28T11:20:36.702Z
+1318988;Analista de Validações Pleno;;analyst;2025-04-28T11:22:48.848Z;2025-04-28T11:22:48.848Z
+1318989;Analista de Validações Sênior;;analyst;2025-04-28T11:22:58.273Z;2025-04-28T11:22:58.273Z
+1318990;Assistente de Validações Júnior;;auxiliary;2025-04-28T11:23:10.212Z;2025-04-28T11:23:10.212Z
+1318991;Analista de Eng. de Produto Sênior;;analyst;2025-04-28T11:26:23.249Z;2025-04-28T11:26:23.249Z
+1318992;Analista de ESG Júnior;;analyst;2025-04-28T11:28:21.714Z;2025-04-28T11:28:21.714Z
+1318993;Analista de ESG Sênior;;analyst;2025-04-28T11:28:29.528Z;2025-04-28T11:28:29.528Z
+1319024;Assistente de TI;;auxiliary;2025-04-28T13:05:32.303Z;2025-04-28T13:05:32.303Z
+1322444;Coordenador(a) de Garantia da Qualidade;;coordinator;2025-05-05T14:22:36.644Z;2025-05-05T14:22:36.644Z
+1322475;Orientador(a) Técnico Pleno;;analyst;2025-05-05T17:24:54.177Z;2025-05-05T17:24:54.177Z
+1322476;Orientador(a) Técnico Sênior;;analyst;2025-05-05T17:25:01.125Z;2025-05-05T17:25:01.125Z
+1370362;Operador(a) Facilitador(a);;operator;2025-06-27T18:22:45.871Z;2025-06-27T18:22:45.871Z
+1371859;Assistente Marketing Internacional;;auxiliary;2025-07-01T10:43:39.542Z;2025-07-01T10:43:39.542Z
