@@ -39,7 +39,7 @@ def classificar_usuarios(df, cpfs_ignorados):
     
     return df_validos, df_invalidos, df_ignorados
 
-def _obter_ou_criar_dados_gupy(servico_gupy, registro):
+def cria_e_obtem_campos(servico_gupy, registro):
     """
     Função auxiliar para obter ou criar IDs de cargo, departamento e filial na Gupy.
     Isso centraliza a lógica que antes estava em `camposCadastros.py`.
@@ -51,7 +51,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     if nome_cargo:
         similar_to_cargo = encontrar_similar_to(nome_cargo, MAPA_CARGOS)
         # Supondo que ServicoGupy terá um método `obter_ou_criar_cargo`
-        cargo_id = servico_gupy.criar_cargo(nome_cargo, similar_to_cargo)
+        cargo_id = servico_gupy.obtem_cargo(nome_cargo, similar_to_cargo)
         if cargo_id:
             dados_atualizacao['roleId'] = cargo_id
 
@@ -59,7 +59,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     nome_departamento = registro.get("Departamento_gupy")
     if nome_departamento:
         similar_to_dep = encontrar_similar_to(nome_departamento, MAPA_DEPARTAMENTOS)
-        dep_id = servico_gupy.criar_departamento(nome_departamento, similar_to_dep)
+        dep_id = servico_gupy.obtem_departamento(nome_departamento, similar_to_dep)
         if dep_id:
             dados_atualizacao['departmentId'] = dep_id
     
@@ -67,7 +67,7 @@ def _obter_ou_criar_dados_gupy(servico_gupy, registro):
     nome_filial = registro.get("Branch_gupy")
     cod_filial = registro.get("Filial_cod")
     if nome_filial and cod_filial:
-        branch_id = servico_gupy.criar_filial(nome_filial, cod_filial)
+        branch_id = servico_gupy.obtem_filial(nome_filial, cod_filial)
         if branch_id:
             dados_atualizacao['branchIds'] = [branch_id]
 
@@ -95,34 +95,26 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
         registro_principal = registros_df.iloc[0]
         nome = registro_principal['Nome']
         email = registro_principal['EmailValido']  # Usa o e-mail já validado
-
-        logging.info(f"Processando CPF: {cpf} - Nome: {nome}")
+        logging.info(f">===================================================================================")
+        logging.info(f">    Processando CPF: {cpf} - Nome: {nome}")
 
         # Verifica a situação de todas as matrículas do CPF. Se TODAS forem 7, ele está desligado.
         todas_desligadas = (registros_df['Situacao'] == 7).all()
-        
-        usuario_gupy = servico_gupy.listar_usuario_por_email(nome, email)
 
         if todas_desligadas:
-            if usuario_gupy:
-                logging.info(f"Colaborador desligado. Deletando usuário da Gupy: {nome} (ID: {usuario_gupy['id']})")
-                servico_gupy.deletar_usuario(usuario_gupy['id'], nome)
+            usuario = servico_gupy.listar_usuario_por_email(nome, email)
+            if usuario:
+                logging.info(f"> Colaborador desligado. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
+                servico_gupy.deletar_usuario(usuario["id"], nome)
             else:
-                logging.info(f"Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
+                logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
         else:  # Colaborador está ATIVO
-            if not usuario_gupy:
-                logging.info(f"Colaborador ativo não encontrado na Gupy. Criando usuário: {nome}")
-                novo_usuario = servico_gupy.criar_usuario(nome, email, cpf)
-                if novo_usuario:
-                    # Após criar, busca os dados de cargo/depto/filial para atualizar
-                    dados_para_atualizar = _obter_ou_criar_dados_gupy(servico_gupy, registro_principal)
-                    if dados_para_atualizar:
-                        logging.info(f"Atualizando dados do usuário recém-criado: {nome}")
-                        servico_gupy.atualizar_usuario(novo_usuario['id'], dados_para_atualizar)
-            else:
-                logging.info(f"Colaborador ativo ({nome}) já existe na Gupy. Verificando necessidade de atualização.")
-                # Lógica de atualização para usuários existentes
-                dados_para_atualizar = _obter_ou_criar_dados_gupy(servico_gupy, registro_principal)
-                # Aqui você pode adicionar uma verificação para atualizar apenas se houver mudanças
+            usuario_id = servico_gupy.criar_usuario(nome, email, cpf)
+            if usuario_id:
+                # Após criar, busca os dados de cargo/depto/filial para atualizar
+                dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal)
+                logging.info(f"> CHEGOU AQUI : {dados_para_atualizar}")
                 if dados_para_atualizar:
-                     servico_gupy.atualizar_usuario(usuario_gupy['id'], dados_para_atualizar)
+                    logging.info(f"> Atualizando dados do usuário recém-criado: {nome}")
+                    servico_gupy.atualizar_usuario(usuario_id, dados_para_atualizar)
+                    
