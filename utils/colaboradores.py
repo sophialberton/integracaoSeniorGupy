@@ -45,6 +45,14 @@ def cria_e_obtem_campos(servico_gupy, registro):
     Isso centraliza a lógica que antes estava em `camposCadastros.py`.
     """
     dados_atualizacao = {}
+    
+    nome = registro.get("Nome")
+    if nome:
+        dados_atualizacao["name"] = nome
+    
+    email = registro.get("EmailValido") or registro.get("Email")
+    if email:
+        dados_atualizacao["email"] = email
 
     # 1. Processar Cargo (Role)
     nome_cargo = registro.get("Role_gupy")
@@ -115,6 +123,46 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
                 dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal)
                 logging.info(f"> CHEGOU AQUI : {dados_para_atualizar}")
                 if dados_para_atualizar:
-                    logging.info(f"> Atualizando dados do usuário recém-criado: {nome}")
+                    logging.info(f"> Atualizando dados do usuário: {nome}")
                     servico_gupy.atualizar_usuario(usuario_id, dados_para_atualizar)
-                    
+          
+def montar_payload_somente_campos_vazios(servico_gupy, registro, dados_atuais):
+    payload = {}
+
+    # Nome
+    nome_novo = registro.get("Nome")
+    nome_atual = dados_atuais.get("name")
+    if nome_novo and not nome_atual:
+        payload["name"] = nome_novo
+
+    # Email
+    email_novo = registro.get("Email_gupy")
+    email_atual = dados_atuais.get("email")
+    if email_novo and not email_atual:
+        payload["email"] = email_novo
+    # Cargo
+    nome_cargo = registro.get("Role_gupy")
+    if nome_cargo and not dados_atuais.get("roleId"):
+        similar_to_cargo = encontrar_similar_to(nome_cargo, MAPA_CARGOS)
+        cargo_id = servico_gupy.obtem_cargo(nome_cargo, similar_to_cargo)
+        if cargo_id:
+            payload["roleId"] = cargo_id
+
+    # Departamento
+    nome_departamento = registro.get("Departamento_gupy")
+    if nome_departamento and not dados_atuais.get("departmentId"):
+        similar_to_dep = encontrar_similar_to(nome_departamento, MAPA_DEPARTAMENTOS)
+        dep_id = servico_gupy.obtem_departamento(nome_departamento, similar_to_dep)
+        if dep_id:
+            payload["departmentId"] = dep_id
+
+    # Filial
+    nome_filial = registro.get("Branch_gupy")
+    cod_filial = registro.get("Filial_cod")
+    if nome_filial and cod_filial and not dados_atuais.get("branchIds"):
+        branch_id = servico_gupy.obtem_filial(nome_filial, cod_filial)
+        if branch_id:
+            payload["branchIds"] = [branch_id]
+
+    return payload
+

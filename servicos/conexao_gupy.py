@@ -17,17 +17,17 @@ class ServicoGupy:
     def _realizar_requisicao(self, method, endpoint, **kwargs):
         """Função auxiliar para realizar requisições HTTP."""
         url = f"{self.base_url}/{endpoint}"
-        # try:
-        #     response = requests.request(method, url, headers=self.headers, timeout=20, **kwargs)
-        #     response.raise_for_status()
-        #     # Retorna None para status 204 (No Content) que é comum em DELETE
-        #     if response.status_code == 204:
-        #         return None
-        #     return response.json()
-        # except requests.exceptions.HTTPError as e:
-        #     logging.error(f"Erro HTTP na API Gupy para {url}: {e.response.status_code} - {e.response.text}")
-        # except requests.exceptions.RequestException as e:
-        #     logging.error(f"Erro de conexão com a API Gupy para {url}: {e}")
+        try:
+            response = requests.request(method, url, headers=self.headers, timeout=20, **kwargs)
+            response.raise_for_status()
+            # Retorna None para status 204 (No Content) que é comum em DELETE
+            if response.status_code == 204:
+                return None
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"Erro HTTP na API Gupy para {url}: {e.response.status_code} - {e.response.text}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro de conexão com a API Gupy para {url}: {e}")
         return None
     
     def _realizar_requisicao_lista(self, method, endpoint, **kwargs):
@@ -229,6 +229,8 @@ class ServicoGupy:
         return None
 
     def obtem_filial(self, nome_filial, cod_filial):
+        def gerar_path(nome_filial):
+            return nome_filial.lower().replace(" ", "-")
         branch_id, nome_existente, path_existente = self.listar_filial(nome_filial, cod_filial)
 
         if branch_id:
@@ -237,7 +239,12 @@ class ServicoGupy:
 
         logging.critical(f">       Criando Filial '{nome_filial}' com código '{cod_filial}'")
         endpoint = "branches"
-        payload = {"name": nome_filial, "code": cod_filial}
+        payload = {
+            "name": nome_filial,
+            "code": str(cod_filial),
+            "path": [gerar_path(nome_filial)]  # array de string
+        }
+
         data = self._realizar_requisicao("post", endpoint, json=payload)
 
         if data:
