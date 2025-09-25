@@ -4,44 +4,10 @@ Funções novas e antigas devem ter nome padronizados e descritivos em portugues
 
 REGRAS A IMPLEMENTAR: 
 
-arrumar o criar/lista cargo e cria/lista filial seguindo a logica das outras funções.
+Preciso implementar a função atualizar_uauario corretamente
 
-Queria ajeitar o loggin geral para que focasse em cada usuario, fiando tipo:
+Antes de atualizar deve verificar quais campos estão vazios do id
 
+Todas as informaçõe deve ser buscadas pela função cria_e_obtem_dados_gupy
 
-     Processando CPF: 00254820174 - Nome: Douglas Agustini
-          Nenhum id cadastrado encontrado para douglas.agustini@fgm.ind.br
-          Encontrou id cadastro para douglas.agustini@fgmdentalgroup.com e id 671870
-     Usuario com cadastro existente! Verificando necessidade de atualização.
-          Campos já cadastrados:
-               Cargo: COORDENADOR (A) QUALIDADE FORNECEDORES;
-               Área: Pesquisa & Desenvolvimento;
-               Filial: none;
-          Campos novos:
-               Cargo: ESPECIALISTA QUALIDADE DE PRODUTO - ESPECIALISTA
-               Área: Engenharia Industrial - Engenharia Industrial
-               Filial: 219 - Matriz
-
-     Verificando se campos novos existem ou deve ser criado.
-          - Cargo COORDENADOR (A) QUALIDADE FORNECEDORES Criado com similarTo: . 
-          //  ou
-          Cargo Coordenador Qualidade - Fornecedores existente com id 01202. 
-          mesmo padrao para area e filial.
-
-ou 
-     Processando CPF: 00254820174 - Nome: Douglas Agustini
-          Nenhum id cadastrado encontrado para douglas.agustini@fgm.ind.br
-     Usuario sem cadastro existente! Criando e atualizando cadastro.
-     ampos novos:
-               Cargo: ESPECIALISTA QUALIDADE DE PRODUTO - ESPECIALISTA
-               Área: Engenharia Industrial - Engenharia Industrial
-               Filial: 219 - Matriz
-
-     Verificando se campos novos existem ou deve ser criado.
-          - Cargo COORDENADOR (A) QUALIDADE FORNECEDORES Criado com similarTo: . 
-          //  ou
-          Cargo Coordenador Qualidade - Fornecedores existente com id 01202. 
-          mesmo padrao para area e filial.
-
-Tipo isso...para melhor visualização
-
+O email a ser considerado deve ser o que o lista_por email retornou, nao do banco de dados
