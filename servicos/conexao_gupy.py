@@ -49,19 +49,18 @@ class ServicoGupy:
     def listar_usuario_por_email(self, nome, email):
         if not email:
             logging.warning(f">Email nulo para {nome}, não será possível listar na GUPY.")
-            return None, None, None
+            return None
 
         email = email.strip()
 
-        # Define o segundo email alternativo com base no domínio original
         if "@fgmdentalgroup.com" in email:
             email_alternativo = email.replace("@fgmdentalgroup.com", "@fgm.ind.br")
         elif "@fgm.ind.br" in email:
             email_alternativo = email.replace("@fgm.ind.br", "@fgmdentalgroup.com")
         else:
             logging.warning(f">Email {email} não possui domínio reconhecido.")
-            return None, None, None
-        # Tenta buscar com os dois emails
+            return None
+
         for email_consulta in [email, email_alternativo]:
             endpoint = f"users?email={email_consulta}&perPage=10&page=1"
             data = self._realizar_requisicao_lista("GET", endpoint)
@@ -75,21 +74,23 @@ class ServicoGupy:
             if "results" in data:
                 usuarios = data["results"]
                 if usuarios:
-                    user_id = usuarios[0].get("id")
-                    user_name = usuarios[0].get("name")
-                    user_email = usuarios[0].get("email")
-                    logging.info(f">    Encontrou cadastro para {user_email}")
+                    usuario = usuarios[0]
                     return {
-                            "id": user_id,
-                            "name": user_name,
-                            "email": user_email
+                            "id": usuario.get("id"),
+                            "name": usuario.get("name"),
+                            "email": usuario.get("email"),
+                            "roleId": usuario.get("roleId"),
+                            "departmentId": usuario.get("departmentId"),
+                            "branchIds": usuario.get("branchIds"),
+                            "profileTestEnabled": usuario.get("profileTestEnabled", True),
+                            "accessProfileId": usuario.get("accessProfileId")  # <-- Adicionado aqui
                         }
-                else:
-                    logging.info(f">    Nenhum cadastro encontrado para {email_consulta}")
+
             else:
                 logging.error(f">Erro ao listar id Gupy de usuário {nome}: {detalhe}")
 
         return None
+
 
     def criar_usuario(self, nome, email, cpf):
         usuario = self.listar_usuario_por_email(nome, email)
@@ -114,9 +115,9 @@ class ServicoGupy:
         logging.info(f"Comando de deleção enviado para o usuário: {nome} (ID: {user_id})")
 
     def atualizar_usuario(self, user_id, dados_atualizacao):
-        """Atualiza os dados de um usuário na Gupy usando PUT, preservando campos imutáveis como profileTestEnabled."""
-        endpoint = f"users/{user_id}"
+        """Atualiza os dados de um usuário na Gupy usando PUT, apenas se houver diferenças reais."""
 
+        endpoint = f"users/{user_id}"
         nome = dados_atualizacao.get("name")
         email = dados_atualizacao.get("email")
 
@@ -124,9 +125,18 @@ class ServicoGupy:
         if not usuario_atual:
             logging.error(f"Não foi possível obter dados atuais do usuário {user_id} ({email})")
             return None
+        cargo_nome = dados_atualizacao.get("roleName", "")
+        logging.debug(f"Cargo recebido para verificação de perfil de acesso: {cargo_nome}")
 
         # Preserva profileTestEnabled se estiver presente
         profile_test_enabled = usuario_atual.get("profileTestEnabled", True)
+
+        # Verifica se o cargo exige accessProfileId especial
+        access_profile_id = None
+        cargo_nome = dados_atualizacao.get("roleName", "")  # roleName precisa estar disponível
+        palavras_chave = ["gerente", "líder", "supervisor", "coordenador", "diretor"]
+        if any(palavra in cargo_nome.lower() for palavra in palavras_chave):
+            access_profile_id = 127509
 
         # Campos permitidos pela API
         payload = {
@@ -135,17 +145,41 @@ class ServicoGupy:
             "roleId": dados_atualizacao.get("roleId"),
             "departmentId": dados_atualizacao.get("departmentId"),
             "branchIds": dados_atualizacao.get("branchIds"),
-            "profileTestEnabled": profile_test_enabled  # incluído, mas sem alterar
+            "profileTestEnabled": profile_test_enabled
         }
+
+        if access_profile_id:
+            payload["accessProfileId"] = access_profile_id
 
         # Remove campos com valor None
         payload = {k: v for k, v in payload.items() if v is not None}
+
+        def normalizar(valor):
+            if isinstance(valor, list):
+                return sorted([str(v).strip().lower() for v in valor])
+            if isinstance(valor, str):
+                return valor.strip().lower()
+            return valor
+
+        dados_diferentes = {}
+        for k, v_novo in payload.items():
+            v_atual = usuario_atual.get(k)
+            if normalizar(v_novo) != normalizar(v_atual):
+                dados_diferentes[k] = v_novo
+
+
+        if not dados_diferentes:
+            logging.info(f"Usuário {user_id} já está atualizado. Nenhuma alteração necessária.")
+            return None
 
         data = self._realizar_requisicao("put", endpoint, json=payload)
         if data:
             logging.critical(f"Usuário atualizado (ID: {user_id}) com os dados: {payload}")
             return data
         return None
+
+
+
     
     def listar_campos_por_id(self, id_gupy, nome, email):
         logging.info(f"> Buscando campos do usuário {nome} - {email} - {id_gupy}")
