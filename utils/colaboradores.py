@@ -39,18 +39,18 @@ def classificar_usuarios(df, cpfs_ignorados):
     
     return df_validos, df_invalidos, df_ignorados
 
-def cria_e_obtem_campos(servico_gupy, registro):
+def cria_e_obtem_campos(servico_gupy, registro, email_gupy=None):
     """
     Função auxiliar para obter ou criar IDs de cargo, departamento e filial na Gupy.
     Isso centraliza a lógica que antes estava em `camposCadastros.py`.
     """
     dados_atualizacao = {}
-    
+
     nome = registro.get("Nome")
     if nome:
         dados_atualizacao["name"] = nome
-    
-    email = registro.get("EmailValido") or registro.get("Email")
+
+    email = email_gupy or registro.get("EmailValido") or registro.get("Email")
     if email:
         dados_atualizacao["email"] = email
 
@@ -117,10 +117,10 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
             else:
                 logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
         else:  # Colaborador está ATIVO
-            usuario_id = servico_gupy.criar_usuario(nome, email, cpf)
-            if usuario_id:
-                # Após criar, busca os dados de cargo/depto/filial para atualizar
-                dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal)
+            usuario = servico_gupy.criar_usuario(nome, email, cpf)
+            if usuario:
+                usuario_id = usuario["id"]
+                dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal, usuario["email"])
                 logging.info(f"> CHEGOU AQUI : {dados_para_atualizar}")
                 if dados_para_atualizar:
                     logging.info(f"> Atualizando dados do usuário: {nome}")

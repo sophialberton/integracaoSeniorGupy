@@ -95,18 +95,16 @@ class ServicoGupy:
         usuario = self.listar_usuario_por_email(nome, email)
 
         if usuario is not None:
-            logging.warning(f"> Usuário já existe: {usuario['name']} (id: {usuario['id']})")
-            return usuario["id"]
+            return usuario  # Retorna o objeto completo, não só o ID
 
-        
-        logging.critical(f"> Criando usuário: {nome} ({email})")
+        logging.critical(f"&gt; Criando usuário: {nome} ({email})")
         endpoint = "users"
         payload = {"name": nome, "email": email}
         data = self._realizar_requisicao("post", endpoint, json=payload)
-        
+
         if data:
-            return data
-        logging.warning(f"> Falha ao criar usuário: {nome} ({email})")
+            return data  # Aqui também retorna o objeto completo
+
         return None
 
     def deletar_usuario(self, user_id, nome):
@@ -116,12 +114,36 @@ class ServicoGupy:
         logging.info(f"Comando de deleção enviado para o usuário: {nome} (ID: {user_id})")
 
     def atualizar_usuario(self, user_id, dados_atualizacao):
-        """Atualiza os dados de um usuário na Gupy."""
+        """Atualiza os dados de um usuário na Gupy usando PUT, preservando campos imutáveis como profileTestEnabled."""
         endpoint = f"users/{user_id}"
-        
-        data = self._realizar_requisicao("put", endpoint, json=dados_atualizacao)
+
+        nome = dados_atualizacao.get("name")
+        email = dados_atualizacao.get("email")
+
+        usuario_atual = self.listar_usuario_por_email(nome, email)
+        if not usuario_atual:
+            logging.error(f"Não foi possível obter dados atuais do usuário {user_id} ({email})")
+            return None
+
+        # Preserva profileTestEnabled se estiver presente
+        profile_test_enabled = usuario_atual.get("profileTestEnabled", True)
+
+        # Campos permitidos pela API
+        payload = {
+            "name": dados_atualizacao.get("name"),
+            "email": dados_atualizacao.get("email"),
+            "roleId": dados_atualizacao.get("roleId"),
+            "departmentId": dados_atualizacao.get("departmentId"),
+            "branchIds": dados_atualizacao.get("branchIds"),
+            "profileTestEnabled": profile_test_enabled  # incluído, mas sem alterar
+        }
+
+        # Remove campos com valor None
+        payload = {k: v for k, v in payload.items() if v is not None}
+
+        data = self._realizar_requisicao("put", endpoint, json=payload)
         if data:
-            logging.info(f"Usuário atualizado (ID: {user_id}) com os dados: {dados_atualizacao}")
+            logging.info(f"Usuário atualizado (ID: {user_id}) com os dados: {payload}")
             return data
         return None
     
