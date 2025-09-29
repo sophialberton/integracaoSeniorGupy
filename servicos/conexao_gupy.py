@@ -125,31 +125,20 @@ class ServicoGupy:
         if not usuario_atual:
             logging.error(f"Não foi possível obter dados atuais do usuário {user_id} ({email})")
             return None
-        cargo_nome = dados_atualizacao.get("roleName", "")
-        logging.debug(f"Cargo recebido para verificação de perfil de acesso: {cargo_nome}")
 
         # Preserva profileTestEnabled se estiver presente
         profile_test_enabled = usuario_atual.get("profileTestEnabled", True)
 
-        # Verifica se o cargo exige accessProfileId especial
-        access_profile_id = None
-        cargo_nome = dados_atualizacao.get("roleName", "")  # roleName precisa estar disponível
-        palavras_chave = ["gerente", "líder", "supervisor", "coordenador", "diretor"]
-        if any(palavra in cargo_nome.lower() for palavra in palavras_chave):
-            access_profile_id = 127509
-
-        # Campos permitidos pela API
+        # Monta o payload com os dados recebidos
         payload = {
             "name": dados_atualizacao.get("name"),
             "email": dados_atualizacao.get("email"),
             "roleId": dados_atualizacao.get("roleId"),
             "departmentId": dados_atualizacao.get("departmentId"),
             "branchIds": dados_atualizacao.get("branchIds"),
+            "accessProfileId": dados_atualizacao.get("accessProfileId"),
             "profileTestEnabled": profile_test_enabled
         }
-
-        if access_profile_id:
-            payload["accessProfileId"] = access_profile_id
 
         # Remove campos com valor None
         payload = {k: v for k, v in payload.items() if v is not None}
@@ -165,8 +154,8 @@ class ServicoGupy:
         for k, v_novo in payload.items():
             v_atual = usuario_atual.get(k)
             if normalizar(v_novo) != normalizar(v_atual):
+                logging.debug(f"Dado diferente detectado: {k} | Atual: {v_atual} | Novo: {v_novo}")
                 dados_diferentes[k] = v_novo
-
 
         if not dados_diferentes:
             logging.info(f"Usuário {user_id} já está atualizado. Nenhuma alteração necessária.")
@@ -177,8 +166,6 @@ class ServicoGupy:
             logging.critical(f"Usuário atualizado (ID: {user_id}) com os dados: {payload}")
             return data
         return None
-
-
 
     
     def listar_campos_por_id(self, id_gupy, nome, email):
