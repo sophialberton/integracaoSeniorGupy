@@ -97,7 +97,7 @@ class ServicoGupy:
         if usuario is not None:
             return usuario  # Retorna o objeto completo, não só o ID
 
-        logging.critical(f"&gt; Criando usuário: {nome} ({email})")
+        logging.critical(f"> Criando usuário: {nome} ({email})")
         endpoint = "users"
         payload = {"name": nome, "email": email}
         data = self._realizar_requisicao("post", endpoint, json=payload)
@@ -143,12 +143,12 @@ class ServicoGupy:
 
         data = self._realizar_requisicao("put", endpoint, json=payload)
         if data:
-            logging.info(f"Usuário atualizado (ID: {user_id}) com os dados: {payload}")
+            logging.critical(f"Usuário atualizado (ID: {user_id}) com os dados: {payload}")
             return data
         return None
     
     def listar_campos_por_id(self, id_gupy, nome, email):
-        logging.warning(f"> Buscando campos do usuário {nome} - {email} - {id_gupy}")
+        logging.info(f"> Buscando campos do usuário {nome} - {email} - {id_gupy}")
         url = f"https://api.gupy.io/api/v1/users?email={email}&perPage=10&page=1"
         headers = {
                 "accept": "application/json",
@@ -178,7 +178,7 @@ class ServicoGupy:
 
     # Funções auxiliar para listar/buscar pelo nome departamento/cargo/filial
     def listar_departamento(self, nome_departamento):
-        logging.warning(f">    Buscando Departamento: '{nome_departamento}'")
+        logging.info(f">    Buscando Departamento: '{nome_departamento}'")
         endpoint = f"departments?name={nome_departamento}&perPage=10&page=1"
         data = self._realizar_requisicao_lista("get", endpoint)
         
@@ -190,7 +190,7 @@ class ServicoGupy:
         return None, None, None
 
     def listar_cargo(self, nome_cargo):
-        logging.warning(f">    Buscando Cargo/Role: '{nome_cargo}'")
+        logging.info(f">    Buscando Cargo/Role: '{nome_cargo}'")
         endpoint = f"roles?name={nome_cargo}&perPage=10&page=1"
         data = self._realizar_requisicao_lista("get", endpoint)
 
@@ -202,7 +202,7 @@ class ServicoGupy:
         return None, None, None
 
     def listar_filial(self, nome_filial, cod_filial):
-        logging.warning(f">    Bucando Filial: '{nome_filial}' com código '{cod_filial}'")
+        logging.info(f">    Bucando Filial: '{nome_filial}' com código '{cod_filial}'")
         endpoint = f"branches?code={cod_filial}&perPage=10&page=1"
         data = self._realizar_requisicao_lista("get", endpoint)
 
@@ -218,7 +218,7 @@ class ServicoGupy:
         id_departamento, nome_existente, similar_existente = self.listar_departamento(nome_departamento)
         
         if id_departamento:
-            logging.critical(f">       Departamento Existente: '{nome_existente}' (ID: {id_departamento}/similar{similar_existente})")
+            logging.info(f">       Departamento Existente: '{nome_existente}' (ID: {id_departamento}/similar{similar_existente})")
             return id_departamento
         
         logging.critical(f">       Criando Departamento '{nome_departamento}' com similar '{similarTo}'")
@@ -236,7 +236,7 @@ class ServicoGupy:
         role_id, nome_existente, similar_existente = self.listar_cargo(nome_cargo)
 
         if role_id:
-            logging.critical(f">       Cargo Existente '{nome_existente}' (ID: {role_id}/similar{similar_existente})")
+            logging.info(f">       Cargo Existente '{nome_existente}' (ID: {role_id}/similar{similar_existente})")
             return role_id
 
         logging.critical(f">       Criando Cargo '{nome_cargo}' com similar '{similarTo}'")
@@ -256,7 +256,7 @@ class ServicoGupy:
         branch_id, nome_existente, path_existente = self.listar_filial(nome_filial, cod_filial)
 
         if branch_id:
-            logging.critical(f">       Filial Existente '{nome_existente}' (ID: {branch_id}/Path: '{path_existente}')")
+            logging.info(f">       Filial Existente '{nome_existente}' (ID: {branch_id}/Path: '{path_existente}')")
             return branch_id
 
         logging.critical(f">       Criando Filial '{nome_filial}' com código '{cod_filial}'")
