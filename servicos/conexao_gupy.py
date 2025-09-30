@@ -16,18 +16,18 @@ class ServicoGupy:
 
     def _realizar_requisicao(self, method, endpoint, **kwargs):
         # """Função auxiliar para realizar requisições HTTP."""
-        # url = f"{self.base_url}/{endpoint}"
-        # try:
-        #     response = requests.request(method, url, headers=self.headers, timeout=20, **kwargs)
-        #     response.raise_for_status()
-        #     # Retorna None para status 204 (No Content) que é comum em DELETE
-        #     if response.status_code == 204:
-        #         return None
-        #     return response.json()
-        # except requests.exceptions.HTTPError as e:
-        #     logging.error(f"Erro HTTP na API Gupy para {url}: {e.response.status_code} - {e.response.text}")
-        # except requests.exceptions.RequestException as e:
-        #     logging.error(f"Erro de conexão com a API Gupy para {url}: {e}")
+        url = f"{self.base_url}/{endpoint}"
+        try:
+            response = requests.request(method, url, headers=self.headers, timeout=20, **kwargs)
+            response.raise_for_status()
+            # Retorna None para status 204 (No Content) que é comum em DELETE
+            if response.status_code == 204:
+                return None
+            return response.json()
+        except requests.exceptions.HTTPError as e:
+            logging.error(f"Erro HTTP na API Gupy para {url}: {e.response.status_code} - {e.response.text}")
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Erro de conexão com a API Gupy para {url}: {e}")
         return None
     
     def _realizar_requisicao_lista(self, method, endpoint, **kwargs):
@@ -111,7 +111,7 @@ class ServicoGupy:
     def deletar_usuario(self, user_id, nome):
         """Deleta um usuário da Gupy."""
         endpoint = f"users/{user_id}"
-        # self._realizar_requisicao("delete", endpoint)
+        self._realizar_requisicao("delete", endpoint)
         logging.critical(f"> Comando de deleção enviado para o usuário: {nome} (ID: {user_id})")
 
     def atualizar_usuario(self, user_id, dados_atualizacao):

@@ -143,12 +143,14 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
     # === 2. Processa os colaboradores ativos ===
     usuarios_ativos = {cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')}
     for cpf, registros_df in usuarios_ativos.items():
-        registro_principal = registros_df.iloc[0]
+        registros_ativos = registros_df[registros_df['Situacao'] != 7]
+        if registros_ativos.empty:
+            continue  # Nenhum registro ativo, ignora
+        registro_principal = registros_ativos.iloc[0]  # Pega o primeiro ativo
         nome = registro_principal['Nome']
         email = registro_principal['EmailValido']
         logging.info(f">===================================================================================")
         logging.info(f">    [ATIVO] Processando CPF: {cpf} - Nome: {nome}")
-
         usuario = servico_gupy.criar_usuario(nome, email, cpf)
         if usuario:
             usuario_id = usuario["id"]
