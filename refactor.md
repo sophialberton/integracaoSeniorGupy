@@ -4,8 +4,5 @@ Funções novas e antigas devem ter nome padronizados e descritivos em portugues
 
 REGRAS A IMPLEMENTAR: 
 
-Fazer com que de print/logging apenas para quando REALMENTE atualizar ou criar algum campo ou cadastro.
+o delete foi chamado para 4 colaboradores que tem um registro ativo alem dos q estao igual a 7, isso nao pode acontecer, o script deve considerar demitido apenas se todos os registros poessuem sa situação igual a 7.
 
-Tipo, comparar o cadastro antes e depois para ver se vai mudar algo no cadastro e printar/logging
-
-E quando criar cargo, ou departamento mostrar.

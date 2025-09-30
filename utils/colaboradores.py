@@ -22,22 +22,31 @@ def carregar_cpfs_ignorados(caminho_arquivo="dados/ignoradosRH.csv"):
         return set()
 
 def classificar_usuarios(df, cpfs_ignorados):
-    """Classifica o DataFrame de colaboradores em válidos, inválidos e ignorados."""
+    """Classifica o DataFrame de colaboradores em válidos, inválidos, ignorados e desligados."""
     df['Cpf'] = df['Cpf'].astype(str).str.strip().str.zfill(11)
     
     df_ignorados = df[df['Cpf'].isin(cpfs_ignorados)]
     df_processar = df[~df['Cpf'].isin(cpfs_ignorados)].copy()
     
-    # Aplica a extração de e-mail válido para separar os colaboradores processáveis
+    # Aplica a extração de e-mail válido
     df_processar['EmailValido'] = df_processar['Email'].apply(extrair_email_valido)
+    
+    # Agrupa por CPF para verificar se todos os registros estão desligados
+    desligados_cpfs = []
+    for cpf, grupo in df_processar.groupby('Cpf'):
+        if (grupo['Situacao'] == 7).all():
+            desligados_cpfs.append(cpf)
+    
+    df_desligados = df_processar[df_processar['Cpf'].isin(desligados_cpfs)]
+    df_processar = df_processar[~df_processar['Cpf'].isin(desligados_cpfs)]
     
     df_validos = df_processar[df_processar['EmailValido'].notna()].copy()
     df_invalidos = df_processar[df_processar['EmailValido'].isna()].copy()
     
-    # A coluna 'EmailValido' agora contém o e-mail limpo e será usada no processamento
     df_invalidos.drop(columns=['EmailValido'], inplace=True)
     
-    return df_validos, df_invalidos, df_ignorados
+    return df_validos, df_invalidos, df_ignorados, df_desligados
+
 
 def cria_e_obtem_campos(servico_gupy, registro, email_gupy=None):
     """
@@ -92,41 +101,52 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
     centralizando a lógica de negócio.
     """
     cpfs_ignorados = carregar_cpfs_ignorados()
-    df_validos, df_invalidos, df_ignorados = classificar_usuarios(df_total, cpfs_ignorados)
+    df_validos, df_invalidos, df_ignorados, df_desligados = classificar_usuarios(df_total, cpfs_ignorados)
 
     # Logging dos totais para conferência
     logging.info(f"Total de registros recebidos do Senior: {len(df_total)}")
     logging.info(f"Registros com e-mail válido para processar: {len(df_validos)}")
     logging.info(f"Registros sem e-mail válido nos domínios: {len(df_invalidos)}")
     logging.info(f"Registros ignorados por CPF: {len(df_ignorados)}")
+    logging.info(f"Registros totalmente desligados: {len(df_desligados)}")
 
-    # Agrupa por CPF para tratar múltiplas matrículas
-    usuarios_agrupados = {cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')}
 
-    for cpf, registros_df in usuarios_agrupados.items():
-        # A lógica considera o registro mais recente ou o primeiro como principal
+    # === 1. Processa os desligados com e-mail válido ===
+    usuarios_desligados = {cpf: grupo for cpf, grupo in df_desligados.groupby('Cpf')}
+    for cpf, registros_df in usuarios_desligados.items():
+        # Verifica se há pelo menos um registro com e-mail válido
+        registros_com_email = registros_df[registros_df['EmailValido'].notna()]
+        if registros_com_email.empty:
+            # logging.info(f"> [DESLIGADO] CPF {cpf} ignorado por não ter e-mail válido.")
+            continue
+
+        registro_principal = registros_com_email.iloc[0]
+        nome = registro_principal['Nome']
+        email = registro_principal['EmailValido']
+        logging.info(f">===================================================================================")
+        logging.info(f">    [DESLIGADO] Processando CPF: {cpf} - Nome: {nome}")
+
+        usuario = servico_gupy.listar_usuario_por_email(nome, email)
+        if usuario:
+            logging.info(f"> Colaborador desligado. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
+            servico_gupy.deletar_usuario(usuario["id"], nome)
+        else:
+            logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
+
+
+    # === 2. Processa os colaboradores ativos ===
+    usuarios_ativos = {cpf: grupo for cpf, grupo in df_validos.groupby('Cpf')}
+    for cpf, registros_df in usuarios_ativos.items():
         registro_principal = registros_df.iloc[0]
         nome = registro_principal['Nome']
-        email = registro_principal['EmailValido']  # Usa o e-mail já validado
+        email = registro_principal['EmailValido']
         logging.info(f">===================================================================================")
-        logging.info(f">    Processando CPF: {cpf} - Nome: {nome}")
+        logging.info(f">    [ATIVO] Processando CPF: {cpf} - Nome: {nome}")
 
-        # Verifica a situação de todas as matrículas do CPF. Se TODAS forem 7, ele está desligado.
-        todas_desligadas = (registros_df['Situacao'] == 7).all()
+        usuario = servico_gupy.criar_usuario(nome, email, cpf)
+        if usuario:
+            usuario_id = usuario["id"]
+            dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal, usuario["email"])
+            if dados_para_atualizar:
+                servico_gupy.atualizar_usuario(usuario_id, dados_para_atualizar)
 
-        if todas_desligadas:
-            usuario = servico_gupy.listar_usuario_por_email(nome, email)
-            if usuario:
-                logging.info(f"> Colaborador desligado. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
-                servico_gupy.deletar_usuario(usuario["id"], nome)
-            else:
-                logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
-        else:  # Colaborador está ATIVO
-            usuario = servico_gupy.criar_usuario(nome, email, cpf)
-            if usuario:
-                usuario_id = usuario["id"]
-                dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal, usuario["email"])
-                # logging.info(f"> Dados a atualizar : {dados_para_atualizar}")
-                if dados_para_atualizar:
-                    # logging.info(f"> Atualizando dados do usuário: {nome}")
-                    servico_gupy.atualizar_usuario(usuario_id, dados_para_atualizar)

@@ -78,7 +78,7 @@ class ServicoSenior:
         WHERE
             FUN.NUMEMP IN (219, 220, 221, 620)
             AND FUN.TIPCOL = 1
-            AND FUN.SITAFA <> 7
+            --AND FUN.SITAFA <> 7
             AND FUN.CODCAR NOT IN (110355)
         ORDER BY
             FUN.NUMEMP, FUN.CODFIL, FUN.NUMCAD
