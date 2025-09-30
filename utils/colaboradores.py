@@ -102,6 +102,9 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
     """
     cpfs_ignorados = carregar_cpfs_ignorados()
     df_validos, df_invalidos, df_ignorados, df_desligados = classificar_usuarios(df_total, cpfs_ignorados)
+    df_invalidos_ativos = df_invalidos[df_invalidos['Situacao'] != 7]
+    nomes_sem_email_valido = df_invalidos_ativos['Nome'].unique().tolist()
+    nomes_formatados = "\n".join(nomes_sem_email_valido)
 
     # Logging dos totais para conferência
     logging.info(f"Total de registros recebidos do Senior: {len(df_total)}")
@@ -109,6 +112,9 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
     logging.info(f"Registros sem e-mail válido nos domínios: {len(df_invalidos)}")
     logging.info(f"Registros ignorados por CPF: {len(df_ignorados)}")
     logging.info(f"Registros totalmente desligados: {len(df_desligados)}")
+    logging.info(f"Registros ATIVOS sem e-mail válido nos domínios: {len(nomes_sem_email_valido)}")
+
+    logging.info("Nomes de colaboradores ativos sem e-mail válido nos domínios:\n" + nomes_formatados)
 
 
     # === 1. Processa os desligados com e-mail válido ===
@@ -128,10 +134,10 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
 
         usuario = servico_gupy.listar_usuario_por_email(nome, email)
         if usuario:
-            logging.info(f"> Colaborador desligado. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
+            logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
             servico_gupy.deletar_usuario(usuario["id"], nome)
-        else:
-            logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
+        # else:
+        #     logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
 
 
     # === 2. Processa os colaboradores ativos ===
@@ -149,4 +155,3 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
             dados_para_atualizar = cria_e_obtem_campos(servico_gupy, registro_principal, usuario["email"])
             if dados_para_atualizar:
                 servico_gupy.atualizar_usuario(usuario_id, dados_para_atualizar)
-
