@@ -48,25 +48,39 @@ class ServicoGupy:
 
     def listar_usuario_por_email(self, nome, email):
         if not email:
-            logging.warning(f">Email nulo para {nome}, não será possível listar na GUPY.")
+            logging.warning(f"> Email nulo para {nome}, não será possível listar na GUPY.")
             return None
 
         email = email.strip()
 
-        if "@fgmdentalgroup.com" in email:
-            email_alternativo = email.replace("@fgmdentalgroup.com", "@fgm.ind.br")
-        elif "@fgm.ind.br" in email:
-            email_alternativo = email.replace("@fgm.ind.br", "@fgmdentalgroup.com")
-        else:
-            logging.warning(f">Email {email} não possui domínio reconhecido.")
+        # Lista de domínios válidos
+        dominios_validos = [
+            "@fgmdentalgroup.com",
+            "@fgm.ind.br",
+            "@biocircle.ind.br"
+        ]
+
+        # Verifica se o domínio é válido
+        dominio_atual = next((d for d in dominios_validos if d in email), None)
+        if not dominio_atual:
+            logging.warning(f"> Email {email} não possui domínio reconhecido.")
             return None
 
-        for email_consulta in [email, email_alternativo]:
+        # Gera variações com os outros domínios válidos
+        email_variacoes = [email]
+        usuario_parte = email.split("@")[0]
+        for dominio in dominios_validos:
+            novo_email = f"{usuario_parte}{dominio}"
+            if novo_email not in email_variacoes:
+                email_variacoes.append(novo_email)
+
+        # Consulta a API com cada variação
+        for email_consulta in email_variacoes:
             endpoint = f"users?email={email_consulta}&perPage=10&page=1"
             data = self._realizar_requisicao_lista("GET", endpoint)
 
             if data is None:
-                logging.warning(f">Nenhuma resposta da API para o email {email_consulta}")
+                logging.warning(f"> Nenhuma resposta da API para o email {email_consulta}")
                 continue
 
             detalhe = data.get("detail", "Erro desconhecido")
@@ -76,20 +90,20 @@ class ServicoGupy:
                 if usuarios:
                     usuario = usuarios[0]
                     return {
-                            "id": usuario.get("id"),
-                            "name": usuario.get("name"),
-                            "email": usuario.get("email"),
-                            "roleId": usuario.get("roleId"),
-                            "departmentId": usuario.get("departmentId"),
-                            "branchIds": usuario.get("branchIds"),
-                            "profileTestEnabled": usuario.get("profileTestEnabled", True),
-                            "accessProfileId": usuario.get("accessProfileId")  # <-- Adicionado aqui
-                        }
+                        "id": usuario.get("id"),
+                        "name": usuario.get("name"),
+                        "email": usuario.get("email"),
+                        "roleId": usuario.get("roleId"),
+                        "departmentId": usuario.get("departmentId"),
+                        "branchIds": usuario.get("branchIds"),
+                        "profileTestEnabled": usuario.get("profileTestEnabled", True),
+                        "accessProfileId": usuario.get("accessProfileId")
+                    }
 
             else:
-                logging.error(f">Erro ao listar id Gupy de usuário {nome}: {detalhe}")
+                logging.error(f"> Erro ao listar id Gupy de usuário {nome}: {detalhe}")
 
-        return None
+
 
 
     def criar_usuario(self, nome, email, cpf):

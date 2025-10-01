@@ -126,18 +126,18 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
             # logging.info(f"> [DESLIGADO] CPF {cpf} ignorado por não ter e-mail válido.")
             continue
 
-        registro_principal = registros_com_email.iloc[0]
-        nome = registro_principal['Nome']
-        email = registro_principal['EmailValido']
-        logging.info(f">===================================================================================")
-        logging.info(f">    [DESLIGADO] Processando CPF: {cpf} - Nome: {nome}")
+    #     registro_principal = registros_com_email.iloc[0]
+    #     nome = registro_principal['Nome']
+    #     email = registro_principal['EmailValido']
+    #     logging.info(f">===================================================================================")
+    #     logging.info(f">    [DESLIGADO] Processando CPF: {cpf} - Nome: {nome}")
 
-        usuario = servico_gupy.listar_usuario_por_email(nome, email)
-        if usuario:
-            logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
-            servico_gupy.deletar_usuario(usuario["id"], nome)
-        # else:
-        #     logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
+    #     usuario = servico_gupy.listar_usuario_por_email(nome, email)
+    #     if usuario:
+    #         logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
+    #         servico_gupy.deletar_usuario(usuario["id"], nome)
+    #     # else:
+    #     #     logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
 
 
     # === 2. Processa os colaboradores ativos ===
