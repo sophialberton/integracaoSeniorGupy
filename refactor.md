@@ -14,3 +14,24 @@ emails válidos em ordem de prioridades:
 Adicionar no tratamento de erro contra a criaçaõ de cadastro duplicados o email biocircle pois pode haver apenas um cadastro na gupy por colaborador, mesmo se ele tiver 3 emails com os 3 dominios.
 
 Se o email corporativo for igual a ' ' significa que o RH nao cadastrou. E não sera possivel criar um cadastro na gupy para o funcionário. 
+
+
+
+
+
+
+
+
+
+
+Envie a sua planilha preenchida conforme o material modelo disponível para download.
+
+O seu arquivo precisa estar nos formatos .XLS ou XLSX e seguir os padrões da planilha modelo.
+
+Modelo:
+
+Nome	Número do documento (CPF)	Código do País (2 letras)
+João Silva (Nome de exemplo)	00000000000	BR
+
+
+Todos os funcionarios são BR
