@@ -308,9 +308,16 @@ class ServicoGupy:
 
 # ====================================================================== Employee
 
-    def lista_employee(self, id_gupy_employee):
+# mesma logica do cadastro de usuário
+    def lista_employee(self, id_gupy_employee): # id gupy employee é diferente de id gupy. 
         endpoint = f"company-employees?id={id_gupy_employee}"
         data = self._realizar_requisicao("post", endpoint)
         payload = {"id": id_gupy_employee, } 
         if data:
             return data.get("id")
+
+    def cria_employee(self, nome, cpf): pass
+
+    def obtem_employee(self, nome, cpf): pass
+
+    def deleta_employee(self, id_gupy_employee): pass

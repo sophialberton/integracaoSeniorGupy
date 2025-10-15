@@ -72,6 +72,8 @@ def cria_e_obtem_campos(servico_gupy, registro, email_gupy=None):
             dados_atualizacao['roleId'] = cargo_id
             dados_atualizacao['roleName'] = nome_cargo
 
+
+            # Para os comuns deve ser o 231953
             # Verifica se o cargo exige accessProfileId especial
             palavras_chave = ["gerente", "líder", "lider", "especialista", "supervisor", "coordenador", "diretor"]
             if any(palavra in nome_cargo.lower() for palavra in palavras_chave):
