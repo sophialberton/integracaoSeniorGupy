@@ -308,16 +308,35 @@ class ServicoGupy:
 
 # ====================================================================== Employee
 
-# mesma logica do cadastro de usuário
-    def lista_employee(self, id_gupy_employee): # id gupy employee é diferente de id gupy. 
-        endpoint = f"company-employees?id={id_gupy_employee}"
-        data = self._realizar_requisicao("post", endpoint)
-        payload = {"id": id_gupy_employee, } 
-        if data:
-            return data.get("id")
+    # mesma logica do cadastro de usuário
+    def lista_employee(self, identification_document):
+        """Busca um employee pelo CPF (identificationDocument)."""
+        endpoint = f"company-employees?identificationDocument={identification_document}"
+        data = self._realizar_requisicao("get", endpoint)
+        if data and data.get("employees"):
+            return data["employees"][0]
+        return None
 
-    def cria_employee(self, nome, cpf): pass
+    def cria_employee(self, nome, cpf):
+        """Cria um novo employee na Gupy."""
+        logging.info(f"> Criando employee: {nome} ({cpf})")
+        endpoint = "company-employees"
+        payload = {
+            "name": nome,
+            "countryOfOrigin": "BR",
+            "identificationDocument": cpf
+        }
+        return self._realizar_requisicao("post", endpoint, json=payload)
 
-    def obtem_employee(self, nome, cpf): pass
+    def obtem_employee(self, nome, cpf):
+        """Obtém um employee, criando-o se não existir."""
+        employee = self.lista_employee(cpf)
+        if employee:
+            return employee
+        return self.cria_employee(nome, cpf)
 
-    def deleta_employee(self, id_gupy_employee): pass
+    def deleta_employee(self, employee_id, nome):
+        """Deleta um employee da Gupy."""
+        endpoint = f"company-employees/{employee_id}"
+        self._realizar_requisicao("delete", endpoint)
+        logging.info(f"> Comando de deleção enviado para o employee: {nome} (ID: {employee_id})")

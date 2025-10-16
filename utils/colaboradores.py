@@ -78,6 +78,8 @@ def cria_e_obtem_campos(servico_gupy, registro, email_gupy=None):
             palavras_chave = ["gerente", "líder", "lider", "especialista", "supervisor", "coordenador", "diretor"]
             if any(palavra in nome_cargo.lower() for palavra in palavras_chave):
                 dados_atualizacao['accessProfileId'] = 127509
+            else:
+                dados_atualizacao['accessProfileId'] = 231953
 
     # 2. Processar Departamento (Department)
     nome_departamento = registro.get("Departamento_gupy")
@@ -138,8 +140,10 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
         if usuario:
             logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
             servico_gupy.deletar_usuario(usuario["id"], nome)
-        # else:
-        #     logging.info(f"> Colaborador desligado ({nome}) não foi encontrado na Gupy. Nenhuma ação necessária.")
+        
+        employee = servico_gupy.lista_employee(cpf)
+        if employee:
+            servico_gupy.deleta_employee(employee['id'], nome)
 
 
     # === 2. Processa os colaboradores ativos ===
@@ -153,6 +157,9 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
         email = registro_principal['EmailValido']
         logging.info(f">===================================================================================")
         logging.info(f">    [ATIVO] Processando CPF: {cpf} - Nome: {nome}")
+
+        servico_gupy.obtem_employee(nome, cpf) # Adiciona a validação/criação do employee
+
         usuario = servico_gupy.criar_usuario(nome, email, cpf)
         if usuario:
             usuario_id = usuario["id"]
