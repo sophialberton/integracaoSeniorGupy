@@ -309,12 +309,12 @@ class ServicoGupy:
 # ====================================================================== Employee
 
     # mesma logica do cadastro de usuário
-    def lista_employee(self, identification_document):
-        """Busca um employee pelo CPF (identificationDocument)."""
-        endpoint = f"company-employees?identificationDocument={identification_document}"
-        data = self._realizar_requisicao("get", endpoint)
-        if data and data.get("employees"):
-            return data["employees"][0]
+    def lista_employee(self, cpf):
+        """Busca employee pelo CPF usando query string."""
+        endpoint = f"company-employees?identificationDocument={cpf}&perPage=10&page=1"
+        response = self._realizar_requisicao("get", endpoint)
+        if response and "results" in response and response["results"]:
+            return response["results"][0]
         return None
 
     def cria_employee(self, nome, cpf):
@@ -322,9 +322,13 @@ class ServicoGupy:
         logging.info(f"> Criando employee: {nome} ({cpf})")
         endpoint = "company-employees"
         payload = {
-            "name": nome,
-            "countryOfOrigin": "BR",
-            "identificationDocument": cpf
+            "employees": [
+                {
+                    "name": nome,
+                    "countryOfOrigin": "BR",
+                    "identificationDocument": cpf
+                }
+            ]
         }
         return self._realizar_requisicao("post", endpoint, json=payload)
 

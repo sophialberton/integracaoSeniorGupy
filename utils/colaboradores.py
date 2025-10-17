@@ -80,6 +80,7 @@ def cria_e_obtem_campos(servico_gupy, registro, email_gupy=None):
                 dados_atualizacao['accessProfileId'] = 127509
             else:
                 dados_atualizacao['accessProfileId'] = 231953
+                logging.info(f'Atualiazando perfil de acesso para Comunicação & Endo')
 
     # 2. Processar Departamento (Department)
     nome_departamento = registro.get("Departamento_gupy")
@@ -122,28 +123,29 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
 
 
     # === 1. Processa os desligados com e-mail válido ===
-    usuarios_desligados = {cpf: grupo for cpf, grupo in df_desligados.groupby('Cpf')}
-    for cpf, registros_df in usuarios_desligados.items():
-        # Verifica se há pelo menos um registro com e-mail válido
-        registros_com_email = registros_df[registros_df['EmailValido'].notna()]
-        if registros_com_email.empty:
-            # logging.info(f"> [DESLIGADO] CPF {cpf} ignorado por não ter e-mail válido.")
-            continue
+    # usuarios_desligados = {cpf: grupo for cpf, grupo in df_desligados.groupby('Cpf')}
+    # for cpf, registros_df in usuarios_desligados.items():
+    #     # Verifica se há pelo menos um registro com e-mail válido
+    #     registros_com_email = registros_df[registros_df['EmailValido'].notna()]
+    #     if registros_com_email.empty:
+    #         # logging.info(f"> [DESLIGADO] CPF {cpf} ignorado por não ter e-mail válido.")
+    #         continue
 
-        registro_principal = registros_com_email.iloc[0]
-        nome = registro_principal['Nome']
-        email = registro_principal['EmailValido']
-        logging.info(f">===================================================================================")
-        logging.info(f">    [DESLIGADO] Processando CPF: {cpf} - Nome: {nome}")
+    #     registro_principal = registros_com_email.iloc[0]
+    #     nome = registro_principal['Nome']
+    #     email = registro_principal['EmailValido']
+    #     logging.info(f">===================================================================================")
+    #     logging.info(f">    [DESLIGADO] Processando CPF: {cpf} - Nome: {nome}")
 
-        usuario = servico_gupy.listar_usuario_por_email(nome, email)
-        if usuario:
-            logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
-            servico_gupy.deletar_usuario(usuario["id"], nome)
+    #     usuario = servico_gupy.listar_usuario_por_email(nome, email)
+    #     if usuario:
+    #         logging.critical(f"> Colaborador desligado com cadastro na Gupy. Deletando usuário da Gupy: {usuario['name']} (email: {usuario['email']}/ID: {usuario['id']})")
+    #         servico_gupy.deletar_usuario(usuario["id"], nome)
         
-        employee = servico_gupy.lista_employee(cpf)
-        if employee:
-            servico_gupy.deleta_employee(employee['id'], nome)
+    #     employee = servico_gupy.lista_employee(cpf)
+    #     if employee:
+    #         logging.critical(f"> Colaborador desligado com nome na lista de colaboradores na Gupy. Deletando cadastro da lista Gupy: {usuario['name']} (cpf: {usuario['cpf']})")
+    #         servico_gupy.deleta_employee(employee['id'], nome)
 
 
     # === 2. Processa os colaboradores ativos ===
@@ -158,7 +160,10 @@ def processar_colaboradores(servico_gupy: ServicoGupy, df_total: pd.DataFrame):
         logging.info(f">===================================================================================")
         logging.info(f">    [ATIVO] Processando CPF: {cpf} - Nome: {nome}")
 
-        servico_gupy.obtem_employee(nome, cpf) # Adiciona a validação/criação do employee
+        employee = servico_gupy.obtem_employee(nome, cpf)
+        if not employee:
+            logging.warning(f"> Employee com CPF {cpf} não pôde ser criado ou obtido.")
+            continue  # pula para o próximo
 
         usuario = servico_gupy.criar_usuario(nome, email, cpf)
         if usuario:
